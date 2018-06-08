@@ -1,0 +1,36 @@
+{
+  "name": "hazeline",
+  "version": "0.0.0",
+  "description": "An interactive walkthrough tutorial library for the web, done right.",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/caiuscitiriga/hazeline.git"
+  },
+  "keywords": [
+    "tutorial",
+    "walkthrough",
+    "application-tutorial",
+    "interactive-tutorial",
+    "step-by-step-tutorial",
+    "step-tutorial",
+    "node",
+    "js",
+    "javascript",
+    "web",
+    "web-tutorial"
+  ],
+  "author": "Caius Citiriga",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/caiuscitiriga/hazeline/issues"
+  },
+  "homepage": "https://github.com/caiuscitiriga/hazeline#readme",
+  "devDependencies": {
+    "typescript": "2.9.1"
+  }
+}
