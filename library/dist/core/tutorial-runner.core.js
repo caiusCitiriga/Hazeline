@@ -39,9 +39,7 @@ class TutorialRunner {
             .drawCloth()
             .pipe(operators_1.filter(res => !!res), operators_1.tap(res => {
             section.steps.forEach((step, idx) => {
-                setTimeout(() => {
-                    drawer_core_1.Drawer.drawBlocksAroundTutorialStepElement(step);
-                }, 100 * idx);
+                drawer_core_1.Drawer.drawBlocksAroundTutorialStepElement(step);
             });
             this.finalizeTutorial(section);
         }))

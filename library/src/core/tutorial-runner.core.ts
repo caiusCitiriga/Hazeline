@@ -46,9 +46,7 @@ export class TutorialRunner {
                 filter(res => !!res),
                 tap(res => {
                     section.steps.forEach((step, idx) => {
-                        setTimeout(() => {
-                            Drawer.drawBlocksAroundTutorialStepElement(step);
-                        }, 100 * idx);
+                        Drawer.drawBlocksAroundTutorialStepElement(step);
                     });
                     this.finalizeTutorial(section);
                 }))

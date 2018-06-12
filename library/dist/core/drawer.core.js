@@ -24,23 +24,7 @@ class Drawer {
         element.css('transition', 'opacity 120ms ease-in-out');
         setTimeout(() => {
             element.css('opacity', 1);
-        }, 120);
-        // const elementClone = $(step.selector).clone(true, true);
-        // const elementPosition = $(step.selector)[0].getBoundingClientRect();
-        // elementClone.css('color', 'red');
-        // elementClone.css('font-size', '40px');
-        // elementClone.css('position', 'absolute');
-        // elementClone.css('z-index', this.clothZIndex);
-        // elementClone.css('transition', 'opacity 120ms ease-in-out');
-        // elementClone.css('top', elementPosition.top);
-        // elementClone.css('left', elementPosition.left);
-        // elementClone.css('width', elementPosition.width);
-        // elementClone.css('height', elementPosition.height);
-        // elementClone.css('opacity', 0);
-        // $('body').append(elementClone);
-        // setTimeout(() => {
-        //     elementClone.css('opacity', 1);
-        // }, 120);
+        }, 500);
     }
     static drawCloth() {
         const obs = new rxjs_1.BehaviorSubject(false);
@@ -61,10 +45,22 @@ class Drawer {
             document.getElementById(this.clothId).style.opacity = '1';
             obs.next(true);
             obs.complete();
+            if (!this.windowResizeListenerAttached) {
+                window.onresize = () => {
+                    this.updateClothSize();
+                    this.windowResizeListenerAttached = true;
+                };
+            }
         }, 500);
         return obs;
     }
+    static updateClothSize() {
+        const newSizes = this.getViewportSizes();
+        document.getElementById(this.clothId).style.width = `${newSizes.width}px`;
+        document.getElementById(this.clothId).style.height = `${newSizes.height}px`;
+    }
 }
+Drawer.windowResizeListenerAttached = false;
 //  Cloth stuff
 Drawer.clothZIndex = '999';
 Drawer.clothId = 'HAZELINE-TUTORIAL-CLOTH';

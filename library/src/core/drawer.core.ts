@@ -6,6 +6,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 export class Drawer {
 
     private static viewportSizes: ViewportSizes;
+    private static windowResizeListenerAttached = false;
 
     //  Cloth stuff
     private static clothZIndex = '999';
@@ -33,7 +34,7 @@ export class Drawer {
 
         setTimeout(() => {
             element.css('opacity', 1);
-        }, 120);
+        }, 500);
     }
 
     public static drawCloth(): Observable<boolean> {
@@ -54,13 +55,28 @@ export class Drawer {
         cloth.style.height = `${viewportSizes.height.toString()}px`;
 
         $('body').prepend(cloth);
+
         setTimeout(() => {
             document.getElementById(this.clothId).style.opacity = '1';
             obs.next(true);
             obs.complete();
+
+            if (!this.windowResizeListenerAttached) {
+                window.onresize = () => {
+                    this.updateClothSize();
+                    this.windowResizeListenerAttached = true;
+                }
+            }
         }, 500);
 
         return obs;
+    }
+
+    private static updateClothSize(): void {
+        const newSizes = this.getViewportSizes();
+
+        document.getElementById(this.clothId).style.width = `${newSizes.width}px`;
+        document.getElementById(this.clothId).style.height = `${newSizes.height}px`;
     }
 
 }
