@@ -1,0 +1,1 @@
+{"version":3,"file":"tutorial-status.interface.d.ts","sourceRoot":"","sources":["../../src/interfaces/tutorial-status.interface.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,eAAe,EAAE,MAAM,8BAA8B,CAAC;AAC/D,OAAO,EAAE,gBAAgB,EAAE,MAAM,iCAAiC,CAAC;AAEnE,MAAM,WAAW,cAAc;IAC3B,cAAc,EAAE,eAAe,CAAC;IAChC,cAAc,EAAE,gBAAgB,CAAC;CACpC"}

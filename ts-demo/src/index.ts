@@ -2,6 +2,7 @@ import { Hazeline } from 'hazeline';
 import $ from 'jquery';
 
 class HazelineDemo {
+
     private haze: Hazeline;
 
     //  Controls
@@ -11,6 +12,7 @@ class HazelineDemo {
         this.haze = new Hazeline();
         this.collectControlsElementsInstances();
         this.attachListenersOnControls();
+        this.attachListenersOnTutorialItems();
     }
 
     private collectControlsElementsInstances(): void {
@@ -20,6 +22,13 @@ class HazelineDemo {
     private attachListenersOnControls(): void {
         this.startDemoBtn.addEventListener('click', e => {
             this.runDemo();
+        });
+    }
+
+    private attachListenersOnTutorialItems(): void {
+        document.getElementById('simpleItem02').addEventListener('click', (e: MouseEvent) => {
+            console.log('Clicked');
+            console.log(e);
         });
     }
 
@@ -51,4 +60,4 @@ class HazelineDemo {
 
 $(document).ready(() => {
     const demo = new HazelineDemo();
-})
+});
