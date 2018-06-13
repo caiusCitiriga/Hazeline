@@ -11,6 +11,7 @@ const tutorial_statuses_enum_1 = require("../enums/tutorial-statuses.enum");
 class TutorialRunner {
     constructor() {
         this._$tutorialStatus = new rxjs_1.BehaviorSubject(null);
+        this.currentTutorialStep = 0;
     }
     get $tutorialStatus() {
         return this._$tutorialStatus;
@@ -37,12 +38,16 @@ class TutorialRunner {
         this.initializeTutorial(section);
         drawer_core_1.Drawer
             .drawCloth()
-            .pipe(operators_1.filter(res => !!res), operators_1.tap(res => {
-            section.steps.forEach((step, idx) => {
-                drawer_core_1.Drawer.drawBlocksAroundTutorialStepElement(step);
-            });
+            .pipe(operators_1.filter(clothIsReady => !!clothIsReady), operators_1.switchMap(() => drawer_core_1.Drawer.drawStep(section.steps[this.currentTutorialStep])), operators_1.filter(nextStepRequested => !!nextStepRequested), operators_1.tap(() => this.loadNextStep(section)))
+            .subscribe();
+    }
+    loadNextStep(section) {
+        if (this.currentTutorialStep === section.steps.length - 1) {
             this.finalizeTutorial(section);
-        }))
+            return;
+        }
+        this.currentTutorialStep++;
+        drawer_core_1.Drawer.drawStep(section.steps[this.currentTutorialStep])
             .subscribe();
     }
     initializeTutorial(section) {

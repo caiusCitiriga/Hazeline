@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { filter, tap } from 'rxjs/operators';
+import { filter, tap, switchMap } from 'rxjs/operators';
 
 import { Drawer } from './drawer.core';
 import { TutorialStatuses } from '../enums/tutorial-statuses.enum';
@@ -10,6 +10,7 @@ import { TutorialSection } from "../interfaces/tutorial-section.interface";
 export class TutorialRunner {
 
     private _$tutorialStatus: BehaviorSubject<TutorialStatus> = new BehaviorSubject(null);
+    private currentTutorialStep = 0;
 
     public get $tutorialStatus(): Observable<TutorialStatus> {
         return this._$tutorialStatus;
@@ -43,13 +44,21 @@ export class TutorialRunner {
         Drawer
             .drawCloth()
             .pipe(
-                filter(res => !!res),
-                tap(res => {
-                    section.steps.forEach((step, idx) => {
-                        Drawer.drawBlocksAroundTutorialStepElement(step);
-                    });
-                    this.finalizeTutorial(section);
-                }))
+                filter(clothIsReady => !!clothIsReady),
+                switchMap(() => Drawer.drawStep(section.steps[this.currentTutorialStep])),
+                filter(nextStepRequested => !!nextStepRequested),
+                tap(() => this.loadNextStep(section)))
+            .subscribe();
+    }
+
+    private loadNextStep(section: TutorialSection): void {
+        if (this.currentTutorialStep === section.steps.length - 1) {
+            this.finalizeTutorial(section);
+            return;
+        }
+
+        this.currentTutorialStep++;
+        Drawer.drawStep(section.steps[this.currentTutorialStep])
             .subscribe();
     }
 
