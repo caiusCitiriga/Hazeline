@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "reinstall": "cd ../library rimraf hazeline-0.0.0.tgz && npm run build && cd ../ts-demo && rimraf node_modules/hazeline package-lock.json && npm i && npm run build-dev",
+    "reinstall": "cd ../library rimraf hazeline-0.0.0.tgz && npm run build && cd ../ts-demo && rimraf node_modules/hazeline  package-lock.json && npm i && npm run build-dev",
     "build-dev": "rimraf dist && webpack --mode development ./src/index.ts --output ./dist/bundle.js --watch",
     "build-prod": "rimraf dist && webpack --mode production ./src/index.ts --output ./dist/bundle.js"
   },
