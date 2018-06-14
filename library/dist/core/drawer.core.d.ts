@@ -22,6 +22,7 @@ export declare class Drawer {
     private static prevStepBtnId;
     static drawCloth(): Observable<boolean>;
     static drawStep(step: SectionStep, isFirstStep?: boolean, isLastStep?: boolean): Observable<NextStepPossibilities>;
+    static removeEverything(): void;
     private static getViewportSizes;
     private static bringToFrontHTMLElement;
     private static backupCurrentElementPropertiesAndChangeThem;
@@ -31,11 +32,13 @@ export declare class Drawer {
     private static defineButtons;
     private static setValuesOnInfoBox;
     private static onNextStep;
+    private static onLastStep;
     private static onPreviousStep;
     private static updateClothSize;
 }
 export declare enum NextStepPossibilities {
     FORWARD = 0,
-    BACKWARD = 1
+    BACKWARD = 1,
+    FINISHED = 2
 }
 //# sourceMappingURL=drawer.core.d.ts.map

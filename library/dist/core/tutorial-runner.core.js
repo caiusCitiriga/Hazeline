@@ -45,6 +45,9 @@ class TutorialRunner {
             if (nextStep === drawer_core_1.NextStepPossibilities.BACKWARD) {
                 this.loadPreviousStep(section);
             }
+            if (nextStep === drawer_core_1.NextStepPossibilities.FINISHED) {
+                this.finalizeTutorial(section);
+            }
         }))
             .subscribe();
     }
@@ -82,6 +85,8 @@ class TutorialRunner {
         if (section.onEnd) {
             section.onEnd();
         }
+        this.currentTutorialStep = 0;
+        drawer_core_1.Drawer.removeEverything();
         this._$tutorialStatus.next({
             runningSection: null,
             tutorialStatus: tutorial_statuses_enum_1.TutorialStatuses.Stopped

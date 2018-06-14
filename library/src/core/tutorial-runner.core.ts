@@ -53,6 +53,9 @@ export class TutorialRunner {
                     if (nextStep === NextStepPossibilities.BACKWARD) {
                         this.loadPreviousStep(section);
                     }
+                    if (nextStep === NextStepPossibilities.FINISHED) {
+                        this.finalizeTutorial(section);
+                    }
                 })
             )
             .subscribe();
@@ -99,6 +102,10 @@ export class TutorialRunner {
         if (section.onEnd) {
             section.onEnd();
         }
+
+        this.currentTutorialStep = 0;
+        Drawer.removeEverything();
+
         this._$tutorialStatus.next({
             runningSection: null,
             tutorialStatus: TutorialStatuses.Stopped

@@ -49,6 +49,21 @@ class Drawer {
             .subscribe();
         return this._$nextStep;
     }
+    static removeEverything() {
+        if (this.prevElSelector) {
+            this.restorePreviousElementStatus();
+        }
+        document.getElementsByTagName('body')[0]
+            .removeChild(document.getElementById(this.clothId));
+        document.getElementsByTagName('body')[0]
+            .removeChild(document.getElementById(this.infoBoxId));
+        if (this.tether) {
+            this.tether.destroy();
+        }
+        this.infoBoxAlreadyDrawn = false;
+        this._$nextStep.complete();
+        this._$nextStep = new rxjs_1.BehaviorSubject(null);
+    }
     static getViewportSizes() {
         this.viewportSizes = {
             width: jquery_1.default(window).width(),
@@ -138,10 +153,10 @@ class Drawer {
         infoBoxElement.style.transition = 'opacity 200ms ease-in-out';
         return infoBoxElement;
     }
-    static defineButtons(infoBoxElement, step) {
+    static defineButtons(infoBoxElement, step, isLastStep) {
         //  Define the next step button element
         const nextStepButton = document.createElement('button');
-        nextStepButton.textContent = 'NEXT';
+        nextStepButton.textContent = isLastStep ? 'END' : 'NEXT';
         nextStepButton.style.right = '0';
         nextStepButton.style.bottom = '0';
         nextStepButton.style.padding = '10px';
@@ -154,7 +169,12 @@ class Drawer {
                 step.onNext(jquery_1.default(step.selector)[0], step.id, step.selector);
             }
             infoBoxElement.style.opacity = '0';
-            this.onNextStep();
+            if (isLastStep) {
+                this.onLastStep();
+            }
+            else {
+                this.onNextStep();
+            }
         });
         //  Define the previous step button element
         const prevStepButton = document.createElement('button');
@@ -185,7 +205,7 @@ class Drawer {
         }
         infoBoxElement.appendChild(idSpanElement);
         //  Define the buttons for the info box
-        const buttons = this.defineButtons(infoBoxElement, step);
+        const buttons = this.defineButtons(infoBoxElement, step, isLastStep);
         if (!isFirstStep) {
             if (infoBoxElement.contains(document.getElementById(this.prevStepBtnId))) {
                 //  Remove the previous button and it's listeners
@@ -209,6 +229,8 @@ class Drawer {
         if (!!isLastStep && infoBoxElement.contains(document.getElementById(this.nextStepBtnId))) {
             //  Remove the button from the info box if is present
             infoBoxElement.removeChild(document.getElementById(this.nextStepBtnId));
+            //  Now add the "next" button, this time configured to end the tutorial
+            infoBoxElement.appendChild(buttons.nextButton);
         }
         setTimeout(() => {
             if (this.tether) {
@@ -232,6 +254,9 @@ class Drawer {
     }
     static onNextStep() {
         this._$nextStep.next(NextStepPossibilities.FORWARD);
+    }
+    static onLastStep() {
+        this._$nextStep.next(NextStepPossibilities.FINISHED);
     }
     static onPreviousStep() {
         this._$nextStep.next(NextStepPossibilities.BACKWARD);
@@ -267,5 +292,6 @@ var NextStepPossibilities;
 (function (NextStepPossibilities) {
     NextStepPossibilities[NextStepPossibilities["FORWARD"] = 0] = "FORWARD";
     NextStepPossibilities[NextStepPossibilities["BACKWARD"] = 1] = "BACKWARD";
+    NextStepPossibilities[NextStepPossibilities["FINISHED"] = 2] = "FINISHED";
 })(NextStepPossibilities = exports.NextStepPossibilities || (exports.NextStepPossibilities = {}));
 //# sourceMappingURL=drawer.core.js.map
