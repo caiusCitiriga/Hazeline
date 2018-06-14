@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const jquery_1 = __importDefault(require("jquery"));
+const tether_1 = __importDefault(require("tether"));
 const rxjs_1 = require("rxjs");
 const operators_1 = require("rxjs/operators");
 class Drawer {
@@ -18,9 +19,9 @@ class Drawer {
         cloth.style.top = '0';
         cloth.style.left = '0';
         cloth.style.opacity = '0';
-        cloth.style.position = 'absolute';
+        cloth.style.position = 'fixed';
         cloth.style.zIndex = this.clothZIndex;
-        cloth.style.background = 'rgba(0,0,0,0.8)';
+        cloth.style.background = 'rgba(0,0,0,0.9)';
         cloth.style.transition = 'opacity 120ms ease-in-out';
         cloth.style.width = `${viewportSizes.width.toString()}px`;
         cloth.style.height = `${viewportSizes.height.toString()}px`;
@@ -38,11 +39,15 @@ class Drawer {
         }, 200);
         return clothIsReady;
     }
-    static drawStep(step) {
+    static drawStep(step, isFirstStep, isLastStep) {
+        const element = jquery_1.default(step.selector);
+        if (!!step.onStart) {
+            step.onStart(element[0], step.id, step.selector);
+        }
         this.bringToFrontHTMLElement(step)
-            .pipe(operators_1.filter(elementIsReady => !!elementIsReady), operators_1.switchMap(() => this.drawTutorialStepInfoBox(step)))
+            .pipe(operators_1.filter(elementIsReady => !!elementIsReady), operators_1.switchMap(() => this.drawTutorialStepInfoBox(step, isFirstStep, isLastStep)))
             .subscribe();
-        return this._$goToNextStep;
+        return this._$nextStep;
     }
     static getViewportSizes() {
         this.viewportSizes = {
@@ -65,74 +70,112 @@ class Drawer {
         return elementBroughtToFront;
     }
     static backupCurrentElementPropertiesAndChangeThem(element, step, elementBroughtToFront) {
+        const skipFirstOpacityChange = !this.prevElSelector;
         this.prevElSelector = step.selector;
         this.prevElZIndex = element.css('z-index');
         this.prevElOpacity = element.css('opacity');
         this.prevElPosition = element.css('position');
         this.prevElTransition = element.css('transition');
-        element.css('opacity', 0);
-        element.css('position', 'relative');
-        element.css('z-index', this.clothZIndex);
-        element.css('transition', 'opacity 120ms ease-in-out');
+        if (!skipFirstOpacityChange) {
+            element.css('opacity', 0);
+        }
         setTimeout(() => {
-            element.css('opacity', 1);
-            elementBroughtToFront.next(true);
-            elementBroughtToFront.complete();
-        }, 200);
+            element.css('position', 'relative');
+            element.css('z-index', this.clothZIndex);
+            element.css('transition', 'opacity 200ms ease-in-out');
+            setTimeout(() => {
+                if (!skipFirstOpacityChange) {
+                    element.css('opacity', 1);
+                }
+                elementBroughtToFront.next(true);
+                elementBroughtToFront.complete();
+            }, 100);
+        }, 100);
     }
     static restorePreviousElementStatus() {
         const elementStatusRestored = new rxjs_1.BehaviorSubject(false);
         const element = jquery_1.default(this.prevElSelector);
-        element.fadeOut();
         setTimeout(() => {
             element.css('z-index', this.prevElZIndex);
             element.css('opacity', this.prevElOpacity);
             element.css('position', this.prevElPosition);
             element.css('transition', this.prevElTransition);
-            element.fadeIn();
             elementStatusRestored.next(true);
         }, 100);
         return elementStatusRestored;
     }
-    static drawTutorialStepInfoBox(step) {
+    static drawTutorialStepInfoBox(step, isFirstStep, isLastStep) {
         const infoBoxIsReady = new rxjs_1.BehaviorSubject(false);
         if (this.infoBoxAlreadyDrawn) {
-            jquery_1.default(this.infoBoxId).fadeOut();
-            this.setValuesOnInfoBox(step);
-            jquery_1.default(this.infoBoxId).fadeIn();
+            this.setValuesOnInfoBox(step, isFirstStep, isLastStep);
             infoBoxIsReady.next(true);
             return infoBoxIsReady;
         }
         //  Define the box info element
-        const infoBoxElement = document.createElement('div');
-        infoBoxElement.id = this.infoBoxId;
-        infoBoxElement.style.zIndex = this.clothZIndex;
-        infoBoxElement.style.width = '300px';
-        infoBoxElement.style.height = '200px';
-        infoBoxElement.style.background = '#fff';
-        infoBoxElement.style.position = 'absolute';
-        infoBoxElement.style.border = '1px solid red';
-        infoBoxElement.style.opacity = '0';
-        //  Define the next step button element
-        const nextStepButton = document.createElement('button');
-        nextStepButton.id = this.nextStepBtnId;
-        nextStepButton.style.zIndex = this.nextStepBtnZindex;
-        nextStepButton.textContent = 'NEXT';
-        //  Attach the listener for click that will trigger the goToNextStep to true
-        nextStepButton.addEventListener('click', () => this.onNextStep());
-        //  Append the button on the info box
-        infoBoxElement.appendChild(nextStepButton);
+        const infoBoxElement = this.defineInfoBoxElement();
         jquery_1.default('body').append(infoBoxElement);
-        this.setValuesOnInfoBox(step);
+        this.setValuesOnInfoBox(step, isFirstStep, isLastStep);
         setTimeout(() => {
-            infoBoxElement.style.opacity = '1';
             infoBoxIsReady.next(true);
             infoBoxIsReady.complete();
             this.infoBoxAlreadyDrawn = true;
-        }, 200);
+        }, 100);
         return infoBoxIsReady;
     }
-    static setValuesOnInfoBox(step) {
+    static defineInfoBoxElement() {
+        const infoBoxElement = document.createElement('div');
+        infoBoxElement.id = this.infoBoxId;
+        infoBoxElement.style.opacity = '0';
+        infoBoxElement.style.color = '#fff';
+        infoBoxElement.style.width = '300px';
+        infoBoxElement.style.height = '200px';
+        infoBoxElement.style.marginTop = '10px';
+        infoBoxElement.style.borderRadius = '5px';
+        infoBoxElement.style.position = 'relative';
+        infoBoxElement.style.border = '2px solid #fff';
+        infoBoxElement.style.zIndex = this.infoBoxZIndex;
+        infoBoxElement.style.background = 'rgba(0,0,0,0.3)';
+        infoBoxElement.style.transition = 'opacity 200ms ease-in-out';
+        return infoBoxElement;
+    }
+    static defineButtons(infoBoxElement, step) {
+        //  Define the next step button element
+        const nextStepButton = document.createElement('button');
+        nextStepButton.textContent = 'NEXT';
+        nextStepButton.style.right = '0';
+        nextStepButton.style.bottom = '0';
+        nextStepButton.style.padding = '10px';
+        nextStepButton.id = this.nextStepBtnId;
+        nextStepButton.style.position = 'absolute';
+        nextStepButton.style.zIndex = this.nextStepBtnZindex;
+        //  Attach the listener for click that will trigger the goToNextStep to true
+        nextStepButton.addEventListener('click', () => {
+            if (step.onNext) {
+                step.onNext(jquery_1.default(step.selector)[0], step.id, step.selector);
+            }
+            infoBoxElement.style.opacity = '0';
+            this.onNextStep();
+        });
+        //  Define the previous step button element
+        const prevStepButton = document.createElement('button');
+        prevStepButton.textContent = 'PREVIOUS';
+        prevStepButton.style.left = '0';
+        prevStepButton.style.bottom = '0';
+        prevStepButton.style.padding = '10px';
+        prevStepButton.id = this.prevStepBtnId;
+        prevStepButton.style.position = 'absolute';
+        prevStepButton.style.zIndex = this.prevStepBtnZindex;
+        //  Attach the listener for click that will trigger the goToPreviousStep to true
+        prevStepButton.addEventListener('click', () => {
+            infoBoxElement.style.opacity = '0';
+            this.onPreviousStep();
+        });
+        return {
+            nextButton: nextStepButton,
+            prevButton: prevStepButton
+        };
+    }
+    static setValuesOnInfoBox(step, isFirstStep, isLastStep) {
         const infoBoxElement = document.getElementById(this.infoBoxId);
         const idSpanElement = document.createElement('span');
         idSpanElement.textContent = step.id;
@@ -141,24 +184,66 @@ class Drawer {
             infoBoxElement.removeChild(document.getElementById(this.infoStepBoxContentElId));
         }
         infoBoxElement.appendChild(idSpanElement);
+        //  Define the buttons for the info box
+        const buttons = this.defineButtons(infoBoxElement, step);
+        if (!isFirstStep) {
+            if (infoBoxElement.contains(document.getElementById(this.prevStepBtnId))) {
+                //  Remove the previous button and it's listeners
+                infoBoxElement.removeChild(document.getElementById(this.prevStepBtnId));
+            }
+            //  Append the button on the info box
+            infoBoxElement.appendChild(buttons.prevButton);
+        }
+        if (!!isFirstStep && infoBoxElement.contains(document.getElementById(this.prevStepBtnId))) {
+            //  Remove the button from the info box if is present
+            infoBoxElement.removeChild(document.getElementById(this.prevStepBtnId));
+        }
+        if (!isLastStep) {
+            if (infoBoxElement.contains(document.getElementById(this.nextStepBtnId))) {
+                //  Remove the previous button and it's listeners
+                infoBoxElement.removeChild(document.getElementById(this.nextStepBtnId));
+            }
+            //  Append the button on the info box
+            infoBoxElement.appendChild(buttons.nextButton);
+        }
+        if (!!isLastStep && infoBoxElement.contains(document.getElementById(this.nextStepBtnId))) {
+            //  Remove the button from the info box if is present
+            infoBoxElement.removeChild(document.getElementById(this.nextStepBtnId));
+        }
+        setTimeout(() => {
+            if (this.tether) {
+                this.tether.setOptions({
+                    element: infoBoxElement,
+                    target: jquery_1.default(step.selector),
+                    attachment: 'top left',
+                    targetAttachment: 'bottom left'
+                });
+            }
+            else {
+                this.tether = new tether_1.default({
+                    element: infoBoxElement,
+                    target: jquery_1.default(step.selector),
+                    attachment: 'top left',
+                    targetAttachment: 'bottom left'
+                });
+            }
+            infoBoxElement.style.opacity = '1';
+        }, 150);
     }
     static onNextStep() {
-        this._$goToNextStep.next(true);
+        this._$nextStep.next(NextStepPossibilities.FORWARD);
+    }
+    static onPreviousStep() {
+        this._$nextStep.next(NextStepPossibilities.BACKWARD);
     }
     static updateClothSize() {
         const newSizes = this.getViewportSizes();
         document.getElementById(this.clothId).style.width = `${newSizes.width}px`;
         document.getElementById(this.clothId).style.height = `${newSizes.height}px`;
     }
-    ////////////////////////////////////////////////////////////
-    //  Instance methods
-    ////////////////////////////////////////////////////////////
-    canGoToNextStep() {
-        return Drawer._$goToNextStep;
-    }
 }
 Drawer.windowResizeListenerAttached = false;
-Drawer._$goToNextStep = new rxjs_1.BehaviorSubject(false);
+Drawer._$nextStep = new rxjs_1.BehaviorSubject(null);
 //  Previous step element status properties
 Drawer.prevElZIndex = null;
 Drawer.prevElOpacity = null;
@@ -172,8 +257,15 @@ Drawer.clothId = 'HAZELINE-TUTORIAL-CLOTH';
 Drawer.infoBoxZIndex = '999';
 Drawer.infoBoxAlreadyDrawn = false;
 Drawer.infoBoxId = 'HAZELINE-TUTORIAL-INFO-BOX';
+Drawer.infoStepBoxContentElId = 'HAZELINE-TUTORIAL-INFO-BOX-CONTENT';
 Drawer.nextStepBtnZindex = '999';
 Drawer.nextStepBtnId = 'HAZELINE-TUTORIAL-INFO-BOX-NEXT-STEP';
-Drawer.infoStepBoxContentElId = 'HAZELINE-TUTORIAL-INFO-BOX-CONTENT';
+Drawer.prevStepBtnZindex = '999';
+Drawer.prevStepBtnId = 'HAZELINE-TUTORIAL-INFO-BOX-PREV-STEP';
 exports.Drawer = Drawer;
+var NextStepPossibilities;
+(function (NextStepPossibilities) {
+    NextStepPossibilities[NextStepPossibilities["FORWARD"] = 0] = "FORWARD";
+    NextStepPossibilities[NextStepPossibilities["BACKWARD"] = 1] = "BACKWARD";
+})(NextStepPossibilities = exports.NextStepPossibilities || (exports.NextStepPossibilities = {}));
 //# sourceMappingURL=drawer.core.js.map

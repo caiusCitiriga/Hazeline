@@ -17,6 +17,7 @@
   },
   "devDependencies": {
     "@types/jquery": "^3.3.2",
+    "@types/tether": "^1.4.3",
     "rimraf": "^2.6.2",
     "ts-loader": "4.4.0",
     "typescript": "2.9.1",

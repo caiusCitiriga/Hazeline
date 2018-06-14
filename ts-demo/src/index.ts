@@ -47,7 +47,17 @@ class HazelineDemo {
                 },
                 {
                     id: 'step-two',
-                    selector: '#simpleItem02'
+                    selector: '#simpleItem02',
+                    onNext: (element, id, selector) => {
+                        console.log('Step #02 on next called');
+                    },
+                    onStart: (element, id, selector) => {
+                        console.log('Step #02 on start called');
+                        console.log('Element:');
+                        console.log(element);
+                        console.log(`ID: ${id}`);
+                        console.log(`Selector: ${selector}`);
+                    }
                 },
                 {
                     id: 'step-three',

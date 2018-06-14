@@ -2,7 +2,7 @@ import $ from 'jquery';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { filter, tap, switchMap } from 'rxjs/operators';
 
-import { Drawer } from './drawer.core';
+import { Drawer, NextStepPossibilities } from './drawer.core';
 import { TutorialStatuses } from '../enums/tutorial-statuses.enum';
 import { TutorialStatus } from '../interfaces/tutorial-status.interface';
 import { TutorialSection } from "../interfaces/tutorial-section.interface";
@@ -45,9 +45,16 @@ export class TutorialRunner {
             .drawCloth()
             .pipe(
                 filter(clothIsReady => !!clothIsReady),
-                switchMap(() => Drawer.drawStep(section.steps[this.currentTutorialStep])),
-                filter(nextStepRequested => !!nextStepRequested),
-                tap(() => this.loadNextStep(section)))
+                switchMap(() => Drawer.drawStep(section.steps[this.currentTutorialStep], true, false)),
+                tap(nextStep => {
+                    if (nextStep === NextStepPossibilities.FORWARD) {
+                        this.loadNextStep(section);
+                    }
+                    if (nextStep === NextStepPossibilities.BACKWARD) {
+                        this.loadPreviousStep(section);
+                    }
+                })
+            )
             .subscribe();
     }
 
@@ -58,7 +65,23 @@ export class TutorialRunner {
         }
 
         this.currentTutorialStep++;
-        Drawer.drawStep(section.steps[this.currentTutorialStep])
+        const isFirstStep = this.currentTutorialStep === 0;
+        const isLastStep = this.currentTutorialStep === section.steps.length - 1;
+
+        Drawer.drawStep(section.steps[this.currentTutorialStep], isFirstStep, isLastStep)
+            .subscribe();
+    }
+
+    private loadPreviousStep(section: TutorialSection): void {
+        if (this.currentTutorialStep === 0) {
+            return;
+        }
+
+        this.currentTutorialStep--;
+        const isFirstStep = this.currentTutorialStep === 0;
+        const isLastStep = this.currentTutorialStep === section.steps.length - 1;
+
+        Drawer.drawStep(section.steps[this.currentTutorialStep], isFirstStep, isLastStep)
             .subscribe();
     }
 

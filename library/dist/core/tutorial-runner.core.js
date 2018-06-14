@@ -38,7 +38,14 @@ class TutorialRunner {
         this.initializeTutorial(section);
         drawer_core_1.Drawer
             .drawCloth()
-            .pipe(operators_1.filter(clothIsReady => !!clothIsReady), operators_1.switchMap(() => drawer_core_1.Drawer.drawStep(section.steps[this.currentTutorialStep])), operators_1.filter(nextStepRequested => !!nextStepRequested), operators_1.tap(() => this.loadNextStep(section)))
+            .pipe(operators_1.filter(clothIsReady => !!clothIsReady), operators_1.switchMap(() => drawer_core_1.Drawer.drawStep(section.steps[this.currentTutorialStep], true, false)), operators_1.tap(nextStep => {
+            if (nextStep === drawer_core_1.NextStepPossibilities.FORWARD) {
+                this.loadNextStep(section);
+            }
+            if (nextStep === drawer_core_1.NextStepPossibilities.BACKWARD) {
+                this.loadPreviousStep(section);
+            }
+        }))
             .subscribe();
     }
     loadNextStep(section) {
@@ -47,7 +54,19 @@ class TutorialRunner {
             return;
         }
         this.currentTutorialStep++;
-        drawer_core_1.Drawer.drawStep(section.steps[this.currentTutorialStep])
+        const isFirstStep = this.currentTutorialStep === 0;
+        const isLastStep = this.currentTutorialStep === section.steps.length - 1;
+        drawer_core_1.Drawer.drawStep(section.steps[this.currentTutorialStep], isFirstStep, isLastStep)
+            .subscribe();
+    }
+    loadPreviousStep(section) {
+        if (this.currentTutorialStep === 0) {
+            return;
+        }
+        this.currentTutorialStep--;
+        const isFirstStep = this.currentTutorialStep === 0;
+        const isLastStep = this.currentTutorialStep === section.steps.length - 1;
+        drawer_core_1.Drawer.drawStep(section.steps[this.currentTutorialStep], isFirstStep, isLastStep)
             .subscribe();
     }
     initializeTutorial(section) {

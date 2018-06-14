@@ -10,6 +10,7 @@ export declare class TutorialRunner {
     private getElement;
     private runInternal;
     private loadNextStep;
+    private loadPreviousStep;
     private initializeTutorial;
     private finalizeTutorial;
 }
