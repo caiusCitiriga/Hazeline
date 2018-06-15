@@ -4,7 +4,7 @@ import Tether from 'tether';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { switchMap, filter, tap, skip } from 'rxjs/operators';
 
-import { SectionStep } from "../interfaces/section-step.interface";
+import { SectionStep, InfoBoxPlacement } from "../interfaces/section-step.interface";
 
 export class Drawer {
 
@@ -25,6 +25,8 @@ export class Drawer {
     private static clothId = 'HAZELINE-TUTORIAL-CLOTH';
 
     //  Info box stuff
+    private static infoBoxMargin = '10px';
+
     private static infoBoxZIndex = '999';
     private static infoBoxAlreadyDrawn = false;
     private static infoBoxId = 'HAZELINE-TUTORIAL-INFO-BOX';
@@ -190,7 +192,7 @@ export class Drawer {
         }
 
         //  Define the box info element
-        const infoBoxElement = this.defineInfoBoxElement();
+        const infoBoxElement = this.defineInfoBoxElement(step);
 
         $('body').append(infoBoxElement);
         this.setValuesOnInfoBox(step, isFirstStep, isLastStep);
@@ -204,20 +206,22 @@ export class Drawer {
         return infoBoxIsReady;
     }
 
-    private static defineInfoBoxElement(): HTMLDivElement {
+    private static defineInfoBoxElement(step: SectionStep): HTMLDivElement {
         const infoBoxElement = document.createElement('div');
+        const infoBoxMarginSettings = this.getMarginSettingsBasedOnPositioning(step.infoBoxPlacement);
+
         infoBoxElement.id = this.infoBoxId;
         infoBoxElement.style.opacity = '0';
         infoBoxElement.style.color = '#333';
         infoBoxElement.style.width = '300px';
         infoBoxElement.style.height = '200px';
         infoBoxElement.style.padding = '10px';
-        infoBoxElement.style.marginTop = '10px';
         infoBoxElement.style.background = '#fff';
         infoBoxElement.style.borderRadius = '5px';
         infoBoxElement.style.position = 'relative';
         infoBoxElement.style.zIndex = this.infoBoxZIndex;
         infoBoxElement.style.transition = 'opacity 200ms ease-in-out';
+        infoBoxElement.style[infoBoxMarginSettings.margin] = infoBoxMarginSettings.value;
 
         return infoBoxElement;
     }
@@ -273,6 +277,44 @@ export class Drawer {
     }
 
     private static setValuesOnInfoBox(step: SectionStep, isFirstStep?: boolean, isLastStep?: boolean): void {
+        this.updateInfoBoxContent(step);
+        this.updateInfoBoxButtons(step, isFirstStep, isLastStep);
+        this.updateInfoBoxMargins(step);
+        const infoBoxElement = document.getElementById(this.infoBoxId) as HTMLDivElement;
+
+        setTimeout(() => {
+            if (this.tether) {
+                this.tether.setOptions({
+                    element: infoBoxElement,
+                    target: $(step.selector),
+                    attachment: this.getTetherAttachmentForInfoBox(step.infoBoxPlacement),
+                    targetAttachment: this.getTetherTargetAttachmentForInfoBox(step.infoBoxPlacement)
+                });
+
+            } else {
+                this.tether = new Tether({
+                    element: infoBoxElement,
+                    target: $(step.selector),
+                    attachment: this.getTetherAttachmentForInfoBox(step.infoBoxPlacement),
+                    targetAttachment: this.getTetherTargetAttachmentForInfoBox(step.infoBoxPlacement)
+                });
+            }
+
+            infoBoxElement.style.opacity = '1';
+        }, 150);
+    }
+
+    private static updateInfoBoxMargins(step: SectionStep): void {
+        const marginSettings = this.getMarginSettingsBasedOnPositioning(step.infoBoxPlacement);
+        const infoBoxElement = document.getElementById(this.infoBoxId) as HTMLDivElement;
+
+        //  Reset all the margins
+        infoBoxElement.style.margin = '0';
+
+        infoBoxElement.style[marginSettings.margin] = marginSettings.value;
+    }
+
+    private static updateInfoBoxContent(step: SectionStep): void {
         const infoBoxElement = document.getElementById(this.infoBoxId) as HTMLDivElement;
         const idSpanElement = document.createElement('span');
 
@@ -284,10 +326,13 @@ export class Drawer {
         }
 
         infoBoxElement.appendChild(idSpanElement);
+    }
+
+    private static updateInfoBoxButtons(step: SectionStep, isFirstStep: boolean, isLastStep: boolean): void {
+        const infoBoxElement = document.getElementById(this.infoBoxId) as HTMLDivElement;
 
         //  Define the buttons for the info box
         const buttons = this.defineButtons(infoBoxElement, step, isLastStep);
-
         if (!isFirstStep) {
             if (infoBoxElement.contains(document.getElementById(this.prevStepBtnId))) {
                 //  Remove the previous button and it's listeners
@@ -314,27 +359,58 @@ export class Drawer {
             //  Now add the "next" button, this time configured to end the tutorial
             infoBoxElement.appendChild(buttons.nextButton);
         }
+    }
 
-        setTimeout(() => {
-            if (this.tether) {
-                this.tether.setOptions({
-                    element: infoBoxElement,
-                    target: $(step.selector),
-                    attachment: 'top left',
-                    targetAttachment: 'bottom left'
-                });
+    private static getMarginSettingsBasedOnPositioning(infoBoxPlacement: InfoBoxPlacement): { margin: string, value: string } {
+        const result = {
+            margin: null,
+            value: null,
+        };
 
-            } else {
-                this.tether = new Tether({
-                    element: infoBoxElement,
-                    target: $(step.selector),
-                    attachment: 'top left',
-                    targetAttachment: 'bottom left'
-                });
-            }
+        switch (infoBoxPlacement) {
+            case InfoBoxPlacement.LEFT:
+                result.margin = 'marginLeft';
+                result.value = `-${this.infoBoxMargin}`;
+                break;
 
-            infoBoxElement.style.opacity = '1';
-        }, 150);
+            case InfoBoxPlacement.ABOVE:
+                result.margin = 'marginTop';
+                result.value = `-${this.infoBoxMargin}`;
+                break;
+
+            case InfoBoxPlacement.RIGHT:
+                result.margin = 'marginLeft';
+                result.value = this.infoBoxMargin;
+                break;
+
+
+            case InfoBoxPlacement.BELOW:
+            default:
+                result.margin = 'marginTop';
+                result.value = this.infoBoxMargin;
+                break;
+        }
+
+        return result;
+    }
+
+    private static getTetherAttachmentForInfoBox(infoBoxPlacement: InfoBoxPlacement): string {
+        switch (infoBoxPlacement) {
+            case InfoBoxPlacement.LEFT: return 'top right';
+            case InfoBoxPlacement.ABOVE: return 'bottom left';
+            case InfoBoxPlacement.RIGHT: return 'top left';
+            case InfoBoxPlacement.BELOW: default: return 'top left';
+        }
+    }
+
+    private static getTetherTargetAttachmentForInfoBox(infoBoxPlacement: InfoBoxPlacement): string {
+        switch (infoBoxPlacement) {
+            case InfoBoxPlacement.LEFT: return 'left top';
+            case InfoBoxPlacement.ABOVE: return 'top left';
+            case InfoBoxPlacement.RIGHT: return 'top right';
+            case InfoBoxPlacement.BELOW: return 'bottom left';
+            default: return 'bottom left';
+        }
     }
 
     private static onNextStep(): void {

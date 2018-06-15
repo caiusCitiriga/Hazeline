@@ -7,6 +7,7 @@ const jquery_1 = __importDefault(require("jquery"));
 const tether_1 = __importDefault(require("tether"));
 const rxjs_1 = require("rxjs");
 const operators_1 = require("rxjs/operators");
+const section_step_interface_1 = require("../interfaces/section-step.interface");
 class Drawer {
     ////////////////////////////////////////////////////////////    
     //  Static methods
@@ -127,7 +128,7 @@ class Drawer {
             return infoBoxIsReady;
         }
         //  Define the box info element
-        const infoBoxElement = this.defineInfoBoxElement();
+        const infoBoxElement = this.defineInfoBoxElement(step);
         jquery_1.default('body').append(infoBoxElement);
         this.setValuesOnInfoBox(step, isFirstStep, isLastStep);
         setTimeout(() => {
@@ -137,20 +138,21 @@ class Drawer {
         }, 100);
         return infoBoxIsReady;
     }
-    static defineInfoBoxElement() {
+    static defineInfoBoxElement(step) {
         const infoBoxElement = document.createElement('div');
+        const infoBoxMarginSettings = this.getMarginSettingsBasedOnPositioning(step.infoBoxPlacement);
         infoBoxElement.id = this.infoBoxId;
         infoBoxElement.style.opacity = '0';
         infoBoxElement.style.color = '#333';
         infoBoxElement.style.width = '300px';
         infoBoxElement.style.height = '200px';
         infoBoxElement.style.padding = '10px';
-        infoBoxElement.style.marginTop = '10px';
         infoBoxElement.style.background = '#fff';
         infoBoxElement.style.borderRadius = '5px';
         infoBoxElement.style.position = 'relative';
         infoBoxElement.style.zIndex = this.infoBoxZIndex;
         infoBoxElement.style.transition = 'opacity 200ms ease-in-out';
+        infoBoxElement.style[infoBoxMarginSettings.margin] = infoBoxMarginSettings.value;
         return infoBoxElement;
     }
     static defineButtons(infoBoxElement, step, isLastStep) {
@@ -200,6 +202,38 @@ class Drawer {
         };
     }
     static setValuesOnInfoBox(step, isFirstStep, isLastStep) {
+        this.updateInfoBoxContent(step);
+        this.updateInfoBoxButtons(step, isFirstStep, isLastStep);
+        this.updateInfoBoxMargins(step);
+        const infoBoxElement = document.getElementById(this.infoBoxId);
+        setTimeout(() => {
+            if (this.tether) {
+                this.tether.setOptions({
+                    element: infoBoxElement,
+                    target: jquery_1.default(step.selector),
+                    attachment: this.getTetherAttachmentForInfoBox(step.infoBoxPlacement),
+                    targetAttachment: this.getTetherTargetAttachmentForInfoBox(step.infoBoxPlacement)
+                });
+            }
+            else {
+                this.tether = new tether_1.default({
+                    element: infoBoxElement,
+                    target: jquery_1.default(step.selector),
+                    attachment: this.getTetherAttachmentForInfoBox(step.infoBoxPlacement),
+                    targetAttachment: this.getTetherTargetAttachmentForInfoBox(step.infoBoxPlacement)
+                });
+            }
+            infoBoxElement.style.opacity = '1';
+        }, 150);
+    }
+    static updateInfoBoxMargins(step) {
+        const marginSettings = this.getMarginSettingsBasedOnPositioning(step.infoBoxPlacement);
+        const infoBoxElement = document.getElementById(this.infoBoxId);
+        //  Reset all the margins
+        infoBoxElement.style.margin = '0';
+        infoBoxElement.style[marginSettings.margin] = marginSettings.value;
+    }
+    static updateInfoBoxContent(step) {
         const infoBoxElement = document.getElementById(this.infoBoxId);
         const idSpanElement = document.createElement('span');
         idSpanElement.textContent = step.id;
@@ -208,6 +242,9 @@ class Drawer {
             infoBoxElement.removeChild(document.getElementById(this.infoStepBoxContentElId));
         }
         infoBoxElement.appendChild(idSpanElement);
+    }
+    static updateInfoBoxButtons(step, isFirstStep, isLastStep) {
+        const infoBoxElement = document.getElementById(this.infoBoxId);
         //  Define the buttons for the info box
         const buttons = this.defineButtons(infoBoxElement, step, isLastStep);
         if (!isFirstStep) {
@@ -236,25 +273,50 @@ class Drawer {
             //  Now add the "next" button, this time configured to end the tutorial
             infoBoxElement.appendChild(buttons.nextButton);
         }
-        setTimeout(() => {
-            if (this.tether) {
-                this.tether.setOptions({
-                    element: infoBoxElement,
-                    target: jquery_1.default(step.selector),
-                    attachment: 'top left',
-                    targetAttachment: 'bottom left'
-                });
-            }
-            else {
-                this.tether = new tether_1.default({
-                    element: infoBoxElement,
-                    target: jquery_1.default(step.selector),
-                    attachment: 'top left',
-                    targetAttachment: 'bottom left'
-                });
-            }
-            infoBoxElement.style.opacity = '1';
-        }, 150);
+    }
+    static getMarginSettingsBasedOnPositioning(infoBoxPlacement) {
+        const result = {
+            margin: null,
+            value: null,
+        };
+        switch (infoBoxPlacement) {
+            case section_step_interface_1.InfoBoxPlacement.LEFT:
+                result.margin = 'marginLeft';
+                result.value = `-${this.infoBoxMargin}`;
+                break;
+            case section_step_interface_1.InfoBoxPlacement.ABOVE:
+                result.margin = 'marginTop';
+                result.value = `-${this.infoBoxMargin}`;
+                break;
+            case section_step_interface_1.InfoBoxPlacement.RIGHT:
+                result.margin = 'marginLeft';
+                result.value = this.infoBoxMargin;
+                break;
+            case section_step_interface_1.InfoBoxPlacement.BELOW:
+            default:
+                result.margin = 'marginTop';
+                result.value = this.infoBoxMargin;
+                break;
+        }
+        return result;
+    }
+    static getTetherAttachmentForInfoBox(infoBoxPlacement) {
+        switch (infoBoxPlacement) {
+            case section_step_interface_1.InfoBoxPlacement.LEFT: return 'top right';
+            case section_step_interface_1.InfoBoxPlacement.ABOVE: return 'bottom left';
+            case section_step_interface_1.InfoBoxPlacement.RIGHT: return 'top left';
+            case section_step_interface_1.InfoBoxPlacement.BELOW:
+            default: return 'top left';
+        }
+    }
+    static getTetherTargetAttachmentForInfoBox(infoBoxPlacement) {
+        switch (infoBoxPlacement) {
+            case section_step_interface_1.InfoBoxPlacement.LEFT: return 'left top';
+            case section_step_interface_1.InfoBoxPlacement.ABOVE: return 'top left';
+            case section_step_interface_1.InfoBoxPlacement.RIGHT: return 'top right';
+            case section_step_interface_1.InfoBoxPlacement.BELOW: return 'bottom left';
+            default: return 'bottom left';
+        }
     }
     static onNextStep() {
         this._$nextStep.next(NextStepPossibilities.FORWARD);
@@ -283,6 +345,7 @@ Drawer.prevElTransition = null;
 Drawer.clothZIndex = '999';
 Drawer.clothId = 'HAZELINE-TUTORIAL-CLOTH';
 //  Info box stuff
+Drawer.infoBoxMargin = '10px';
 Drawer.infoBoxZIndex = '999';
 Drawer.infoBoxAlreadyDrawn = false;
 Drawer.infoBoxId = 'HAZELINE-TUTORIAL-INFO-BOX';

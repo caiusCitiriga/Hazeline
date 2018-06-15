@@ -6,4 +6,9 @@
     text-align: center;
     padding: 10px;
     color: #fff;
+    margin-bottom: 16px;
+}
+
+.items-wrp {
+    margin-top: 100px;
 }

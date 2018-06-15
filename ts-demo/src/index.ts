@@ -1,5 +1,6 @@
 import { Hazeline } from 'hazeline';
 import $ from 'jquery';
+import { InfoBoxPlacement } from 'hazeline/dist/interfaces/section-step.interface';
 
 class HazelineDemo {
 
@@ -43,25 +44,23 @@ class HazelineDemo {
             steps: [
                 {
                     id: 'step-one',
-                    selector: '#simpleItem01'
+                    selector: '#simpleItem01',
+                    infoBoxPlacement: InfoBoxPlacement.ABOVE
                 },
                 {
                     id: 'step-two',
                     selector: '#simpleItem02',
-                    onNext: (element, id, selector) => {
-                        console.log('Step #02 on next called');
-                    },
-                    onStart: (element, id, selector) => {
-                        console.log('Step #02 on start called');
-                        console.log('Element:');
-                        console.log(element);
-                        console.log(`ID: ${id}`);
-                        console.log(`Selector: ${selector}`);
-                    }
+                    infoBoxPlacement: InfoBoxPlacement.BELOW
                 },
                 {
                     id: 'step-three',
-                    selector: '#simpleItem03'
+                    selector: '#simpleItem03',
+                    infoBoxPlacement: InfoBoxPlacement.LEFT
+                },
+                {
+                    id: 'step-four',
+                    selector: '#simpleItem04',
+                    infoBoxPlacement: InfoBoxPlacement.RIGHT
                 }
             ]
         });

@@ -12,6 +12,7 @@ export declare class Drawer {
     private static prevElTransition;
     private static clothZIndex;
     private static clothId;
+    private static infoBoxMargin;
     private static infoBoxZIndex;
     private static infoBoxAlreadyDrawn;
     private static infoBoxId;
@@ -31,6 +32,12 @@ export declare class Drawer {
     private static defineInfoBoxElement;
     private static defineButtons;
     private static setValuesOnInfoBox;
+    private static updateInfoBoxMargins;
+    private static updateInfoBoxContent;
+    private static updateInfoBoxButtons;
+    private static getMarginSettingsBasedOnPositioning;
+    private static getTetherAttachmentForInfoBox;
+    private static getTetherTargetAttachmentForInfoBox;
     private static onNextStep;
     private static onLastStep;
     private static onPreviousStep;
