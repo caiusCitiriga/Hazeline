@@ -361,7 +361,7 @@ export class Drawer {
         }
     }
 
-    private static getMarginSettingsBasedOnPositioning(infoBoxPlacement: InfoBoxPlacement): { margin: string, value: string } {
+    private static getMarginSettingsBasedOnPositioning(infoBoxPlacement: InfoBoxPlacement | string): { margin: string, value: string } {
         const result = {
             margin: null,
             value: null,
@@ -394,7 +394,7 @@ export class Drawer {
         return result;
     }
 
-    private static getTetherAttachmentForInfoBox(infoBoxPlacement: InfoBoxPlacement): string {
+    private static getTetherAttachmentForInfoBox(infoBoxPlacement: InfoBoxPlacement | string): string {
         switch (infoBoxPlacement) {
             case InfoBoxPlacement.LEFT: return 'top right';
             case InfoBoxPlacement.ABOVE: return 'bottom left';
@@ -403,7 +403,7 @@ export class Drawer {
         }
     }
 
-    private static getTetherTargetAttachmentForInfoBox(infoBoxPlacement: InfoBoxPlacement): string {
+    private static getTetherTargetAttachmentForInfoBox(infoBoxPlacement: InfoBoxPlacement | string): string {
         switch (infoBoxPlacement) {
             case InfoBoxPlacement.LEFT: return 'left top';
             case InfoBoxPlacement.ABOVE: return 'top left';

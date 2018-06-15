@@ -50,7 +50,7 @@ class HazelineDemo {
                 {
                     id: 'step-two',
                     selector: '#simpleItem02',
-                    infoBoxPlacement: InfoBoxPlacement.BELOW
+                    infoBoxPlacement: 'below'
                 },
                 {
                     id: 'step-three',

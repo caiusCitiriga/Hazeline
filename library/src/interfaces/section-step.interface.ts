@@ -4,7 +4,7 @@ export interface SectionStep {
     selector: string;
 
     //  Info box placement options
-    infoBoxPlacement?: InfoBoxPlacement;
+    infoBoxPlacement?: InfoBoxPlacement | string;
 
     //  Events
     onNext?: (element: HTMLElement, id: string, selector: string) => void;
