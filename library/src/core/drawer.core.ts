@@ -319,16 +319,17 @@ export class Drawer {
 
     private static updateInfoBoxContent(step: SectionStep): void {
         const infoBoxElement = document.getElementById(this.infoBoxId) as HTMLDivElement;
-        const idSpanElement = document.createElement('span');
+        const stepDescriptionParagraphElement = document.createElement('p');
 
-        idSpanElement.textContent = step.id;
-        idSpanElement.id = this.infoStepBoxContentElId;
+        stepDescriptionParagraphElement.textContent = step.text;
+        stepDescriptionParagraphElement.style.textAlign = 'center';
+        stepDescriptionParagraphElement.id = this.infoStepBoxContentElId;
 
         if (document.getElementById(this.infoStepBoxContentElId)) {
             infoBoxElement.removeChild(document.getElementById(this.infoStepBoxContentElId));
         }
 
-        infoBoxElement.appendChild(idSpanElement);
+        infoBoxElement.appendChild(stepDescriptionParagraphElement);
     }
 
     private static updateInfoBoxButtons(step: SectionStep, isFirstStep: boolean, isLastStep: boolean): void {

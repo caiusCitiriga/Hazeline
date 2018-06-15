@@ -7,7 +7,8 @@ const jquery_1 = __importDefault(require("jquery"));
 const tether_1 = __importDefault(require("tether"));
 const rxjs_1 = require("rxjs");
 const operators_1 = require("rxjs/operators");
-const section_step_interface_1 = require("../interfaces/section-step.interface");
+const info_box_placement_enum_1 = require("../enums/info-box-placement.enum");
+const next_step_possibilities_enum_1 = require("../enums/next-step-possibilities.enum");
 class Drawer {
     ////////////////////////////////////////////////////////////    
     //  Static methods
@@ -235,13 +236,14 @@ class Drawer {
     }
     static updateInfoBoxContent(step) {
         const infoBoxElement = document.getElementById(this.infoBoxId);
-        const idSpanElement = document.createElement('span');
-        idSpanElement.textContent = step.id;
-        idSpanElement.id = this.infoStepBoxContentElId;
+        const stepDescriptionParagraphElement = document.createElement('p');
+        stepDescriptionParagraphElement.textContent = step.text;
+        stepDescriptionParagraphElement.style.textAlign = 'center';
+        stepDescriptionParagraphElement.id = this.infoStepBoxContentElId;
         if (document.getElementById(this.infoStepBoxContentElId)) {
             infoBoxElement.removeChild(document.getElementById(this.infoStepBoxContentElId));
         }
-        infoBoxElement.appendChild(idSpanElement);
+        infoBoxElement.appendChild(stepDescriptionParagraphElement);
     }
     static updateInfoBoxButtons(step, isFirstStep, isLastStep) {
         const infoBoxElement = document.getElementById(this.infoBoxId);
@@ -280,19 +282,19 @@ class Drawer {
             value: null,
         };
         switch (infoBoxPlacement) {
-            case section_step_interface_1.InfoBoxPlacement.LEFT:
+            case info_box_placement_enum_1.InfoBoxPlacement.LEFT:
                 result.margin = 'marginLeft';
                 result.value = `-${this.infoBoxMargin}`;
                 break;
-            case section_step_interface_1.InfoBoxPlacement.ABOVE:
+            case info_box_placement_enum_1.InfoBoxPlacement.ABOVE:
                 result.margin = 'marginTop';
                 result.value = `-${this.infoBoxMargin}`;
                 break;
-            case section_step_interface_1.InfoBoxPlacement.RIGHT:
+            case info_box_placement_enum_1.InfoBoxPlacement.RIGHT:
                 result.margin = 'marginLeft';
                 result.value = this.infoBoxMargin;
                 break;
-            case section_step_interface_1.InfoBoxPlacement.BELOW:
+            case info_box_placement_enum_1.InfoBoxPlacement.BELOW:
             default:
                 result.margin = 'marginTop';
                 result.value = this.infoBoxMargin;
@@ -302,30 +304,30 @@ class Drawer {
     }
     static getTetherAttachmentForInfoBox(infoBoxPlacement) {
         switch (infoBoxPlacement) {
-            case section_step_interface_1.InfoBoxPlacement.LEFT: return 'top right';
-            case section_step_interface_1.InfoBoxPlacement.ABOVE: return 'bottom left';
-            case section_step_interface_1.InfoBoxPlacement.RIGHT: return 'top left';
-            case section_step_interface_1.InfoBoxPlacement.BELOW:
+            case info_box_placement_enum_1.InfoBoxPlacement.LEFT: return 'top right';
+            case info_box_placement_enum_1.InfoBoxPlacement.ABOVE: return 'bottom left';
+            case info_box_placement_enum_1.InfoBoxPlacement.RIGHT: return 'top left';
+            case info_box_placement_enum_1.InfoBoxPlacement.BELOW:
             default: return 'top left';
         }
     }
     static getTetherTargetAttachmentForInfoBox(infoBoxPlacement) {
         switch (infoBoxPlacement) {
-            case section_step_interface_1.InfoBoxPlacement.LEFT: return 'left top';
-            case section_step_interface_1.InfoBoxPlacement.ABOVE: return 'top left';
-            case section_step_interface_1.InfoBoxPlacement.RIGHT: return 'top right';
-            case section_step_interface_1.InfoBoxPlacement.BELOW: return 'bottom left';
+            case info_box_placement_enum_1.InfoBoxPlacement.LEFT: return 'left top';
+            case info_box_placement_enum_1.InfoBoxPlacement.ABOVE: return 'top left';
+            case info_box_placement_enum_1.InfoBoxPlacement.RIGHT: return 'top right';
+            case info_box_placement_enum_1.InfoBoxPlacement.BELOW: return 'bottom left';
             default: return 'bottom left';
         }
     }
     static onNextStep() {
-        this._$nextStep.next(NextStepPossibilities.FORWARD);
+        this._$nextStep.next(next_step_possibilities_enum_1.NextStepPossibilities.FORWARD);
     }
     static onLastStep() {
-        this._$nextStep.next(NextStepPossibilities.FINISHED);
+        this._$nextStep.next(next_step_possibilities_enum_1.NextStepPossibilities.FINISHED);
     }
     static onPreviousStep() {
-        this._$nextStep.next(NextStepPossibilities.BACKWARD);
+        this._$nextStep.next(next_step_possibilities_enum_1.NextStepPossibilities.BACKWARD);
     }
     static updateClothSize() {
         const newSizes = this.getViewportSizes();
@@ -355,10 +357,4 @@ Drawer.nextStepBtnId = 'HAZELINE-TUTORIAL-INFO-BOX-NEXT-STEP';
 Drawer.prevStepBtnZindex = '999';
 Drawer.prevStepBtnId = 'HAZELINE-TUTORIAL-INFO-BOX-PREV-STEP';
 exports.Drawer = Drawer;
-var NextStepPossibilities;
-(function (NextStepPossibilities) {
-    NextStepPossibilities[NextStepPossibilities["FORWARD"] = 0] = "FORWARD";
-    NextStepPossibilities[NextStepPossibilities["BACKWARD"] = 1] = "BACKWARD";
-    NextStepPossibilities[NextStepPossibilities["FINISHED"] = 2] = "FINISHED";
-})(NextStepPossibilities = exports.NextStepPossibilities || (exports.NextStepPossibilities = {}));
 //# sourceMappingURL=drawer.core.js.map

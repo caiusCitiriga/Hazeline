@@ -1,6 +1,7 @@
-import { Hazeline } from 'hazeline';
 import $ from 'jquery';
-import { InfoBoxPlacement } from 'hazeline/dist/interfaces/section-step.interface';
+import { Hazeline } from 'hazeline';
+
+import { InfoBoxPlacement } from 'hazeline/dist/enums/info-box-placement.enum';
 
 class HazelineDemo {
 
@@ -45,21 +46,25 @@ class HazelineDemo {
                 {
                     id: 'step-one',
                     selector: '#simpleItem01',
+                    text: 'Step one description',
                     infoBoxPlacement: InfoBoxPlacement.ABOVE
                 },
                 {
                     id: 'step-two',
                     selector: '#simpleItem02',
+                    text: 'Step two description',
                     infoBoxPlacement: 'below'
                 },
                 {
                     id: 'step-three',
                     selector: '#simpleItem03',
+                    text: 'Step three description',
                     infoBoxPlacement: InfoBoxPlacement.LEFT
                 },
                 {
                     id: 'step-four',
                     selector: '#simpleItem04',
+                    text: 'Step four description',
                     infoBoxPlacement: InfoBoxPlacement.RIGHT
                 }
             ]

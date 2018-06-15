@@ -1,4 +1,5 @@
 import { Observable } from 'rxjs';
+import { NextStepPossibilities } from '../enums/next-step-possibilities.enum';
 import { SectionStep } from "../interfaces/section-step.interface";
 export declare class Drawer {
     private static tether;
@@ -42,10 +43,5 @@ export declare class Drawer {
     private static onLastStep;
     private static onPreviousStep;
     private static updateClothSize;
-}
-export declare enum NextStepPossibilities {
-    FORWARD = 0,
-    BACKWARD = 1,
-    FINISHED = 2
 }
 //# sourceMappingURL=drawer.core.d.ts.map
