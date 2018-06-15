@@ -1,3 +1,5 @@
+import { InfoBoxPlacement } from "../enums/info-box-placement.enum";
+
 export interface SectionStep {
     //  Properties
     id: string;
@@ -9,11 +11,4 @@ export interface SectionStep {
     //  Events
     onNext?: (element: HTMLElement, id: string, selector: string) => void;
     onStart?: (element: HTMLElement, id: string, selector: string) => void;
-}
-
-export enum InfoBoxPlacement {
-    LEFT = 'left',
-    ABOVE = 'above',
-    BELOW = 'below',
-    RIGHT = 'right',
 }

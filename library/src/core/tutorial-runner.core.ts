@@ -2,10 +2,13 @@ import $ from 'jquery';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { filter, tap, switchMap } from 'rxjs/operators';
 
-import { Drawer, NextStepPossibilities } from './drawer.core';
 import { TutorialStatuses } from '../enums/tutorial-statuses.enum';
+import { NextStepPossibilities } from '../enums/next-step-possibilities.enum';
+
 import { TutorialStatus } from '../interfaces/tutorial-status.interface';
 import { TutorialSection } from "../interfaces/tutorial-section.interface";
+
+import { Drawer } from './drawer.core';
 
 export class TutorialRunner {
 

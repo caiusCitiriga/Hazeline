@@ -4,7 +4,10 @@ import Tether from 'tether';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { switchMap, filter, tap, skip } from 'rxjs/operators';
 
-import { SectionStep, InfoBoxPlacement } from "../interfaces/section-step.interface";
+import { InfoBoxPlacement } from '../enums/info-box-placement.enum';
+import { NextStepPossibilities } from '../enums/next-step-possibilities.enum';
+
+import { SectionStep } from "../interfaces/section-step.interface";
 
 export class Drawer {
 
@@ -441,10 +444,4 @@ interface ViewportSizes {
 interface ButtonsDefinitionResult {
     nextButton: HTMLButtonElement,
     prevButton: HTMLButtonElement
-}
-
-export enum NextStepPossibilities {
-    FORWARD,
-    BACKWARD,
-    FINISHED
 }
