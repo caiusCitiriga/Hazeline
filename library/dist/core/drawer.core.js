@@ -20,8 +20,8 @@ class Drawer {
         cloth.style.left = '0';
         cloth.style.opacity = '0';
         cloth.style.position = 'fixed';
+        cloth.style.background = '#007bffe6';
         cloth.style.zIndex = this.clothZIndex;
-        cloth.style.background = 'rgba(0,0,0,0.9)';
         cloth.style.transition = 'opacity 120ms ease-in-out';
         cloth.style.width = `${viewportSizes.width.toString()}px`;
         cloth.style.height = `${viewportSizes.height.toString()}px`;
@@ -141,15 +141,15 @@ class Drawer {
         const infoBoxElement = document.createElement('div');
         infoBoxElement.id = this.infoBoxId;
         infoBoxElement.style.opacity = '0';
-        infoBoxElement.style.color = '#fff';
+        infoBoxElement.style.color = '#333';
         infoBoxElement.style.width = '300px';
         infoBoxElement.style.height = '200px';
+        infoBoxElement.style.padding = '10px';
         infoBoxElement.style.marginTop = '10px';
+        infoBoxElement.style.background = '#fff';
         infoBoxElement.style.borderRadius = '5px';
         infoBoxElement.style.position = 'relative';
-        infoBoxElement.style.border = '2px solid #fff';
         infoBoxElement.style.zIndex = this.infoBoxZIndex;
-        infoBoxElement.style.background = 'rgba(0,0,0,0.3)';
         infoBoxElement.style.transition = 'opacity 200ms ease-in-out';
         return infoBoxElement;
     }
@@ -159,10 +159,12 @@ class Drawer {
         nextStepButton.textContent = isLastStep ? 'END' : 'NEXT';
         nextStepButton.style.right = '0';
         nextStepButton.style.bottom = '0';
+        nextStepButton.style.margin = '5px';
         nextStepButton.style.padding = '10px';
         nextStepButton.id = this.nextStepBtnId;
         nextStepButton.style.position = 'absolute';
         nextStepButton.style.zIndex = this.nextStepBtnZindex;
+        nextStepButton.setAttribute('class', `btn ${isLastStep ? 'btn-success' : 'btn-primary'}`);
         //  Attach the listener for click that will trigger the goToNextStep to true
         nextStepButton.addEventListener('click', () => {
             if (step.onNext) {
@@ -181,10 +183,12 @@ class Drawer {
         prevStepButton.textContent = 'PREVIOUS';
         prevStepButton.style.left = '0';
         prevStepButton.style.bottom = '0';
+        prevStepButton.style.margin = '5px';
         prevStepButton.style.padding = '10px';
         prevStepButton.id = this.prevStepBtnId;
         prevStepButton.style.position = 'absolute';
         prevStepButton.style.zIndex = this.prevStepBtnZindex;
+        prevStepButton.setAttribute('class', 'btn btn-secondary');
         //  Attach the listener for click that will trigger the goToPreviousStep to true
         prevStepButton.addEventListener('click', () => {
             infoBoxElement.style.opacity = '0';

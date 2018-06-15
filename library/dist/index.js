@@ -6,6 +6,8 @@ class Hazeline {
     constructor() {
         this.sectionsLoader = new sections_loader_core_1.SectionsLoader();
         this.tutorialRunner = new tutorial_runner_core_1.TutorialRunner();
+        var bootstrap_enabled = (typeof $().emulateTransitionEnd == 'function');
+        console.log('Bootsrap enabled: ' + bootstrap_enabled);
     }
     //  TODO should return an observable of the tutorial status
     startTutorialSection(sectionId) {

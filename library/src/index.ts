@@ -12,6 +12,9 @@ export class Hazeline {
     public constructor() {
         this.sectionsLoader = new SectionsLoader();
         this.tutorialRunner = new TutorialRunner();
+
+        var bootstrap_enabled = (typeof ($() as any).emulateTransitionEnd == 'function');
+        console.log('Bootsrap enabled: ' + bootstrap_enabled);
     }
 
     //  TODO should return an observable of the tutorial status
