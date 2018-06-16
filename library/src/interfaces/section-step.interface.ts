@@ -10,6 +10,11 @@ export interface SectionStep {
     infoBoxPlacement?: InfoBoxPlacement | string;
 
     //  Events
-    onNext?: (element: HTMLElement, id: string, selector: string) => void;
-    onStart?: (element: HTMLElement, id: string, selector: string) => void;
+    onNext?: (element: HTMLElement, step: SectionStep) => SectionStep;
+    onStart?: (element: HTMLElement, step: SectionStep) => SectionStep;
+
+    //  Buttons customization
+    endBtnText?: string;
+    nextBtnText?: string;
+    prevBtnText?: string;
 }

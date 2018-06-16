@@ -44,7 +44,7 @@ class Drawer {
     static drawStep(step, isFirstStep, isLastStep) {
         const element = jquery_1.default(step.selector);
         if (!!step.onStart) {
-            step.onStart(element[0], step.id, step.selector);
+            step.onStart(element[0], step);
         }
         this.bringToFrontHTMLElement(step)
             .pipe(operators_1.filter(elementIsReady => !!elementIsReady), operators_1.switchMap(() => this.drawTutorialStepInfoBox(step, isFirstStep, isLastStep)))
@@ -146,12 +146,13 @@ class Drawer {
         infoBoxElement.style.opacity = '0';
         infoBoxElement.style.color = '#333';
         infoBoxElement.style.width = '300px';
-        infoBoxElement.style.height = '200px';
         infoBoxElement.style.padding = '10px';
+        infoBoxElement.style.minHeight = '210px';
         infoBoxElement.style.background = '#fff';
         infoBoxElement.style.borderRadius = '5px';
         infoBoxElement.style.position = 'relative';
         infoBoxElement.style.zIndex = this.infoBoxZIndex;
+        infoBoxElement.style.boxShadow = 'rgb(0, 0, 0) 0px 3px 12px -6px';
         infoBoxElement.style.transition = 'opacity 200ms ease-in-out';
         infoBoxElement.style[infoBoxMarginSettings.margin] = infoBoxMarginSettings.value;
         return infoBoxElement;
@@ -159,19 +160,21 @@ class Drawer {
     static defineButtons(infoBoxElement, step, isLastStep) {
         //  Define the next step button element
         const nextStepButton = document.createElement('button');
-        nextStepButton.textContent = isLastStep ? 'END' : 'NEXT';
+        //  If the user has specified a text for next/end btn use it, otherwise use the defaults
         nextStepButton.style.right = '0';
         nextStepButton.style.bottom = '0';
-        nextStepButton.style.margin = '5px';
         nextStepButton.style.padding = '10px';
         nextStepButton.id = this.nextStepBtnId;
+        nextStepButton.style.marginRight = '10px';
+        nextStepButton.style.marginBottom = '10px';
         nextStepButton.style.position = 'absolute';
         nextStepButton.style.zIndex = this.nextStepBtnZindex;
+        nextStepButton.textContent = this.getNextButtonText(step, isLastStep);
         nextStepButton.setAttribute('class', `btn ${isLastStep ? 'btn-success' : 'btn-primary'}`);
         //  Attach the listener for click that will trigger the goToNextStep to true
         nextStepButton.addEventListener('click', () => {
             if (step.onNext) {
-                step.onNext(jquery_1.default(step.selector)[0], step.id, step.selector);
+                step.onNext(jquery_1.default(step.selector)[0], step);
             }
             infoBoxElement.style.opacity = '0';
             if (isLastStep) {
@@ -183,15 +186,16 @@ class Drawer {
         });
         //  Define the previous step button element
         const prevStepButton = document.createElement('button');
-        prevStepButton.textContent = 'PREVIOUS';
         prevStepButton.style.left = '0';
         prevStepButton.style.bottom = '0';
-        prevStepButton.style.margin = '5px';
         prevStepButton.style.padding = '10px';
         prevStepButton.id = this.prevStepBtnId;
+        prevStepButton.style.marginLeft = '10px';
+        prevStepButton.style.marginBottom = '10px';
         prevStepButton.style.position = 'absolute';
         prevStepButton.style.zIndex = this.prevStepBtnZindex;
         prevStepButton.setAttribute('class', 'btn btn-secondary');
+        prevStepButton.textContent = step.prevBtnText ? step.prevBtnText : this.defaultPreviousButtonText;
         //  Attach the listener for click that will trigger the goToPreviousStep to true
         prevStepButton.addEventListener('click', () => {
             infoBoxElement.style.opacity = '0';
@@ -201,6 +205,18 @@ class Drawer {
             nextButton: nextStepButton,
             prevButton: prevStepButton
         };
+    }
+    static getNextButtonText(step, isLastStep) {
+        if (isLastStep) {
+            if (step.endBtnText) {
+                return step.endBtnText;
+            }
+            return this.defaultEndButtonText;
+        }
+        if (step.nextBtnText) {
+            return step.nextBtnText;
+        }
+        return this.defaultNextButtonText;
     }
     static setValuesOnInfoBox(step, isFirstStep, isLastStep) {
         this.updateInfoBoxContent(step);
@@ -238,8 +254,12 @@ class Drawer {
         const infoBoxElement = document.getElementById(this.infoBoxId);
         const stepDescriptionParagraphElement = document.createElement('p');
         stepDescriptionParagraphElement.textContent = step.text;
+        stepDescriptionParagraphElement.style.height = '130px';
+        stepDescriptionParagraphElement.style.overflowY = 'scroll';
         stepDescriptionParagraphElement.style.textAlign = 'center';
+        stepDescriptionParagraphElement.style.borderRadius = '5px';
         stepDescriptionParagraphElement.id = this.infoStepBoxContentElId;
+        stepDescriptionParagraphElement.style.border = '1px solid #eee';
         if (document.getElementById(this.infoStepBoxContentElId)) {
             infoBoxElement.removeChild(document.getElementById(this.infoStepBoxContentElId));
         }
@@ -304,20 +324,20 @@ class Drawer {
     }
     static getTetherAttachmentForInfoBox(infoBoxPlacement) {
         switch (infoBoxPlacement) {
-            case info_box_placement_enum_1.InfoBoxPlacement.LEFT: return 'top right';
-            case info_box_placement_enum_1.InfoBoxPlacement.ABOVE: return 'bottom left';
-            case info_box_placement_enum_1.InfoBoxPlacement.RIGHT: return 'top left';
+            case info_box_placement_enum_1.InfoBoxPlacement.LEFT: return 'middle right';
+            case info_box_placement_enum_1.InfoBoxPlacement.ABOVE: return 'bottom middle';
+            case info_box_placement_enum_1.InfoBoxPlacement.RIGHT: return 'middle left';
             case info_box_placement_enum_1.InfoBoxPlacement.BELOW:
-            default: return 'top left';
+            default: return 'top middle';
         }
     }
     static getTetherTargetAttachmentForInfoBox(infoBoxPlacement) {
         switch (infoBoxPlacement) {
-            case info_box_placement_enum_1.InfoBoxPlacement.LEFT: return 'left top';
-            case info_box_placement_enum_1.InfoBoxPlacement.ABOVE: return 'top left';
-            case info_box_placement_enum_1.InfoBoxPlacement.RIGHT: return 'top right';
-            case info_box_placement_enum_1.InfoBoxPlacement.BELOW: return 'bottom left';
-            default: return 'bottom left';
+            case info_box_placement_enum_1.InfoBoxPlacement.LEFT: return 'middle top';
+            case info_box_placement_enum_1.InfoBoxPlacement.ABOVE: return 'top middle';
+            case info_box_placement_enum_1.InfoBoxPlacement.RIGHT: return 'middle right';
+            case info_box_placement_enum_1.InfoBoxPlacement.BELOW: return 'bottom middle';
+            default: return 'bottom middle';
         }
     }
     static onNextStep() {
@@ -356,5 +376,9 @@ Drawer.nextStepBtnZindex = '999';
 Drawer.nextStepBtnId = 'HAZELINE-TUTORIAL-INFO-BOX-NEXT-STEP';
 Drawer.prevStepBtnZindex = '999';
 Drawer.prevStepBtnId = 'HAZELINE-TUTORIAL-INFO-BOX-PREV-STEP';
+//  Info box buttons stuff
+Drawer.defaultEndButtonText = 'End';
+Drawer.defaultNextButtonText = 'Next';
+Drawer.defaultPreviousButtonText = 'Previous';
 exports.Drawer = Drawer;
 //# sourceMappingURL=drawer.core.js.map

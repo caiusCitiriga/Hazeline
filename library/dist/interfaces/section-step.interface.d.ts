@@ -4,7 +4,10 @@ export interface SectionStep {
     selector: string;
     text: string;
     infoBoxPlacement?: InfoBoxPlacement | string;
-    onNext?: (element: HTMLElement, id: string, selector: string) => void;
-    onStart?: (element: HTMLElement, id: string, selector: string) => void;
+    onNext?: (element: HTMLElement, step: SectionStep) => void;
+    onStart?: (element: HTMLElement, step: SectionStep) => void;
+    endBtnText?: string;
+    nextBtnText?: string;
+    prevBtnText?: string;
 }
 //# sourceMappingURL=section-step.interface.d.ts.map

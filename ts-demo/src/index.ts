@@ -47,25 +47,30 @@ class HazelineDemo {
                     id: 'step-one',
                     selector: '#simpleItem01',
                     text: 'Step one description',
-                    infoBoxPlacement: InfoBoxPlacement.ABOVE
+                    infoBoxPlacement: InfoBoxPlacement.ABOVE,
+                    nextBtnText: 'Successivo',
                 },
                 {
                     id: 'step-two',
                     selector: '#simpleItem02',
-                    text: 'Step two description',
-                    infoBoxPlacement: 'below'
+                    text: 'You can click on this item, and the event listener attached to it will fire.',
+                    nextBtnText: 'Avanti',
+                    prevBtnText: 'Indietro'
                 },
                 {
                     id: 'step-three',
                     selector: '#simpleItem03',
                     text: 'Step three description',
-                    infoBoxPlacement: InfoBoxPlacement.LEFT
+                    infoBoxPlacement: 'left',
                 },
                 {
                     id: 'step-four',
                     selector: '#simpleItem04',
-                    text: 'Step four description',
-                    infoBoxPlacement: InfoBoxPlacement.RIGHT
+                    text: `
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi ut nulla ac nulla auctor interdum. Integer faucibus efficitur arcu eu porttitor. Donec semper vestibulum leo ac convallis. Etiam non blandit tortor. Maecenas ac arcu sed augue fermentum maximus. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Morbi fringilla, nunc nec ullamcorper fringilla, purus nulla ornare leo, vel tristique felis libero ut eros. Quisque ex nisl, bibendum nec turpis ac, varius sodales ex. Donec risus enim, pharetra sed tellus sed, pharetra laoreet orci.`,
+                    infoBoxPlacement: InfoBoxPlacement.RIGHT,
+                    endBtnText: 'Fine',
+                    prevBtnText: 'Indietro'
                 }
             ]
         });

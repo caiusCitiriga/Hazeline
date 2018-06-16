@@ -22,6 +22,9 @@ export declare class Drawer {
     private static nextStepBtnId;
     private static prevStepBtnZindex;
     private static prevStepBtnId;
+    private static defaultEndButtonText;
+    private static defaultNextButtonText;
+    private static defaultPreviousButtonText;
     static drawCloth(): Observable<boolean>;
     static drawStep(step: SectionStep, isFirstStep?: boolean, isLastStep?: boolean): Observable<NextStepPossibilities>;
     static removeEverything(): void;
@@ -32,6 +35,7 @@ export declare class Drawer {
     private static drawTutorialStepInfoBox;
     private static defineInfoBoxElement;
     private static defineButtons;
+    private static getNextButtonText;
     private static setValuesOnInfoBox;
     private static updateInfoBoxMargins;
     private static updateInfoBoxContent;
