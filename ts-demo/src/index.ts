@@ -47,7 +47,7 @@ class HazelineDemo {
                     id: 'step-one',
                     selector: '#simpleItem01',
                     text: 'Step one description',
-                    infoBoxPlacement: InfoBoxPlacement.ABOVE,
+                    infoBoxPlacement: 'right',
                     nextBtnText: 'Successivo',
                 },
                 {
