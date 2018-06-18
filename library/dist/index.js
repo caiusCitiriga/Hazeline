@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const styles_manager_core_1 = require("./core/styles-manager.core");
 const sections_loader_core_1 = require("./core/sections-loader.core");
 const tutorial_runner_core_1 = require("./core/tutorial-runner.core");
 class Hazeline {
@@ -8,6 +9,21 @@ class Hazeline {
         this.tutorialRunner = new tutorial_runner_core_1.TutorialRunner();
         var bootstrap_enabled = (typeof $().emulateTransitionEnd == 'function');
         console.log('Bootsrap enabled: ' + bootstrap_enabled);
+    }
+    setTutorialOverlayCSSRules(styles) {
+        styles_manager_core_1.StylesManager.tutorialClothDefaultStyle = styles;
+    }
+    setInfoBoxCSSRules(styles) {
+        styles_manager_core_1.StylesManager.infoBoxDefaultStyle = styles;
+    }
+    setInfoBoxContentCSSRules(styles) {
+        styles_manager_core_1.StylesManager.infoBoxContentDefaultStyle = styles;
+    }
+    setInfoBoxNextButtonCSSRules(styles) {
+        styles_manager_core_1.StylesManager.infoBoxNextBtnDefaultStyle = styles;
+    }
+    setInfoBoxPreviousButtonCSSRules(styles) {
+        styles_manager_core_1.StylesManager.infoBoxPrevBtnDefaultStyle = styles;
     }
     //  TODO should return an observable of the tutorial status
     startTutorialSection(sectionId) {

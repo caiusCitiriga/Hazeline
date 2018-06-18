@@ -9,6 +9,7 @@ const rxjs_1 = require("rxjs");
 const operators_1 = require("rxjs/operators");
 const info_box_placement_enum_1 = require("../enums/info-box-placement.enum");
 const next_step_possibilities_enum_1 = require("../enums/next-step-possibilities.enum");
+const styles_manager_core_1 = require("./styles-manager.core");
 class Drawer {
     ////////////////////////////////////////////////////////////    
     //  Static methods
@@ -16,15 +17,8 @@ class Drawer {
     static drawCloth() {
         const clothIsReady = new rxjs_1.BehaviorSubject(false);
         const viewportSizes = this.getViewportSizes();
-        const cloth = document.createElement('div');
+        const cloth = styles_manager_core_1.StylesManager.styleTutorialCloth(document.createElement('div'));
         cloth.setAttribute('id', this.clothId);
-        cloth.style.top = '0';
-        cloth.style.left = '0';
-        cloth.style.opacity = '0';
-        cloth.style.position = 'fixed';
-        cloth.style.background = '#007bffe6';
-        cloth.style.zIndex = this.clothZIndex;
-        cloth.style.transition = 'opacity 120ms ease-in-out';
         cloth.style.width = `${viewportSizes.width.toString()}px`;
         cloth.style.height = `${viewportSizes.height.toString()}px`;
         jquery_1.default('body').prepend(cloth);
@@ -44,7 +38,7 @@ class Drawer {
     static drawStep(step, isFirstStep, isLastStep) {
         const element = jquery_1.default(step.selector);
         if (!!step.onStart) {
-            step.onStart(element[0], step);
+            step = step.onStart(element[0], step);
         }
         this.bringToFrontHTMLElement(step)
             .pipe(operators_1.filter(elementIsReady => !!elementIsReady), operators_1.switchMap(() => this.drawTutorialStepInfoBox(step, isFirstStep, isLastStep)))
@@ -140,41 +134,20 @@ class Drawer {
         return infoBoxIsReady;
     }
     static defineInfoBoxElement(step) {
-        const infoBoxElement = document.createElement('div');
+        const infoBoxElement = styles_manager_core_1.StylesManager.styleInfoBox(document.createElement('div'));
         const infoBoxMarginSettings = this.getMarginSettingsBasedOnPositioning(step.infoBoxPlacement);
         infoBoxElement.id = this.infoBoxId;
-        infoBoxElement.style.opacity = '0';
-        infoBoxElement.style.color = '#333';
-        infoBoxElement.style.width = '300px';
-        infoBoxElement.style.padding = '10px';
-        infoBoxElement.style.minHeight = '210px';
-        infoBoxElement.style.background = '#fff';
-        infoBoxElement.style.borderRadius = '5px';
-        infoBoxElement.style.position = 'relative';
-        infoBoxElement.style.zIndex = this.infoBoxZIndex;
-        infoBoxElement.style.boxShadow = 'rgb(0, 0, 0) 0px 3px 12px -6px';
-        infoBoxElement.style.transition = 'opacity 200ms ease-in-out';
         infoBoxElement.style[infoBoxMarginSettings.margin] = infoBoxMarginSettings.value;
         return infoBoxElement;
     }
     static defineButtons(infoBoxElement, step, isLastStep) {
-        //  Define the next step button element
-        const nextStepButton = document.createElement('button');
-        //  If the user has specified a text for next/end btn use it, otherwise use the defaults
-        nextStepButton.style.right = '0';
-        nextStepButton.style.bottom = '0';
-        nextStepButton.style.padding = '10px';
+        const nextStepButton = styles_manager_core_1.StylesManager.styleInfoBoxNextBtn(document.createElement('button'));
         nextStepButton.id = this.nextStepBtnId;
-        nextStepButton.style.marginRight = '10px';
-        nextStepButton.style.marginBottom = '10px';
-        nextStepButton.style.position = 'absolute';
-        nextStepButton.style.zIndex = this.nextStepBtnZindex;
         nextStepButton.textContent = this.getNextButtonText(step, isLastStep);
         nextStepButton.setAttribute('class', `btn ${isLastStep ? 'btn-success' : 'btn-primary'}`);
-        //  Attach the listener for click that will trigger the goToNextStep to true
         nextStepButton.addEventListener('click', () => {
             if (step.onNext) {
-                step.onNext(jquery_1.default(step.selector)[0], step);
+                step = step.onNext(jquery_1.default(step.selector)[0], step);
             }
             infoBoxElement.style.opacity = '0';
             if (isLastStep) {
@@ -185,15 +158,8 @@ class Drawer {
             }
         });
         //  Define the previous step button element
-        const prevStepButton = document.createElement('button');
-        prevStepButton.style.left = '0';
-        prevStepButton.style.bottom = '0';
-        prevStepButton.style.padding = '10px';
+        const prevStepButton = styles_manager_core_1.StylesManager.styleInfoBoxPrevBtn(document.createElement('button'));
         prevStepButton.id = this.prevStepBtnId;
-        prevStepButton.style.marginLeft = '10px';
-        prevStepButton.style.marginBottom = '10px';
-        prevStepButton.style.position = 'absolute';
-        prevStepButton.style.zIndex = this.prevStepBtnZindex;
         prevStepButton.setAttribute('class', 'btn btn-secondary');
         prevStepButton.textContent = step.prevBtnText ? step.prevBtnText : this.defaultPreviousButtonText;
         //  Attach the listener for click that will trigger the goToPreviousStep to true
@@ -248,18 +214,14 @@ class Drawer {
         const infoBoxElement = document.getElementById(this.infoBoxId);
         //  Reset all the margins
         infoBoxElement.style.margin = '0';
+        //  Apply the new margins
         infoBoxElement.style[marginSettings.margin] = marginSettings.value;
     }
     static updateInfoBoxContent(step) {
-        const infoBoxElement = document.getElementById(this.infoBoxId);
-        const stepDescriptionParagraphElement = document.createElement('p');
+        const infoBoxElement = styles_manager_core_1.StylesManager.styleInfoBox(document.getElementById(this.infoBoxId));
+        const stepDescriptionParagraphElement = styles_manager_core_1.StylesManager.styleInfoBoxContent(document.createElement('p'));
         stepDescriptionParagraphElement.textContent = step.text;
-        stepDescriptionParagraphElement.style.height = '130px';
-        stepDescriptionParagraphElement.style.overflowY = 'scroll';
-        stepDescriptionParagraphElement.style.textAlign = 'center';
-        stepDescriptionParagraphElement.style.borderRadius = '5px';
         stepDescriptionParagraphElement.id = this.infoStepBoxContentElId;
-        stepDescriptionParagraphElement.style.border = '1px solid #eee';
         if (document.getElementById(this.infoStepBoxContentElId)) {
             infoBoxElement.removeChild(document.getElementById(this.infoStepBoxContentElId));
         }

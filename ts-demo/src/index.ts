@@ -18,8 +18,6 @@ class HazelineDemo {
 
         //  Doing so will override ALL the styles
         this.haze.setTutorialOverlayCSSRules({
-            zIndex: '999',
-            position: 'fixed',
             backgroundColor: 'rgba(0,0,0,.9)',
         });
     }

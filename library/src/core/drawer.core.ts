@@ -8,6 +8,7 @@ import { InfoBoxPlacement } from '../enums/info-box-placement.enum';
 import { NextStepPossibilities } from '../enums/next-step-possibilities.enum';
 
 import { SectionStep } from "../interfaces/section-step.interface";
+import { StylesManager } from './styles-manager.core';
 
 export class Drawer {
 
@@ -53,16 +54,9 @@ export class Drawer {
         const clothIsReady = new BehaviorSubject(false);
 
         const viewportSizes = this.getViewportSizes();
-        const cloth = document.createElement('div');
-        cloth.setAttribute('id', this.clothId);
+        const cloth = StylesManager.styleTutorialCloth(document.createElement('div'));
 
-        cloth.style.top = '0';
-        cloth.style.left = '0';
-        cloth.style.opacity = '0';
-        cloth.style.position = 'fixed';
-        cloth.style.background = '#007bffe6';
-        cloth.style.zIndex = this.clothZIndex;
-        cloth.style.transition = 'opacity 120ms ease-in-out';
+        cloth.setAttribute('id', this.clothId);
         cloth.style.width = `${viewportSizes.width.toString()}px`;
         cloth.style.height = `${viewportSizes.height.toString()}px`;
 
@@ -215,41 +209,20 @@ export class Drawer {
     }
 
     private static defineInfoBoxElement(step: SectionStep): HTMLDivElement {
-        const infoBoxElement = document.createElement('div');
+        const infoBoxElement = StylesManager.styleInfoBox(document.createElement('div'));
         const infoBoxMarginSettings = this.getMarginSettingsBasedOnPositioning(step.infoBoxPlacement);
 
         infoBoxElement.id = this.infoBoxId;
-        infoBoxElement.style.opacity = '0';
-        infoBoxElement.style.color = '#333';
-        infoBoxElement.style.width = '300px';
-        infoBoxElement.style.padding = '10px';
-        infoBoxElement.style.minHeight = '210px';
-        infoBoxElement.style.background = '#fff';
-        infoBoxElement.style.borderRadius = '5px';
-        infoBoxElement.style.position = 'relative';
-        infoBoxElement.style.zIndex = this.infoBoxZIndex;
-        infoBoxElement.style.boxShadow = 'rgb(0, 0, 0) 0px 3px 12px -6px';
-        infoBoxElement.style.transition = 'opacity 200ms ease-in-out';
         infoBoxElement.style[infoBoxMarginSettings.margin] = infoBoxMarginSettings.value;
 
-        return infoBoxElement;
+        return infoBoxElement as HTMLDivElement;
     }
 
     private static defineButtons(infoBoxElement: HTMLDivElement, step: SectionStep, isLastStep?: boolean): ButtonsDefinitionResult {
-        //  Define the next step button element
-        const nextStepButton = document.createElement('button');
-        //  If the user has specified a text for next/end btn use it, otherwise use the defaults
-        nextStepButton.style.right = '0';
-        nextStepButton.style.bottom = '0';
-        nextStepButton.style.padding = '10px';
+        const nextStepButton = StylesManager.styleInfoBoxNextBtn(document.createElement('button'));
         nextStepButton.id = this.nextStepBtnId;
-        nextStepButton.style.marginRight = '10px';
-        nextStepButton.style.marginBottom = '10px';
-        nextStepButton.style.position = 'absolute';
-        nextStepButton.style.zIndex = this.nextStepBtnZindex;
         nextStepButton.textContent = this.getNextButtonText(step, isLastStep);
         nextStepButton.setAttribute('class', `btn ${isLastStep ? 'btn-success' : 'btn-primary'}`);
-        //  Attach the listener for click that will trigger the goToNextStep to true
         nextStepButton.addEventListener('click', () => {
             if (step.onNext) {
                 step = step.onNext($(step.selector)[0], step);
@@ -265,15 +238,8 @@ export class Drawer {
         });
 
         //  Define the previous step button element
-        const prevStepButton = document.createElement('button');
-        prevStepButton.style.left = '0';
-        prevStepButton.style.bottom = '0';
-        prevStepButton.style.padding = '10px';
+        const prevStepButton = StylesManager.styleInfoBoxPrevBtn(document.createElement('button'));
         prevStepButton.id = this.prevStepBtnId;
-        prevStepButton.style.marginLeft = '10px';
-        prevStepButton.style.marginBottom = '10px';
-        prevStepButton.style.position = 'absolute';
-        prevStepButton.style.zIndex = this.prevStepBtnZindex;
         prevStepButton.setAttribute('class', 'btn btn-secondary');
         prevStepButton.textContent = step.prevBtnText ? step.prevBtnText : this.defaultPreviousButtonText;
         //  Attach the listener for click that will trigger the goToPreviousStep to true
@@ -337,21 +303,16 @@ export class Drawer {
 
         //  Reset all the margins
         infoBoxElement.style.margin = '0';
-
+        //  Apply the new margins
         infoBoxElement.style[marginSettings.margin] = marginSettings.value;
     }
 
     private static updateInfoBoxContent(step: SectionStep): void {
-        const infoBoxElement = document.getElementById(this.infoBoxId) as HTMLDivElement;
-        const stepDescriptionParagraphElement = document.createElement('p');
+        const infoBoxElement = StylesManager.styleInfoBox(document.getElementById(this.infoBoxId));
+        const stepDescriptionParagraphElement = StylesManager.styleInfoBoxContent(document.createElement('p'));
 
         stepDescriptionParagraphElement.textContent = step.text;
-        stepDescriptionParagraphElement.style.height = '130px';
-        stepDescriptionParagraphElement.style.overflowY = 'scroll';
-        stepDescriptionParagraphElement.style.textAlign = 'center';
-        stepDescriptionParagraphElement.style.borderRadius = '5px';
         stepDescriptionParagraphElement.id = this.infoStepBoxContentElId;
-        stepDescriptionParagraphElement.style.border = '1px solid #eee';
 
         if (document.getElementById(this.infoStepBoxContentElId)) {
             infoBoxElement.removeChild(document.getElementById(this.infoStepBoxContentElId));
@@ -471,6 +432,6 @@ interface ViewportSizes {
 }
 
 interface ButtonsDefinitionResult {
-    nextButton: HTMLButtonElement,
-    prevButton: HTMLButtonElement
+    nextButton: HTMLElement,
+    prevButton: HTMLElement
 }

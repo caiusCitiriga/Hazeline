@@ -4,8 +4,8 @@ export interface SectionStep {
     selector: string;
     text: string;
     infoBoxPlacement?: InfoBoxPlacement | string;
-    onNext?: (element: HTMLElement, step: SectionStep) => void;
-    onStart?: (element: HTMLElement, step: SectionStep) => void;
+    onNext?: (element: HTMLElement, step: SectionStep) => SectionStep;
+    onStart?: (element: HTMLElement, step: SectionStep) => SectionStep;
     endBtnText?: string;
     nextBtnText?: string;
     prevBtnText?: string;

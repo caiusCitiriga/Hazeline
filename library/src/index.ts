@@ -1,11 +1,11 @@
 import { SectionStep } from "./interfaces/section-step.interface";
 import { TutorialSection } from "./interfaces/tutorial-section.interface";
 
+import { CSSRules, StylesManager } from "./core/styles-manager.core";
 import { SectionsLoader } from "./core/sections-loader.core";
 import { TutorialRunner } from './core/tutorial-runner.core';
 
 export class Hazeline {
-
     private sectionsLoader: SectionsLoader;
     private tutorialRunner: TutorialRunner;
 
@@ -15,6 +15,26 @@ export class Hazeline {
 
         var bootstrap_enabled = (typeof ($() as any).emulateTransitionEnd == 'function');
         console.log('Bootsrap enabled: ' + bootstrap_enabled);
+    }
+
+    public setTutorialOverlayCSSRules(styles: CSSRules) {
+        StylesManager.tutorialClothDefaultStyle = styles;
+    }
+
+    public setInfoBoxCSSRules(styles: CSSRules) {
+        StylesManager.infoBoxDefaultStyle = styles;
+    }
+
+    public setInfoBoxContentCSSRules(styles: CSSRules) {
+        StylesManager.infoBoxContentDefaultStyle = styles;
+    }
+
+    public setInfoBoxNextButtonCSSRules(styles: CSSRules) {
+        StylesManager.infoBoxNextBtnDefaultStyle = styles;
+    }
+
+    public setInfoBoxPreviousButtonCSSRules(styles: CSSRules) {
+        StylesManager.infoBoxPrevBtnDefaultStyle = styles;
     }
 
     //  TODO should return an observable of the tutorial status
