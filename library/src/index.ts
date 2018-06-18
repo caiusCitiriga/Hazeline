@@ -18,25 +18,11 @@ export class Hazeline {
         console.log('%cBootsrap found: ' + bootstrap_enabled, 'color: green; font-weight: bold');
     }
 
-    public setTutorialOverlayCSSRules(styles: CSSRules) {
-        StylesManager.defaultTutorialClothStyle = styles;
-    }
-
-    public setInfoBoxCSSRules(styles: CSSRules) {
-        StylesManager.deafultInfoBoxStyle = styles;
-    }
-
-    public setInfoBoxContentCSSRules(styles: CSSRules) {
-        StylesManager.defaultInfoBoxContentStyle = styles;
-    }
-
-    public setInfoBoxNextButtonCSSRules(styles: CSSRules) {
-        StylesManager.defaultInfoBoxNextBtnStyle = styles;
-    }
-
-    public setInfoBoxPreviousButtonCSSRules(styles: CSSRules) {
-        StylesManager.defaultInfoBoxPrevBtnStyle = styles;
-    }
+    public setInfoBoxCSSRules(styles: CSSRules): void { StylesManager.deafultInfoBoxStyle = styles; }
+    public setInfoBoxContentCSSRules(styles: CSSRules): void { StylesManager.defaultInfoBoxContentStyle = styles; }
+    public setTutorialOverlayCSSRules(styles: CSSRules): void { StylesManager.defaultTutorialClothStyle = styles; }
+    public setInfoBoxNextButtonCSSRules(styles: CSSRules): void { StylesManager.defaultInfoBoxNextBtnStyle = styles; }
+    public setInfoBoxPreviousButtonCSSRules(styles: CSSRules): void { StylesManager.defaultInfoBoxPrevBtnStyle = styles; }
 
     //  TODO should return an observable of the tutorial status
     public startTutorialSection(sectionId: string): void {
