@@ -1,6 +1,6 @@
+import { CSSRules } from "./interfaces/css-rules.interface";
 import { SectionStep } from "./interfaces/section-step.interface";
 import { TutorialSection } from "./interfaces/tutorial-section.interface";
-import { CSSRules } from "./core/styles-manager.core";
 export declare class Hazeline {
     private sectionsLoader;
     private tutorialRunner;

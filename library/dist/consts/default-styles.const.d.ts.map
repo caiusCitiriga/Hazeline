@@ -1,0 +1,1 @@
+{"version":3,"file":"default-styles.const.d.ts","sourceRoot":"","sources":["../../src/consts/default-styles.const.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,QAAQ,EAAE,MAAM,mCAAmC,CAAC;AAE7D,eAAO,MAAM,cAAc,EAAE,aAgD5B,CAAA;AAED,UAAU,aAAa;IACnB,OAAO,EAAE,QAAQ,CAAC;IAClB,aAAa,EAAE,QAAQ,CAAC;IACxB,cAAc,EAAE,QAAQ,CAAC;IACzB,cAAc,EAAE,QAAQ,CAAC;IACzB,kBAAkB,EAAE,QAAQ,CAAC;CAChC"}

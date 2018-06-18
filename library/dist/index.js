@@ -8,22 +8,22 @@ class Hazeline {
         this.sectionsLoader = new sections_loader_core_1.SectionsLoader();
         this.tutorialRunner = new tutorial_runner_core_1.TutorialRunner();
         var bootstrap_enabled = (typeof $().emulateTransitionEnd == 'function');
-        console.log('Bootsrap enabled: ' + bootstrap_enabled);
+        console.log('%cBootsrap found: ' + bootstrap_enabled, 'color: green; font-weight: bold');
     }
     setTutorialOverlayCSSRules(styles) {
-        styles_manager_core_1.StylesManager.tutorialClothDefaultStyle = styles;
+        styles_manager_core_1.StylesManager.defaultTutorialClothDefaultStyle = styles;
     }
     setInfoBoxCSSRules(styles) {
-        styles_manager_core_1.StylesManager.infoBoxDefaultStyle = styles;
+        styles_manager_core_1.StylesManager.deafultInfoBoxDefaultStyle = styles;
     }
     setInfoBoxContentCSSRules(styles) {
-        styles_manager_core_1.StylesManager.infoBoxContentDefaultStyle = styles;
+        styles_manager_core_1.StylesManager.defaultInfoBoxContentDefaultStyle = styles;
     }
     setInfoBoxNextButtonCSSRules(styles) {
-        styles_manager_core_1.StylesManager.infoBoxNextBtnDefaultStyle = styles;
+        styles_manager_core_1.StylesManager.defaultInfoBoxNextBtnDefaultStyle = styles;
     }
     setInfoBoxPreviousButtonCSSRules(styles) {
-        styles_manager_core_1.StylesManager.infoBoxPrevBtnDefaultStyle = styles;
+        styles_manager_core_1.StylesManager.defaultInfoBoxPrevBtnDefaultStyle = styles;
     }
     //  TODO should return an observable of the tutorial status
     startTutorialSection(sectionId) {

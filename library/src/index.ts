@@ -1,7 +1,8 @@
+import { CSSRules } from "./interfaces/css-rules.interface";
 import { SectionStep } from "./interfaces/section-step.interface";
 import { TutorialSection } from "./interfaces/tutorial-section.interface";
 
-import { CSSRules, StylesManager } from "./core/styles-manager.core";
+import { StylesManager } from "./core/styles-manager.core";
 import { SectionsLoader } from "./core/sections-loader.core";
 import { TutorialRunner } from './core/tutorial-runner.core';
 
@@ -14,27 +15,27 @@ export class Hazeline {
         this.tutorialRunner = new TutorialRunner();
 
         var bootstrap_enabled = (typeof ($() as any).emulateTransitionEnd == 'function');
-        console.log('Bootsrap enabled: ' + bootstrap_enabled);
+        console.log('%cBootsrap found: ' + bootstrap_enabled, 'color: green; font-weight: bold');
     }
 
     public setTutorialOverlayCSSRules(styles: CSSRules) {
-        StylesManager.tutorialClothDefaultStyle = styles;
+        StylesManager.defaultTutorialClothDefaultStyle = styles;
     }
 
     public setInfoBoxCSSRules(styles: CSSRules) {
-        StylesManager.infoBoxDefaultStyle = styles;
+        StylesManager.deafultInfoBoxDefaultStyle = styles;
     }
 
     public setInfoBoxContentCSSRules(styles: CSSRules) {
-        StylesManager.infoBoxContentDefaultStyle = styles;
+        StylesManager.defaultInfoBoxContentDefaultStyle = styles;
     }
 
     public setInfoBoxNextButtonCSSRules(styles: CSSRules) {
-        StylesManager.infoBoxNextBtnDefaultStyle = styles;
+        StylesManager.defaultInfoBoxNextBtnDefaultStyle = styles;
     }
 
     public setInfoBoxPreviousButtonCSSRules(styles: CSSRules) {
-        StylesManager.infoBoxPrevBtnDefaultStyle = styles;
+        StylesManager.defaultInfoBoxPrevBtnDefaultStyle = styles;
     }
 
     //  TODO should return an observable of the tutorial status
