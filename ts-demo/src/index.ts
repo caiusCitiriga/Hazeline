@@ -15,6 +15,13 @@ class HazelineDemo {
         this.collectControlsElementsInstances();
         this.attachListenersOnControls();
         this.attachListenersOnTutorialItems();
+
+        //  Doing so will override ALL the styles
+        this.haze.setTutorialOverlayCSSRules({
+            zIndex: '999',
+            position: 'fixed',
+            backgroundColor: 'rgba(0,0,0,.9)',
+        });
     }
 
     private collectControlsElementsInstances(): void {
@@ -70,7 +77,8 @@ class HazelineDemo {
                     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi ut nulla ac nulla auctor interdum. Integer faucibus efficitur arcu eu porttitor. Donec semper vestibulum leo ac convallis. Etiam non blandit tortor. Maecenas ac arcu sed augue fermentum maximus. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Morbi fringilla, nunc nec ullamcorper fringilla, purus nulla ornare leo, vel tristique felis libero ut eros. Quisque ex nisl, bibendum nec turpis ac, varius sodales ex. Donec risus enim, pharetra sed tellus sed, pharetra laoreet orci.`,
                     infoBoxPlacement: InfoBoxPlacement.RIGHT,
                     endBtnText: 'Fine',
-                    prevBtnText: 'Indietro'
+                    prevBtnText: 'Indietro',
+
                 }
             ]
         });
