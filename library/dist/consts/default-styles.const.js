@@ -30,7 +30,7 @@ exports.DEFAULT_STYLES = {
         borderRadius: '5px',
         border: '1px solid #eee'
     },
-    infoBoxNextBtn: {
+    infoBoxNextOrEndBtn: {
         right: '0',
         bottom: '0',
         zIndex: '999',

@@ -1,32 +1,27 @@
 import { DEFAULT_STYLES } from "../consts/default-styles.const";
+
 import { CSSRules } from "../interfaces/css-rules.interface";
 
 export class StylesManager {
 
-    private static defaultInfoBoxStyles = DEFAULT_STYLES.infoBox;
-    private static defaultTutorialClothStyles = DEFAULT_STYLES.tutorialCloth;
-    private static defaultInfoBoxContentStyles = DEFAULT_STYLES.infoBoxContent;
-    private static defaultInfoBoxNextButtonStyles = DEFAULT_STYLES.infoBoxNextBtn;
-    private static defaultInfoBoxPrevButtonStyles = DEFAULT_STYLES.infoBoxPreviousBtn;
+    private static defaultInfoBoxStyles = Object.assign({}, DEFAULT_STYLES.infoBox);
+    private static defaultTutorialClothStyles = Object.assign({}, DEFAULT_STYLES.tutorialCloth);
+    private static defaultInfoBoxContentStyles = Object.assign({}, DEFAULT_STYLES.infoBoxContent);
+    private static defaultInfoBoxPrevButtonStyles = Object.assign({}, DEFAULT_STYLES.infoBoxPreviousBtn);
+    private static defaultInfoBoxNextButtonStyles = Object.assign({}, DEFAULT_STYLES.infoBoxNextOrEndBtn);
 
-    public static set defaultTutorialClothDefaultStyle(value: CSSRules) {
-        this.defaultTutorialClothStyles = Object.assign(this.defaultTutorialClothStyles, value);
-    }
+    public static set deafultInfoBoxStyle(value: CSSRules) { this.defaultInfoBoxStyles = Object.assign(this.defaultInfoBoxStyles, value); }
+    public static set defaultTutorialClothStyle(value: CSSRules) { this.defaultTutorialClothStyles = Object.assign(this.defaultTutorialClothStyles, value); }
+    public static set defaultInfoBoxNextBtnStyle(value: CSSRules) { this.defaultInfoBoxNextButtonStyles = Object.assign(this.defaultInfoBoxNextButtonStyles, value); }
+    public static set defaultInfoBoxPrevBtnStyle(value: CSSRules) { this.defaultInfoBoxPrevButtonStyles = Object.assign(this.defaultInfoBoxPrevButtonStyles, value); }
+    public static set defaultInfoBoxContentStyle(value: CSSRules) { this.defaultInfoBoxContentStyles = Object.assign(this.defaultInfoBoxContentStyles, value); }
 
-    public static set deafultInfoBoxDefaultStyle(value: CSSRules) {
-        this.defaultInfoBoxStyles = Object.assign(this.defaultInfoBoxStyles, value);
-    }
-
-    public static set defaultInfoBoxNextBtnDefaultStyle(value: CSSRules) {
-        this.defaultInfoBoxNextButtonStyles = Object.assign(this.defaultInfoBoxNextButtonStyles, value);
-    }
-
-    public static set defaultInfoBoxPrevBtnDefaultStyle(value: CSSRules) {
-        this.defaultInfoBoxPrevButtonStyles = Object.assign(this.defaultInfoBoxPrevButtonStyles, value);
-    }
-
-    public static set defaultInfoBoxContentDefaultStyle(value: CSSRules) {
-        this.defaultInfoBoxContentStyles = Object.assign(this.defaultInfoBoxContentStyles, value);
+    public static resetStyles(): void {
+        this.defaultInfoBoxStyles = Object.assign({}, DEFAULT_STYLES.infoBox);
+        this.defaultTutorialClothStyles = Object.assign({}, DEFAULT_STYLES.tutorialCloth);
+        this.defaultInfoBoxContentStyles = Object.assign({}, DEFAULT_STYLES.infoBoxContent);
+        this.defaultInfoBoxPrevButtonStyles = Object.assign({}, DEFAULT_STYLES.infoBoxPreviousBtn);
+        this.defaultInfoBoxNextButtonStyles = Object.assign({}, DEFAULT_STYLES.infoBoxNextOrEndBtn);
     }
 
     public static styleTutorialCloth(clothElement: HTMLElement): HTMLElement {

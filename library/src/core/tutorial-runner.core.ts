@@ -114,5 +114,4 @@ export class TutorialRunner {
             tutorialStatus: TutorialStatuses.Stopped
         });
     }
-
 }

@@ -1,0 +1,1 @@
+{"version":3,"file":"stylable-elements.d.ts","sourceRoot":"","sources":["../../src/interfaces/stylable-elements.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,QAAQ,EAAE,MAAM,mCAAmC,CAAC;AAE7D,MAAM,WAAW,oBAAoB;IACjC,OAAO,CAAC,EAAE,QAAQ,CAAC;IACnB,cAAc,CAAC,EAAE,QAAQ,CAAC;IAC1B,mBAAmB,CAAC,EAAE,QAAQ,CAAC;IAC/B,kBAAkB,CAAC,EAAE,QAAQ,CAAC;CACjC"}

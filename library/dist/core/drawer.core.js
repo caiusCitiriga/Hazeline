@@ -36,6 +36,8 @@ class Drawer {
         return clothIsReady;
     }
     static drawStep(step, isFirstStep, isLastStep) {
+        styles_manager_core_1.StylesManager.resetStyles();
+        this.applyStepCustomStylesIfAny(step.styles);
         const element = jquery_1.default(step.selector);
         if (!!step.onStart) {
             step = step.onStart(element[0], step);
@@ -144,7 +146,6 @@ class Drawer {
         const nextStepButton = styles_manager_core_1.StylesManager.styleInfoBoxNextBtn(document.createElement('button'));
         nextStepButton.id = this.nextStepBtnId;
         nextStepButton.textContent = this.getNextButtonText(step, isLastStep);
-        nextStepButton.setAttribute('class', `btn ${isLastStep ? 'btn-success' : 'btn-primary'}`);
         nextStepButton.addEventListener('click', () => {
             if (step.onNext) {
                 step = step.onNext(jquery_1.default(step.selector)[0], step);
@@ -160,9 +161,7 @@ class Drawer {
         //  Define the previous step button element
         const prevStepButton = styles_manager_core_1.StylesManager.styleInfoBoxPrevBtn(document.createElement('button'));
         prevStepButton.id = this.prevStepBtnId;
-        prevStepButton.setAttribute('class', 'btn btn-secondary');
         prevStepButton.textContent = step.prevBtnText ? step.prevBtnText : this.defaultPreviousButtonText;
-        //  Attach the listener for click that will trigger the goToPreviousStep to true
         prevStepButton.addEventListener('click', () => {
             infoBoxElement.style.opacity = '0';
             this.onPreviousStep();
@@ -316,6 +315,23 @@ class Drawer {
         document.getElementById(this.clothId).style.width = `${newSizes.width}px`;
         document.getElementById(this.clothId).style.height = `${newSizes.height}px`;
     }
+    static applyStepCustomStylesIfAny(customStyles) {
+        if (!customStyles) {
+            return;
+        }
+        if (customStyles.infoBox) {
+            styles_manager_core_1.StylesManager.deafultInfoBoxStyle = customStyles.infoBox;
+        }
+        if (customStyles.infoBoxContent) {
+            styles_manager_core_1.StylesManager.defaultInfoBoxContentStyle = customStyles.infoBoxContent;
+        }
+        if (customStyles.infoBoxPreviousBtn) {
+            styles_manager_core_1.StylesManager.defaultInfoBoxPrevBtnStyle = customStyles.infoBoxPreviousBtn;
+        }
+        if (customStyles.infoBoxNextOrEndBtn) {
+            styles_manager_core_1.StylesManager.defaultInfoBoxNextBtnStyle = customStyles.infoBoxNextOrEndBtn;
+        }
+    }
 }
 Drawer.windowResizeListenerAttached = false;
 Drawer._$nextStep = new rxjs_1.BehaviorSubject(null);
@@ -325,19 +341,16 @@ Drawer.prevElOpacity = null;
 Drawer.prevElPosition = null;
 Drawer.prevElSelector = null;
 Drawer.prevElTransition = null;
-//  Cloth stuff
+//  Elements misc properties
 Drawer.clothZIndex = '999';
-Drawer.clothId = 'HAZELINE-TUTORIAL-CLOTH';
-//  Info box stuff
 Drawer.infoBoxMargin = '10px';
-Drawer.infoBoxZIndex = '999';
 Drawer.infoBoxAlreadyDrawn = false;
+//  Elements IDs
+Drawer.clothId = 'HAZELINE-TUTORIAL-CLOTH';
 Drawer.infoBoxId = 'HAZELINE-TUTORIAL-INFO-BOX';
-Drawer.infoStepBoxContentElId = 'HAZELINE-TUTORIAL-INFO-BOX-CONTENT';
-Drawer.nextStepBtnZindex = '999';
 Drawer.nextStepBtnId = 'HAZELINE-TUTORIAL-INFO-BOX-NEXT-STEP';
-Drawer.prevStepBtnZindex = '999';
 Drawer.prevStepBtnId = 'HAZELINE-TUTORIAL-INFO-BOX-PREV-STEP';
+Drawer.infoStepBoxContentElId = 'HAZELINE-TUTORIAL-INFO-BOX-CONTENT';
 //  Info box buttons stuff
 Drawer.defaultEndButtonText = 'End';
 Drawer.defaultNextButtonText = 'Next';

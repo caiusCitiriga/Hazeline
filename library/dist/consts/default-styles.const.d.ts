@@ -1,11 +1,3 @@
-import { CSSRules } from "../interfaces/css-rules.interface";
-export declare const DEFAULT_STYLES: DefaultStyles;
-interface DefaultStyles {
-    infoBox: CSSRules;
-    tutorialCloth: CSSRules;
-    infoBoxContent: CSSRules;
-    infoBoxNextBtn: CSSRules;
-    infoBoxPreviousBtn: CSSRules;
-}
-export {};
+import { StylableElements } from "../interfaces/step-stylable-elements";
+export declare const DEFAULT_STYLES: StylableElements;
 //# sourceMappingURL=default-styles.const.d.ts.map

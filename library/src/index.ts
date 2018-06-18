@@ -19,23 +19,23 @@ export class Hazeline {
     }
 
     public setTutorialOverlayCSSRules(styles: CSSRules) {
-        StylesManager.defaultTutorialClothDefaultStyle = styles;
+        StylesManager.defaultTutorialClothStyle = styles;
     }
 
     public setInfoBoxCSSRules(styles: CSSRules) {
-        StylesManager.deafultInfoBoxDefaultStyle = styles;
+        StylesManager.deafultInfoBoxStyle = styles;
     }
 
     public setInfoBoxContentCSSRules(styles: CSSRules) {
-        StylesManager.defaultInfoBoxContentDefaultStyle = styles;
+        StylesManager.defaultInfoBoxContentStyle = styles;
     }
 
     public setInfoBoxNextButtonCSSRules(styles: CSSRules) {
-        StylesManager.defaultInfoBoxNextBtnDefaultStyle = styles;
+        StylesManager.defaultInfoBoxNextBtnStyle = styles;
     }
 
     public setInfoBoxPreviousButtonCSSRules(styles: CSSRules) {
-        StylesManager.defaultInfoBoxPrevBtnDefaultStyle = styles;
+        StylesManager.defaultInfoBoxPrevBtnStyle = styles;
     }
 
     //  TODO should return an observable of the tutorial status

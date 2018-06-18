@@ -15,11 +15,9 @@ class HazelineDemo {
         this.collectControlsElementsInstances();
         this.attachListenersOnControls();
         this.attachListenersOnTutorialItems();
-
-        //  Doing so will override ALL the styles
         this.haze.setTutorialOverlayCSSRules({
-            backgroundColor: 'rgba(0,0,0,.9)',
-        });
+            background: 'rgba(255,255,255, .9'
+        })
     }
 
     private collectControlsElementsInstances(): void {
@@ -54,13 +52,33 @@ class HazelineDemo {
                     text: 'Step one description',
                     infoBoxPlacement: 'right',
                     nextBtnText: 'Successivo',
+                    styles: {
+                        infoBoxNextOrEndBtn: {
+                            color: 'red'
+                        },
+                        infoBoxPreviousBtn: {
+                            color: 'red'
+                        },
+                        infoBoxContent: {
+                            backgroundColor: '#333',
+                            color: '#eee'
+                        },
+                        infoBox: {
+                            boxShadow: 'none'
+                        }
+                    }
                 },
                 {
                     id: 'step-two',
                     selector: '#simpleItem02',
                     text: 'You can click on this item, and the event listener attached to it will fire.',
                     nextBtnText: 'Avanti',
-                    prevBtnText: 'Indietro'
+                    prevBtnText: 'Indietro',
+                    styles: {
+                        infoBoxContent: {
+                            color: 'red'
+                        }
+                    }
                 },
                 {
                     id: 'step-three',
@@ -76,7 +94,11 @@ class HazelineDemo {
                     infoBoxPlacement: InfoBoxPlacement.RIGHT,
                     endBtnText: 'Fine',
                     prevBtnText: 'Indietro',
-
+                    styles: {
+                        infoBoxNextOrEndBtn: {
+                            color: 'red'
+                        },
+                    }
                 }
             ]
         });

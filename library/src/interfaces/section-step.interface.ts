@@ -1,5 +1,7 @@
 import { InfoBoxPlacement } from "../enums/info-box-placement.enum";
 
+import { StepStylableElements } from "./stylable-elements";
+
 export interface SectionStep {
     //  Properties
     id: string;
@@ -17,4 +19,6 @@ export interface SectionStep {
     endBtnText?: string;
     nextBtnText?: string;
     prevBtnText?: string;
+
+    styles?: StepStylableElements;
 }

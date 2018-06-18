@@ -9,6 +9,7 @@ import { NextStepPossibilities } from '../enums/next-step-possibilities.enum';
 
 import { SectionStep } from "../interfaces/section-step.interface";
 import { StylesManager } from './styles-manager.core';
+import { StepStylableElements } from '../interfaces/stylable-elements';
 
 export class Drawer {
 
@@ -24,23 +25,17 @@ export class Drawer {
     private static prevElSelector: string = null;
     private static prevElTransition: string = null;
 
-    //  Cloth stuff
+    //  Elements misc properties
     private static clothZIndex = '999';
-    private static clothId = 'HAZELINE-TUTORIAL-CLOTH';
-
-    //  Info box stuff
     private static infoBoxMargin = '10px';
-
-    private static infoBoxZIndex = '999';
     private static infoBoxAlreadyDrawn = false;
+
+    //  Elements IDs
+    private static clothId = 'HAZELINE-TUTORIAL-CLOTH';
     private static infoBoxId = 'HAZELINE-TUTORIAL-INFO-BOX';
-    private static infoStepBoxContentElId = 'HAZELINE-TUTORIAL-INFO-BOX-CONTENT';
-
-    private static nextStepBtnZindex = '999';
     private static nextStepBtnId = 'HAZELINE-TUTORIAL-INFO-BOX-NEXT-STEP';
-
-    private static prevStepBtnZindex = '999';
     private static prevStepBtnId = 'HAZELINE-TUTORIAL-INFO-BOX-PREV-STEP';
+    private static infoStepBoxContentElId = 'HAZELINE-TUTORIAL-INFO-BOX-CONTENT';
 
     //  Info box buttons stuff
     private static defaultEndButtonText = 'End';
@@ -79,6 +74,9 @@ export class Drawer {
     }
 
     public static drawStep(step: SectionStep, isFirstStep?: boolean, isLastStep?: boolean): Observable<NextStepPossibilities> {
+        StylesManager.resetStyles();
+        this.applyStepCustomStylesIfAny(step.styles);
+
         const element = $(step.selector);
         if (!!step.onStart) {
             step = step.onStart(element[0], step);
@@ -222,7 +220,7 @@ export class Drawer {
         const nextStepButton = StylesManager.styleInfoBoxNextBtn(document.createElement('button'));
         nextStepButton.id = this.nextStepBtnId;
         nextStepButton.textContent = this.getNextButtonText(step, isLastStep);
-        nextStepButton.setAttribute('class', `btn ${isLastStep ? 'btn-success' : 'btn-primary'}`);
+
         nextStepButton.addEventListener('click', () => {
             if (step.onNext) {
                 step = step.onNext($(step.selector)[0], step);
@@ -240,9 +238,8 @@ export class Drawer {
         //  Define the previous step button element
         const prevStepButton = StylesManager.styleInfoBoxPrevBtn(document.createElement('button'));
         prevStepButton.id = this.prevStepBtnId;
-        prevStepButton.setAttribute('class', 'btn btn-secondary');
         prevStepButton.textContent = step.prevBtnText ? step.prevBtnText : this.defaultPreviousButtonText;
-        //  Attach the listener for click that will trigger the goToPreviousStep to true
+
         prevStepButton.addEventListener('click', () => {
             infoBoxElement.style.opacity = '0';
             this.onPreviousStep();
@@ -423,6 +420,17 @@ export class Drawer {
 
         document.getElementById(this.clothId).style.width = `${newSizes.width}px`;
         document.getElementById(this.clothId).style.height = `${newSizes.height}px`;
+    }
+
+    private static applyStepCustomStylesIfAny(customStyles: StepStylableElements): void {
+        if (!customStyles) {
+            return;
+        }
+
+        if (customStyles.infoBox) { StylesManager.deafultInfoBoxStyle = customStyles.infoBox; }
+        if (customStyles.infoBoxContent) { StylesManager.defaultInfoBoxContentStyle = customStyles.infoBoxContent; }
+        if (customStyles.infoBoxPreviousBtn) { StylesManager.defaultInfoBoxPrevBtnStyle = customStyles.infoBoxPreviousBtn; }
+        if (customStyles.infoBoxNextOrEndBtn) { StylesManager.defaultInfoBoxNextBtnStyle = customStyles.infoBoxNextOrEndBtn; }
     }
 }
 

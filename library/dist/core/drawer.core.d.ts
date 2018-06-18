@@ -12,16 +12,13 @@ export declare class Drawer {
     private static prevElSelector;
     private static prevElTransition;
     private static clothZIndex;
-    private static clothId;
     private static infoBoxMargin;
-    private static infoBoxZIndex;
     private static infoBoxAlreadyDrawn;
+    private static clothId;
     private static infoBoxId;
-    private static infoStepBoxContentElId;
-    private static nextStepBtnZindex;
     private static nextStepBtnId;
-    private static prevStepBtnZindex;
     private static prevStepBtnId;
+    private static infoStepBoxContentElId;
     private static defaultEndButtonText;
     private static defaultNextButtonText;
     private static defaultPreviousButtonText;
@@ -47,5 +44,6 @@ export declare class Drawer {
     private static onLastStep;
     private static onPreviousStep;
     private static updateClothSize;
+    private static applyStepCustomStylesIfAny;
 }
 //# sourceMappingURL=drawer.core.d.ts.map

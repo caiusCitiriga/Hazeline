@@ -11,19 +11,19 @@ class Hazeline {
         console.log('%cBootsrap found: ' + bootstrap_enabled, 'color: green; font-weight: bold');
     }
     setTutorialOverlayCSSRules(styles) {
-        styles_manager_core_1.StylesManager.defaultTutorialClothDefaultStyle = styles;
+        styles_manager_core_1.StylesManager.defaultTutorialClothStyle = styles;
     }
     setInfoBoxCSSRules(styles) {
-        styles_manager_core_1.StylesManager.deafultInfoBoxDefaultStyle = styles;
+        styles_manager_core_1.StylesManager.deafultInfoBoxStyle = styles;
     }
     setInfoBoxContentCSSRules(styles) {
-        styles_manager_core_1.StylesManager.defaultInfoBoxContentDefaultStyle = styles;
+        styles_manager_core_1.StylesManager.defaultInfoBoxContentStyle = styles;
     }
     setInfoBoxNextButtonCSSRules(styles) {
-        styles_manager_core_1.StylesManager.defaultInfoBoxNextBtnDefaultStyle = styles;
+        styles_manager_core_1.StylesManager.defaultInfoBoxNextBtnStyle = styles;
     }
     setInfoBoxPreviousButtonCSSRules(styles) {
-        styles_manager_core_1.StylesManager.defaultInfoBoxPrevBtnDefaultStyle = styles;
+        styles_manager_core_1.StylesManager.defaultInfoBoxPrevBtnStyle = styles;
     }
     //  TODO should return an observable of the tutorial status
     startTutorialSection(sectionId) {

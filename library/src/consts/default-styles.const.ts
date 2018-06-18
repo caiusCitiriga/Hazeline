@@ -1,6 +1,6 @@
-import { CSSRules } from "../interfaces/css-rules.interface";
+import { StylableElements } from "../interfaces/step-stylable-elements";
 
-export const DEFAULT_STYLES: DefaultStyles = {
+export const DEFAULT_STYLES: StylableElements = {
     tutorialCloth: {
         top: '0',
         left: '0',
@@ -30,7 +30,7 @@ export const DEFAULT_STYLES: DefaultStyles = {
         borderRadius: '5px',
         border: '1px solid #eee'
     },
-    infoBoxNextBtn: {
+    infoBoxNextOrEndBtn: {
         right: '0',
         bottom: '0',
         zIndex: '999',
@@ -48,12 +48,4 @@ export const DEFAULT_STYLES: DefaultStyles = {
         marginBottom: '10px',
         position: 'absolute',
     }
-}
-
-interface DefaultStyles {
-    infoBox: CSSRules;
-    tutorialCloth: CSSRules;
-    infoBoxContent: CSSRules;
-    infoBoxNextBtn: CSSRules;
-    infoBoxPreviousBtn: CSSRules;
 }
