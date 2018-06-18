@@ -8,8 +8,9 @@ import { InfoBoxPlacement } from '../enums/info-box-placement.enum';
 import { NextStepPossibilities } from '../enums/next-step-possibilities.enum';
 
 import { SectionStep } from "../interfaces/section-step.interface";
-import { StylesManager } from './styles-manager.core';
 import { StepStylableElements } from '../interfaces/stylable-elements';
+
+import { StylesManager } from './styles-manager.core';
 
 export class Drawer {
 
