@@ -2,7 +2,7 @@ import $ from 'jquery';
 import Tether from 'tether';
 
 import { BehaviorSubject, Observable } from 'rxjs';
-import { switchMap, filter, tap, skip } from 'rxjs/operators';
+import { switchMap, filter, tap } from 'rxjs/operators';
 
 import { InfoBoxPlacement } from '../enums/info-box-placement.enum';
 import { NextStepPossibilities } from '../enums/next-step-possibilities.enum';
