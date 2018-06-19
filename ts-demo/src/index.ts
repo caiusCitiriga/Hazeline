@@ -1,7 +1,5 @@
 import $ from 'jquery';
-import { Hazeline } from 'hazeline';
-
-import { InfoBoxPlacement } from 'hazeline/dist/enums/info-box-placement.enum';
+import { Hazeline, InfoBoxPlacement } from 'hazeline';
 
 class HazelineDemo {
 
@@ -16,7 +14,7 @@ class HazelineDemo {
         this.attachListenersOnControls();
         this.attachListenersOnTutorialItems();
         this.haze.setTutorialOverlayCSSRules({
-            background: 'rgba(255,255,255, .9'
+            background: 'rgba(255,255,255, .9)'
         })
     }
 
