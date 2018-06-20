@@ -16,10 +16,12 @@ export const DEFAULT_STYLES: StylableElements = {
         zIndex: '999',
         width: '300px',
         padding: '10px',
+        display: 'flex',
         minHeight: '210px',
         background: '#fff',
         borderRadius: '5px',
         position: 'relative',
+        flexDirection: 'column',
         transition: 'opacity 200ms ease-in-out',
         boxShadow: 'rgb(0, 0, 0) 0px 3px 12px -6px',
     },
@@ -35,8 +37,6 @@ export const DEFAULT_STYLES: StylableElements = {
         bottom: '0',
         zIndex: '999',
         padding: '10px',
-        marginRight: '10px',
-        marginBottom: '10px',
         position: 'absolute',
     },
     infoBoxPreviousBtn: {
@@ -44,8 +44,6 @@ export const DEFAULT_STYLES: StylableElements = {
         bottom: '0',
         zIndex: '999',
         padding: '10px',
-        marginLeft: '10px',
-        marginBottom: '10px',
         position: 'absolute',
     }
 }
