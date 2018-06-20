@@ -1,46 +1,12 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const styles_manager_core_1 = require("./core/styles-manager.core");
-const sections_loader_core_1 = require("./core/sections-loader.core");
-const tutorial_runner_core_1 = require("./core/tutorial-runner.core");
-class Hazeline {
-    constructor() {
-        this.sectionsLoader = new sections_loader_core_1.SectionsLoader();
-        this.tutorialRunner = new tutorial_runner_core_1.TutorialRunner();
-        var bootstrap_enabled = (typeof $().emulateTransitionEnd == 'function');
-        console.log('%cBootsrap found: ' + bootstrap_enabled, 'color: green; font-weight: bold');
-    }
-    setTutorialOverlayCSSRules(styles) {
-        styles_manager_core_1.StylesManager.defaultTutorialClothStyle = styles;
-    }
-    setInfoBoxCSSRules(styles) {
-        styles_manager_core_1.StylesManager.deafultInfoBoxStyle = styles;
-    }
-    setInfoBoxContentCSSRules(styles) {
-        styles_manager_core_1.StylesManager.defaultInfoBoxContentStyle = styles;
-    }
-    setInfoBoxNextButtonCSSRules(styles) {
-        styles_manager_core_1.StylesManager.defaultInfoBoxNextBtnStyle = styles;
-    }
-    setInfoBoxPreviousButtonCSSRules(styles) {
-        styles_manager_core_1.StylesManager.defaultInfoBoxPrevBtnStyle = styles;
-    }
-    //  TODO should return an observable of the tutorial status
-    startTutorialSection(sectionId) {
-        this.tutorialRunner.run(this.sectionsLoader.getTutorialSection(sectionId));
-    }
-    addTutorialSection(section) {
-        this.sectionsLoader.addSection(section);
-    }
-    addTutorialSections(sections) {
-        this.sectionsLoader.addSections(sections);
-    }
-    getTutorialSectionById(sectionId) {
-        return this.sectionsLoader.getTutorialSection(sectionId);
-    }
-    getSectionStepById(sectionId, stepId) {
-        return this.sectionsLoader.getSectionStep(sectionId, stepId);
-    }
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
-exports.Hazeline = Hazeline;
+Object.defineProperty(exports, "__esModule", { value: true });
+//  Core library
+__export(require("./hazeline"));
+//  Enums
+__export(require("./enums/tutorial-statuses.enum"));
+__export(require("./enums/info-box-placement.enum"));
+__export(require("./enums/next-step-possibilities.enum"));
 //# sourceMappingURL=index.js.map

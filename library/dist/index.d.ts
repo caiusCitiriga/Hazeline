@@ -1,19 +1,11 @@
-import { CSSRules } from "./interfaces/css-rules.interface";
-import { SectionStep } from "./interfaces/section-step.interface";
-import { TutorialSection } from "./interfaces/tutorial-section.interface";
-export declare class Hazeline {
-    private sectionsLoader;
-    private tutorialRunner;
-    constructor();
-    setTutorialOverlayCSSRules(styles: CSSRules): void;
-    setInfoBoxCSSRules(styles: CSSRules): void;
-    setInfoBoxContentCSSRules(styles: CSSRules): void;
-    setInfoBoxNextButtonCSSRules(styles: CSSRules): void;
-    setInfoBoxPreviousButtonCSSRules(styles: CSSRules): void;
-    startTutorialSection(sectionId: string): void;
-    addTutorialSection(section: TutorialSection): void;
-    addTutorialSections(sections: TutorialSection[]): void;
-    getTutorialSectionById(sectionId: string): TutorialSection | null;
-    getSectionStepById(sectionId: string, stepId: string): SectionStep | null;
-}
+export * from './hazeline';
+export * from './interfaces/stylable-elements';
+export * from './interfaces/css-rules.interface';
+export * from './interfaces/section-step.interface';
+export * from './interfaces/step-stylable-elements';
+export * from './interfaces/tutorial-status.interface';
+export * from './interfaces/tutorial-section.interface';
+export * from './enums/tutorial-statuses.enum';
+export * from './enums/info-box-placement.enum';
+export * from './enums/next-step-possibilities.enum';
 //# sourceMappingURL=index.d.ts.map
