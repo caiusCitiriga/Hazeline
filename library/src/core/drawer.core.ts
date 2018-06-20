@@ -34,6 +34,7 @@ export class Drawer {
     //  Elements IDs
     private static clothId = 'HAZELINE-TUTORIAL-CLOTH';
     private static infoBoxId = 'HAZELINE-TUTORIAL-INFO-BOX';
+    private static tutorialCloseBtnId = 'HAZELINE-TUTORIAL-CLOSE';
     private static nextStepBtnId = 'HAZELINE-TUTORIAL-INFO-BOX-NEXT-STEP';
     private static prevStepBtnId = 'HAZELINE-TUTORIAL-INFO-BOX-PREV-STEP';
     private static infoStepBoxContentElId = 'HAZELINE-TUTORIAL-INFO-BOX-CONTENT';
@@ -192,8 +193,10 @@ export class Drawer {
             return infoBoxIsReady;
         }
 
-        //  Define the box info element
         const infoBoxElement = this.defineInfoBoxElement(step);
+        //  Define the div that will act as tutorial interrupt (close) button 
+        const tutorialCloseButton = this.defineTutorialCloseButton(step);
+        $(infoBoxElement).append(tutorialCloseButton);
 
         $('body').append(infoBoxElement);
         this.setValuesOnInfoBox(step, isFirstStep, isLastStep);
@@ -215,6 +218,18 @@ export class Drawer {
         infoBoxElement.style[infoBoxMarginSettings.margin] = infoBoxMarginSettings.value;
 
         return infoBoxElement as HTMLDivElement;
+    }
+
+    private static defineTutorialCloseButton(step: SectionStep): HTMLDivElement {
+        const tutorialCloseButton = StylesManager.styleTutorialCloseButton(document.createElement('div'));
+        tutorialCloseButton.id = this.tutorialCloseBtnId;
+        tutorialCloseButton.textContent = 'X';
+
+        tutorialCloseButton.addEventListener('click', () => {
+            this.onTutorialCloseBtn();
+        });
+
+        return tutorialCloseButton as HTMLDivElement;
     }
 
     private static defineButtons(infoBoxElement: HTMLDivElement, step: SectionStep, isLastStep?: boolean): ButtonsDefinitionResult {
@@ -414,6 +429,10 @@ export class Drawer {
 
     private static onPreviousStep(): void {
         this._$nextStep.next(NextStepPossibilities.BACKWARD);
+    }
+
+    private static onTutorialCloseBtn(): void {
+        this._$nextStep.next(NextStepPossibilities.TUTORIAL_CLOSE);
     }
 
     private static updateClothSize(): void {

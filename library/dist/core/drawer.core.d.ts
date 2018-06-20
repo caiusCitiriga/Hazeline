@@ -16,6 +16,7 @@ export declare class Drawer {
     private static infoBoxAlreadyDrawn;
     private static clothId;
     private static infoBoxId;
+    private static tutorialCloseBtnId;
     private static nextStepBtnId;
     private static prevStepBtnId;
     private static infoStepBoxContentElId;
@@ -31,6 +32,7 @@ export declare class Drawer {
     private static restorePreviousElementStatus;
     private static drawTutorialStepInfoBox;
     private static defineInfoBoxElement;
+    private static defineTutorialCloseButton;
     private static defineButtons;
     private static getNextButtonText;
     private static setValuesOnInfoBox;
@@ -43,6 +45,7 @@ export declare class Drawer {
     private static onNextStep;
     private static onLastStep;
     private static onPreviousStep;
+    private static onTutorialCloseBtn;
     private static updateClothSize;
     private static applyStepCustomStylesIfAny;
 }

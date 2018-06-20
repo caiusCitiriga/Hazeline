@@ -124,8 +124,10 @@ class Drawer {
             infoBoxIsReady.next(true);
             return infoBoxIsReady;
         }
-        //  Define the box info element
         const infoBoxElement = this.defineInfoBoxElement(step);
+        //  Define the div that will act as tutorial interrupt (close) button 
+        const tutorialCloseButton = this.defineTutorialCloseButton(step);
+        jquery_1.default(infoBoxElement).append(tutorialCloseButton);
         jquery_1.default('body').append(infoBoxElement);
         this.setValuesOnInfoBox(step, isFirstStep, isLastStep);
         setTimeout(() => {
@@ -141,6 +143,15 @@ class Drawer {
         infoBoxElement.id = this.infoBoxId;
         infoBoxElement.style[infoBoxMarginSettings.margin] = infoBoxMarginSettings.value;
         return infoBoxElement;
+    }
+    static defineTutorialCloseButton(step) {
+        const tutorialCloseButton = styles_manager_core_1.StylesManager.styleTutorialCloseButton(document.createElement('div'));
+        tutorialCloseButton.id = this.tutorialCloseBtnId;
+        tutorialCloseButton.textContent = 'X';
+        tutorialCloseButton.addEventListener('click', () => {
+            this.onTutorialCloseBtn();
+        });
+        return tutorialCloseButton;
     }
     static defineButtons(infoBoxElement, step, isLastStep) {
         const nextStepButton = styles_manager_core_1.StylesManager.styleInfoBoxNextBtn(document.createElement('button'));
@@ -310,6 +321,9 @@ class Drawer {
     static onPreviousStep() {
         this._$nextStep.next(next_step_possibilities_enum_1.NextStepPossibilities.BACKWARD);
     }
+    static onTutorialCloseBtn() {
+        this._$nextStep.next(next_step_possibilities_enum_1.NextStepPossibilities.TUTORIAL_CLOSE);
+    }
     static updateClothSize() {
         const newSizes = this.getViewportSizes();
         document.getElementById(this.clothId).style.width = `${newSizes.width}px`;
@@ -348,6 +362,7 @@ Drawer.infoBoxAlreadyDrawn = false;
 //  Elements IDs
 Drawer.clothId = 'HAZELINE-TUTORIAL-CLOTH';
 Drawer.infoBoxId = 'HAZELINE-TUTORIAL-INFO-BOX';
+Drawer.tutorialCloseBtnId = 'HAZELINE-TUTORIAL-CLOSE';
 Drawer.nextStepBtnId = 'HAZELINE-TUTORIAL-INFO-BOX-NEXT-STEP';
 Drawer.prevStepBtnId = 'HAZELINE-TUTORIAL-INFO-BOX-PREV-STEP';
 Drawer.infoStepBoxContentElId = 'HAZELINE-TUTORIAL-INFO-BOX-CONTENT';

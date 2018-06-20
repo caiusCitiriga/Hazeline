@@ -1,5 +1,6 @@
 export enum NextStepPossibilities {
     FORWARD,
     BACKWARD,
-    FINISHED
+    FINISHED,
+    TUTORIAL_CLOSE
 }

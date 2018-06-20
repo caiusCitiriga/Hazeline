@@ -59,6 +59,10 @@ export class TutorialRunner {
                     if (nextStep === NextStepPossibilities.FINISHED) {
                         this.finalizeTutorial(section);
                     }
+                    if (nextStep === NextStepPossibilities.TUTORIAL_CLOSE) {
+                        //  There might be some differences between normal end or premature close. So we'll keep them in two ifs
+                        this.finalizeTutorial(section);
+                    }
                 })
             )
             .subscribe();

@@ -5,5 +5,6 @@ var NextStepPossibilities;
     NextStepPossibilities[NextStepPossibilities["FORWARD"] = 0] = "FORWARD";
     NextStepPossibilities[NextStepPossibilities["BACKWARD"] = 1] = "BACKWARD";
     NextStepPossibilities[NextStepPossibilities["FINISHED"] = 2] = "FINISHED";
+    NextStepPossibilities[NextStepPossibilities["TUTORIAL_CLOSE"] = 3] = "TUTORIAL_CLOSE";
 })(NextStepPossibilities = exports.NextStepPossibilities || (exports.NextStepPossibilities = {}));
 //# sourceMappingURL=next-step-possibilities.enum.js.map

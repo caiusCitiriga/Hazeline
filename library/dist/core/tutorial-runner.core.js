@@ -49,6 +49,10 @@ class TutorialRunner {
             if (nextStep === next_step_possibilities_enum_1.NextStepPossibilities.FINISHED) {
                 this.finalizeTutorial(section);
             }
+            if (nextStep === next_step_possibilities_enum_1.NextStepPossibilities.TUTORIAL_CLOSE) {
+                //  There might be some differences between normal end or premature close. So we'll keep them in two ifs
+                this.finalizeTutorial(section);
+            }
         }))
             .subscribe();
     }
