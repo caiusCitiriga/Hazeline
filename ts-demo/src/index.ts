@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import { Hazeline, InfoBoxPlacement } from 'hazeline';
+import { Hazeline } from 'hazeline';
 
 class HazelineDemo {
 
@@ -13,9 +13,6 @@ class HazelineDemo {
         this.collectControlsElementsInstances();
         this.attachListenersOnControls();
         this.attachListenersOnTutorialItems();
-        this.haze.setTutorialOverlayCSSRules({
-            background: 'rgba(255,255,255, .9)'
-        })
     }
 
     private collectControlsElementsInstances(): void {
@@ -48,55 +45,22 @@ class HazelineDemo {
                     id: 'step-one',
                     selector: '#simpleItem01',
                     text: 'Step one description',
-                    infoBoxPlacement: 'right',
-                    nextBtnText: 'Successivo',
-                    styles: {
-                        infoBoxNextOrEndBtn: {
-                            color: 'red'
-                        },
-                        infoBoxPreviousBtn: {
-                            color: 'red'
-                        },
-                        infoBoxContent: {
-                            backgroundColor: '#333',
-                            color: '#eee'
-                        },
-                        infoBox: {
-                            boxShadow: 'none'
-                        }
-                    }
                 },
                 {
                     id: 'step-two',
                     selector: '#simpleItem02',
                     text: 'You can click on this item, and the event listener attached to it will fire.',
-                    nextBtnText: 'Avanti',
-                    prevBtnText: 'Indietro',
-                    styles: {
-                        infoBoxContent: {
-                            color: 'red'
-                        }
-                    }
                 },
                 {
                     id: 'step-three',
                     selector: '#simpleItem03',
                     text: 'Step three description',
-                    infoBoxPlacement: 'left',
                 },
                 {
                     id: 'step-four',
                     selector: '#simpleItem04',
                     text: `
                     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi ut nulla ac nulla auctor interdum. Integer faucibus efficitur arcu eu porttitor. Donec semper vestibulum leo ac convallis. Etiam non blandit tortor. Maecenas ac arcu sed augue fermentum maximus. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Morbi fringilla, nunc nec ullamcorper fringilla, purus nulla ornare leo, vel tristique felis libero ut eros. Quisque ex nisl, bibendum nec turpis ac, varius sodales ex. Donec risus enim, pharetra sed tellus sed, pharetra laoreet orci.`,
-                    infoBoxPlacement: InfoBoxPlacement.RIGHT,
-                    endBtnText: 'Fine',
-                    prevBtnText: 'Indietro',
-                    styles: {
-                        infoBoxNextOrEndBtn: {
-                            color: 'red'
-                        },
-                    }
                 }
             ]
         });
