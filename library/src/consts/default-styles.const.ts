@@ -33,17 +33,22 @@ export const DEFAULT_STYLES: StylableElements = {
         border: '1px solid #eee'
     },
     infoBoxNextOrEndBtn: {
-        right: '0',
-        bottom: '0',
         zIndex: '999',
         padding: '10px',
-        position: 'absolute',
+        alignSelf: 'flex-end',
+        position: 'relative',
+        height: '50px',
+        width: '90px',
+        display: 'block',
     },
     infoBoxPreviousBtn: {
-        left: '0',
-        bottom: '0',
         zIndex: '999',
         padding: '10px',
-        position: 'absolute',
+        alignSelf: 'flex-start',
+        position: 'relative',
+        bottom: '-50px',
+        height: '50px',
+        width: '90px',
+        marginTop: '-50px',
     }
 }
