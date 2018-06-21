@@ -66,6 +66,7 @@ exports.DEFAULT_STYLES = {
         lineHeight: '0px',
         cursor: 'pointer',
         width: '90px',
+        marginTop: '3px',
         display: 'block',
     },
     infoBoxPreviousBtn: {
@@ -73,7 +74,7 @@ exports.DEFAULT_STYLES = {
         padding: '10px',
         alignSelf: 'flex-start',
         position: 'relative',
-        bottom: '-40px',
+        bottom: '-43px',
         height: '40px',
         background: '#fff',
         border: '1px solid #6c757d',

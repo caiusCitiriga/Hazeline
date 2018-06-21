@@ -248,7 +248,7 @@ export class Drawer {
     private static defineTutorialCloseButton(step: SectionStep): HTMLDivElement {
         const tutorialCloseButton = StylesManager.styleTutorialCloseButton(document.createElement('div'));
         tutorialCloseButton.id = this.tutorialCloseBtnId;
-        tutorialCloseButton.textContent = 'X';
+        tutorialCloseButton.innerHTML = 'X';
 
         tutorialCloseButton.addEventListener('click', () => {
             this.onTutorialCloseBtn();
@@ -260,7 +260,7 @@ export class Drawer {
     private static defineButtons(infoBoxElement: HTMLDivElement, step: SectionStep, isLastStep?: boolean): ButtonsDefinitionResult {
         const nextStepButton = StylesManager.styleInfoBoxNextBtn(document.createElement('button'));
         nextStepButton.id = this.nextStepBtnId;
-        nextStepButton.textContent = this.getNextButtonText(step, isLastStep);
+        nextStepButton.innerHTML = this.getNextButtonText(step, isLastStep);
 
         nextStepButton.addEventListener('click', () => {
             if (step.onNext) {
@@ -279,7 +279,7 @@ export class Drawer {
         //  Define the previous step button element
         const prevStepButton = StylesManager.styleInfoBoxPrevBtn(document.createElement('button'));
         prevStepButton.id = this.prevStepBtnId;
-        prevStepButton.textContent = step.prevBtnText ? step.prevBtnText : this.defaultPreviousButtonText;
+        prevStepButton.innerHTML = step.prevBtnText ? step.prevBtnText : this.defaultPreviousButtonText;
 
         prevStepButton.addEventListener('click', () => {
             infoBoxElement.style.opacity = '0';
