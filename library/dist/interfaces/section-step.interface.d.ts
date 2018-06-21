@@ -2,7 +2,7 @@ import { InfoBoxPlacement } from "../enums/info-box-placement.enum";
 import { StepStylableElements } from "./stylable-elements";
 export interface SectionStep {
     id: string;
-    text: string;
+    htmlContent: string;
     selector: string;
     infoBoxPlacement?: InfoBoxPlacement | string;
     onNext?: (element: HTMLElement, step: SectionStep) => SectionStep;

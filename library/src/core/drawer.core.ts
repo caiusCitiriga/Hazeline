@@ -349,7 +349,7 @@ export class Drawer {
         const infoBoxElement = StylesManager.styleInfoBox(document.getElementById(this.infoBoxId));
         const stepDescriptionParagraphElement = StylesManager.styleInfoBoxContent(document.createElement('p'));
 
-        stepDescriptionParagraphElement.textContent = step.text;
+        stepDescriptionParagraphElement.innerHTML = step.htmlContent;
         stepDescriptionParagraphElement.id = this.infoStepBoxContentElId;
 
         if (document.getElementById(this.infoStepBoxContentElId)) {

@@ -5,7 +5,7 @@ import { StepStylableElements } from "./stylable-elements";
 export interface SectionStep {
     //  Properties
     id: string;
-    text: string;
+    htmlContent: string;
     selector: string;
 
     //  Placement options

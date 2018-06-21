@@ -47,22 +47,22 @@ class HazelineDemo {
                     {
                         id: 'step-one',
                         selector: '#simpleItem01',
-                        text: 'Step one description',
+                        htmlContent: 'Step one description',
                     },
                     {
                         id: 'step-two',
                         selector: '#simpleItem02',
-                        text: 'You can click on this item, and the event listener attached to it will fire.',
+                        htmlContent: 'You can click on this item, and the event listener attached to it will fire.',
                     },
                     {
                         id: 'step-three',
                         selector: '#simpleItem03',
-                        text: 'Step three description',
+                        htmlContent: 'Step three description',
                     },
                     {
                         id: 'step-four',
                         selector: '#simpleItem04',
-                        text: `
+                        htmlContent: `
                     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi ut nulla ac nulla auctor interdum. Integer faucibus efficitur arcu eu porttitor. Donec semper vestibulum leo ac convallis. Etiam non blandit tortor. Maecenas ac arcu sed augue fermentum maximus. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Morbi fringilla, nunc nec ullamcorper fringilla, purus nulla ornare leo, vel tristique felis libero ut eros. Quisque ex nisl, bibendum nec turpis ac, varius sodales ex. Donec risus enim, pharetra sed tellus sed, pharetra laoreet orci.`,
                     }
                 ]
@@ -74,7 +74,7 @@ class HazelineDemo {
                     {
                         id: 'step-one',
                         selector: '#usernameInput',
-                        text: 'Type in your name, and press Enter',
+                        htmlContent: 'Type in your name, and press Enter',
                         triggers: {
                             next: {
                                 event: 'keyup',
@@ -91,7 +91,7 @@ class HazelineDemo {
                     {
                         id: 'step-two',
                         selector: '#passwordInput',
-                        text: 'Type in your password, and press Next',
+                        htmlContent: 'Type in your password, and press <strong>Next</strong>',
                     }
                 ],
             }

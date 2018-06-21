@@ -247,7 +247,7 @@ class Drawer {
     static updateInfoBoxContent(step) {
         const infoBoxElement = styles_manager_core_1.StylesManager.styleInfoBox(document.getElementById(this.infoBoxId));
         const stepDescriptionParagraphElement = styles_manager_core_1.StylesManager.styleInfoBoxContent(document.createElement('p'));
-        stepDescriptionParagraphElement.textContent = step.text;
+        stepDescriptionParagraphElement.innerHTML = step.htmlContent;
         stepDescriptionParagraphElement.id = this.infoStepBoxContentElId;
         if (document.getElementById(this.infoStepBoxContentElId)) {
             infoBoxElement.removeChild(document.getElementById(this.infoStepBoxContentElId));
