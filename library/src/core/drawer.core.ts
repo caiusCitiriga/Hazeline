@@ -19,6 +19,9 @@ export class Drawer {
     private static windowResizeListenerAttached = false;
     private static _$nextStep: BehaviorSubject<NextStepPossibilities> = new BehaviorSubject(null);
 
+    //  Custom triggers events wrappers
+    private static nextStepCustomTriggerWrapper: (event: any) => void = null;
+
     //  Previous step element status properties
     private static prevElZIndex: string = null;
     private static prevElOpacity: string = null;
@@ -125,7 +128,7 @@ export class Drawer {
 
     private static bringToFrontHTMLElement(step: SectionStep): Observable<boolean> {
         const elementBroughtToFront: BehaviorSubject<boolean> = new BehaviorSubject(false);
-        const element = $(step.selector);
+        const element = $(step.selector)[0];
 
         if (!!this.prevElSelector) {
             this.restorePreviousElementStatus()
@@ -141,32 +144,54 @@ export class Drawer {
         return elementBroughtToFront;
     }
 
-    private static backupCurrentElementPropertiesAndChangeThem(element: JQuery<HTMLElement>, step: SectionStep, elementBroughtToFront: BehaviorSubject<boolean>): void {
+    private static backupCurrentElementPropertiesAndChangeThem(element: HTMLElement, step: SectionStep, elementBroughtToFront: BehaviorSubject<boolean>): void {
         const skipFirstOpacityChange = !this.prevElSelector;
         this.prevElSelector = step.selector;
-        this.prevElZIndex = element.css('z-index');
-        this.prevElOpacity = element.css('opacity');
-        this.prevElPosition = element.css('position');
-        this.prevElTransition = element.css('transition');
+        this.prevElZIndex = element.style.zIndex;
+        this.prevElOpacity = element.style.opacity;
+        this.prevElPosition = element.style.position;
+        this.prevElTransition = element.style.transition;
 
         if (!skipFirstOpacityChange) {
-            element.css('opacity', 0);
+            element.style.opacity = '0';
         }
 
+        element = this.attachCustomTriggersIfAny(element, step);
+
         setTimeout(() => {
-            element.css('position', 'relative');
-            element.css('z-index', this.clothZIndex);
-            element.css('transition', 'opacity 200ms ease-in-out');
+            element.style.position = 'relative';
+            element.style.zIndex = this.clothZIndex;
+            element.style.transition = 'opacity 200ms ease-in-out';
 
             setTimeout(() => {
                 if (!skipFirstOpacityChange) {
-                    element.css('opacity', 1);
+                    element.style.opacity = '1';
                 }
                 elementBroughtToFront.next(true);
                 elementBroughtToFront.complete();
             }, 100);
         }, 100);
 
+    }
+
+    private static attachCustomTriggersIfAny(element: HTMLElement, step: SectionStep): HTMLElement {
+        if (step.triggers && step.triggers.next) {
+            this.nextStepCustomTriggerWrapper = (event: any) => {
+                if (step.triggers.next.action(event)) {
+                    this.onNextStep(step);
+                }
+            };
+
+            element.addEventListener(step.triggers.next.event, this.nextStepCustomTriggerWrapper);
+        }
+
+        return element;
+    }
+
+    private static detachCustomTriggersIfAny(element: HTMLElement, step: SectionStep): void {
+        if (step.triggers && step.triggers.next) {
+            element.removeEventListener(step.triggers.next.event, this.nextStepCustomTriggerWrapper);
+        }
     }
 
     private static restorePreviousElementStatus(): Observable<boolean> {
@@ -247,7 +272,7 @@ export class Drawer {
             if (isLastStep) {
                 this.onLastStep();
             } else {
-                this.onNextStep();
+                this.onNextStep(step);
             }
         });
 
@@ -419,7 +444,8 @@ export class Drawer {
         }
     }
 
-    private static onNextStep(): void {
+    private static onNextStep(step: SectionStep): void {
+        this.detachCustomTriggersIfAny($(step.selector)[0], step);
         this._$nextStep.next(NextStepPossibilities.FORWARD);
     }
 

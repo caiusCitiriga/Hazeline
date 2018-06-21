@@ -6,6 +6,7 @@ export declare class Drawer {
     private static viewportSizes;
     private static windowResizeListenerAttached;
     private static _$nextStep;
+    private static nextStepCustomTriggerWrapper;
     private static prevElZIndex;
     private static prevElOpacity;
     private static prevElPosition;
@@ -29,6 +30,8 @@ export declare class Drawer {
     private static getViewportSizes;
     private static bringToFrontHTMLElement;
     private static backupCurrentElementPropertiesAndChangeThem;
+    private static attachCustomTriggersIfAny;
+    private static detachCustomTriggersIfAny;
     private static restorePreviousElementStatus;
     private static drawTutorialStepInfoBox;
     private static defineInfoBoxElement;

@@ -5,20 +5,28 @@ import { StepStylableElements } from "./stylable-elements";
 export interface SectionStep {
     //  Properties
     id: string;
-    selector: string;
     text: string;
+    selector: string;
 
-    //  Info box placement options
+    //  Placement options
     infoBoxPlacement?: InfoBoxPlacement | string;
 
-    //  Events
+    //  Step events
     onNext?: (element: HTMLElement, step: SectionStep) => SectionStep;
     onStart?: (element: HTMLElement, step: SectionStep) => SectionStep;
 
-    //  Buttons customization
+    //  Buttons text customization
     endBtnText?: string;
     nextBtnText?: string;
     prevBtnText?: string;
 
+    triggers?: {
+        next: {
+            event: string;
+            action: (event: any) => boolean;
+        }
+    }
+
+    //  Styles override for current step
     styles?: StepStylableElements;
 }

@@ -71,7 +71,7 @@ class Drawer {
     }
     static bringToFrontHTMLElement(step) {
         const elementBroughtToFront = new rxjs_1.BehaviorSubject(false);
-        const element = jquery_1.default(step.selector);
+        const element = jquery_1.default(step.selector)[0];
         if (!!this.prevElSelector) {
             this.restorePreviousElementStatus()
                 .pipe(operators_1.filter(elementRestored => !!elementRestored), operators_1.tap(() => this.backupCurrentElementPropertiesAndChangeThem(element, step, elementBroughtToFront)))
@@ -85,25 +85,42 @@ class Drawer {
     static backupCurrentElementPropertiesAndChangeThem(element, step, elementBroughtToFront) {
         const skipFirstOpacityChange = !this.prevElSelector;
         this.prevElSelector = step.selector;
-        this.prevElZIndex = element.css('z-index');
-        this.prevElOpacity = element.css('opacity');
-        this.prevElPosition = element.css('position');
-        this.prevElTransition = element.css('transition');
+        this.prevElZIndex = element.style.zIndex;
+        this.prevElOpacity = element.style.opacity;
+        this.prevElPosition = element.style.position;
+        this.prevElTransition = element.style.transition;
         if (!skipFirstOpacityChange) {
-            element.css('opacity', 0);
+            element.style.opacity = '0';
         }
+        element = this.attachCustomTriggersIfAny(element, step);
         setTimeout(() => {
-            element.css('position', 'relative');
-            element.css('z-index', this.clothZIndex);
-            element.css('transition', 'opacity 200ms ease-in-out');
+            element.style.position = 'relative';
+            element.style.zIndex = this.clothZIndex;
+            element.style.transition = 'opacity 200ms ease-in-out';
             setTimeout(() => {
                 if (!skipFirstOpacityChange) {
-                    element.css('opacity', 1);
+                    element.style.opacity = '1';
                 }
                 elementBroughtToFront.next(true);
                 elementBroughtToFront.complete();
             }, 100);
         }, 100);
+    }
+    static attachCustomTriggersIfAny(element, step) {
+        if (step.triggers && step.triggers.next) {
+            this.nextStepCustomTriggerWrapper = (event) => {
+                if (step.triggers.next.action(event)) {
+                    this.onNextStep(step);
+                }
+            };
+            element.addEventListener(step.triggers.next.event, this.nextStepCustomTriggerWrapper);
+        }
+        return element;
+    }
+    static detachCustomTriggersIfAny(element, step) {
+        if (step.triggers && step.triggers.next) {
+            element.removeEventListener(step.triggers.next.event, this.nextStepCustomTriggerWrapper);
+        }
     }
     static restorePreviousElementStatus() {
         const elementStatusRestored = new rxjs_1.BehaviorSubject(false);
@@ -166,7 +183,7 @@ class Drawer {
                 this.onLastStep();
             }
             else {
-                this.onNextStep();
+                this.onNextStep(step);
             }
         });
         //  Define the previous step button element
@@ -312,7 +329,8 @@ class Drawer {
             default: return 'bottom middle';
         }
     }
-    static onNextStep() {
+    static onNextStep(step) {
+        this.detachCustomTriggersIfAny(jquery_1.default(step.selector)[0], step);
         this._$nextStep.next(next_step_possibilities_enum_1.NextStepPossibilities.FORWARD);
     }
     static onLastStep() {
@@ -349,6 +367,8 @@ class Drawer {
 }
 Drawer.windowResizeListenerAttached = false;
 Drawer._$nextStep = new rxjs_1.BehaviorSubject(null);
+//  Custom triggers events wrappers
+Drawer.nextStepCustomTriggerWrapper = null;
 //  Previous step element status properties
 Drawer.prevElZIndex = null;
 Drawer.prevElOpacity = null;

@@ -75,8 +75,25 @@ class HazelineDemo {
                         id: 'step-one',
                         selector: '#usernameInput',
                         text: 'Type in your name, and press Enter',
+                        triggers: {
+                            next: {
+                                event: 'keyup',
+                                action: (event: KeyboardEvent) => {
+                                    if (event.keyCode === 13) {
+                                        return true;
+                                    }
+
+                                    return false;
+                                }
+                            }
+                        }
+                    },
+                    {
+                        id: 'step-two',
+                        selector: '#passwordInput',
+                        text: 'Type in your password, and press Next',
                     }
-                ]
+                ],
             }
         )
     }
