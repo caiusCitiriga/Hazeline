@@ -1,5 +1,4 @@
 import { CSSRules } from "./interfaces/css-rules.interface";
-import { SectionStep } from "./interfaces/section-step.interface";
 import { TutorialSection } from "./interfaces/tutorial-section.interface";
 
 import { StylesManager } from "./core/styles-manager.core";
@@ -40,9 +39,4 @@ export class Hazeline {
     public getTutorialSectionById(sectionId: string): TutorialSection | null {
         return this.sectionsLoader.getTutorialSection(sectionId);
     }
-
-    public getSectionStepById(sectionId: string, stepId: string): SectionStep | null {
-        return this.sectionsLoader.getSectionStep(sectionId, stepId);
-    }
-
 }

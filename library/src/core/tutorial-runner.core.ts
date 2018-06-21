@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { filter, tap, switchMap } from 'rxjs/operators';
+import { filter, tap, switchMap, delay } from 'rxjs/operators';
 
 import { TutorialStatuses } from '../enums/tutorial-statuses.enum';
 import { NextStepPossibilities } from '../enums/next-step-possibilities.enum';
@@ -21,8 +21,7 @@ export class TutorialRunner {
 
     public run(section: TutorialSection): void {
         if (!section) {
-            console.log('HAZELINE: Cannot run a null section');
-            return;
+            throw new Error('HAZELINE: Cannot run a null section');
         }
 
         this.ensureAllStepsElementsExistsOrThrow(section);
@@ -33,7 +32,7 @@ export class TutorialRunner {
     public ensureAllStepsElementsExistsOrThrow(section: TutorialSection): void {
         section.steps.forEach(sectionStep => {
             if (!this.getElement(sectionStep.selector).length) {
-                throw new Error(`HAZELINE: The element cannot be found on the page. SELECTOR: ${sectionStep.selector} ID: ${sectionStep.id}`);
+                throw new Error(`HAZELINE: The element cannot be found on the page. SELECTOR: ${sectionStep.selector}`);
             }
         });
     }

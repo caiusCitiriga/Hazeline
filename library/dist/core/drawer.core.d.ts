@@ -26,7 +26,10 @@ export declare class Drawer {
     private static defaultPreviousButtonText;
     static drawCloth(): Observable<boolean>;
     static drawStep(step: SectionStep, isFirstStep?: boolean, isLastStep?: boolean): Observable<NextStepPossibilities>;
+    static showPleaseWait(): Observable<boolean>;
+    static hidePleaseWait(): Observable<boolean>;
     static removeEverything(): void;
+    private static callOnStarForThisStep;
     private static getViewportSizes;
     private static bringToFrontHTMLElement;
     private static backupCurrentElementPropertiesAndChangeThem;

@@ -2,7 +2,7 @@ import $ from 'jquery';
 import Tether from 'tether';
 
 import { BehaviorSubject, Observable } from 'rxjs';
-import { switchMap, filter, tap } from 'rxjs/operators';
+import { switchMap, filter, tap, delay } from 'rxjs/operators';
 
 import { InfoBoxPlacement } from '../enums/info-box-placement.enum';
 import { NextStepPossibilities } from '../enums/next-step-possibilities.enum';
@@ -82,19 +82,79 @@ export class Drawer {
         StylesManager.resetStyles();
         this.applyStepCustomStylesIfAny(step.styles);
 
-        const element = $(step.selector);
-        if (!!step.onStart) {
-            step = step.onStart(element[0], step);
+        if (step.beforeStartDelay !== null && step.beforeStartDelay !== undefined) {
+            this.showPleaseWait()
+                .pipe(
+                    filter(res => !!res),
+                    delay(step.beforeStartDelay),
+                    switchMap(() => this.hidePleaseWait()),
+                    switchMap(() => this.bringToFrontHTMLElement(step)),
+                    tap(() => this.callOnStarForThisStep(step)),
+                    filter(elementIsReady => !!elementIsReady),
+                    switchMap(() => this.drawTutorialStepInfoBox(step, isFirstStep, isLastStep))
+                ).subscribe();
+        } else {
+            this.bringToFrontHTMLElement(step)
+                .pipe(
+                    tap(() => this.callOnStarForThisStep(step)),
+                    filter(elementIsReady => !!elementIsReady),
+                    switchMap(() => this.drawTutorialStepInfoBox(step, isFirstStep, isLastStep))
+                )
+                .subscribe();
         }
 
-        this.bringToFrontHTMLElement(step)
-            .pipe(
-                filter(elementIsReady => !!elementIsReady),
-                switchMap(() => this.drawTutorialStepInfoBox(step, isFirstStep, isLastStep)),
-        )
-            .subscribe();
-
         return this._$nextStep;
+    }
+
+    public static showPleaseWait(): Observable<boolean> {
+        const pleaseWaitIsReady = new BehaviorSubject(false);
+
+        let pleaseWaitElement = document.getElementById('HAZELINE-PLEASE-WAIT');
+        if (!pleaseWaitElement) {
+            pleaseWaitElement = document.createElement('h1');
+            pleaseWaitElement.id = 'HAZELINE-PLEASE-WAIT';
+            pleaseWaitElement.style.top = '50%';
+            pleaseWaitElement.style.opacity = '0';
+            pleaseWaitElement.style.color = '#fff';
+            pleaseWaitElement.style.width = '100%';
+            pleaseWaitElement.style.height = '54px';
+            pleaseWaitElement.style.position = 'fixed';
+            pleaseWaitElement.style.textAlign = 'center';
+            pleaseWaitElement.style.marginTop = '-27px';
+            pleaseWaitElement.style.zIndex = this.clothZIndex;
+            pleaseWaitElement.style.transition = 'opacity 120ms ease-in-out';
+
+            pleaseWaitElement.innerHTML = 'Please wait...';
+        }
+
+        $('body').append(pleaseWaitElement);
+
+        setTimeout(() => {
+            pleaseWaitElement.style.opacity = '1';
+            pleaseWaitIsReady.next(true);
+            pleaseWaitIsReady.complete();
+        }, 100);
+
+        return pleaseWaitIsReady.asObservable();
+    }
+
+    public static hidePleaseWait(): Observable<boolean> {
+        const pleaseWaitIsGone = new BehaviorSubject(false);
+
+        let pleaseWaitElement = document.getElementById('HAZELINE-PLEASE-WAIT');
+        if (!pleaseWaitElement) {
+            return;
+        }
+
+        pleaseWaitElement.style.opacity = '0';
+
+        setTimeout(() => {
+            document.getElementsByTagName('body')[0].removeChild(pleaseWaitElement);
+            pleaseWaitIsGone.next(true);
+            pleaseWaitIsGone.complete();
+        }, +pleaseWaitElement.style.transitionDuration);
+
+        return pleaseWaitIsGone.asObservable();
     }
 
     public static removeEverything(): void {
@@ -115,6 +175,13 @@ export class Drawer {
         this.infoBoxAlreadyDrawn = false;
         this._$nextStep.complete();
         this._$nextStep = new BehaviorSubject(null);
+    }
+
+    private static callOnStarForThisStep(step: SectionStep): void {
+        const element = $(step.selector);
+        if (!!step.onStart) {
+            step = step.onStart(element[0], step);
+        }
     }
 
     private static getViewportSizes(): ViewportSizes {
@@ -145,15 +212,15 @@ export class Drawer {
     }
 
     private static backupCurrentElementPropertiesAndChangeThem(element: HTMLElement, step: SectionStep, elementBroughtToFront: BehaviorSubject<boolean>): void {
-        const skipFirstOpacityChange = !this.prevElSelector;
+        const skipFirstAnimation = !this.prevElSelector;
         this.prevElSelector = step.selector;
         this.prevElZIndex = element.style.zIndex;
         this.prevElOpacity = element.style.opacity;
         this.prevElPosition = element.style.position;
         this.prevElTransition = element.style.transition;
 
-        if (!skipFirstOpacityChange) {
-            element.style.opacity = '0';
+        if (!skipFirstAnimation) {
+            $(element).animate({ 'opacity': '0' }, 100);
         }
 
         element = this.attachCustomTriggersIfAny(element, step);
@@ -161,11 +228,10 @@ export class Drawer {
         setTimeout(() => {
             element.style.position = 'relative';
             element.style.zIndex = this.clothZIndex;
-            element.style.transition = 'opacity 200ms ease-in-out';
 
             setTimeout(() => {
-                if (!skipFirstOpacityChange) {
-                    element.style.opacity = '1';
+                if (!skipFirstAnimation) {
+                    $(element).animate({ 'opacity': '1' }, 100);
                 }
                 elementBroughtToFront.next(true);
                 elementBroughtToFront.complete();
@@ -204,6 +270,7 @@ export class Drawer {
             element.css('opacity', this.prevElOpacity);
             element.css('position', this.prevElPosition);
             element.css('transition', this.prevElTransition);
+
             elementStatusRestored.next(true);
         }, 100);
 
@@ -349,7 +416,7 @@ export class Drawer {
         const infoBoxElement = StylesManager.styleInfoBox(document.getElementById(this.infoBoxId));
         const stepDescriptionParagraphElement = StylesManager.styleInfoBoxContent(document.createElement('p'));
 
-        stepDescriptionParagraphElement.innerHTML = step.htmlContent;
+        stepDescriptionParagraphElement.innerHTML = step.text;
         stepDescriptionParagraphElement.id = this.infoStepBoxContentElId;
 
         if (document.getElementById(this.infoStepBoxContentElId)) {

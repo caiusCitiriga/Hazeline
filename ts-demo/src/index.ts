@@ -31,50 +31,46 @@ class HazelineDemo {
 
     public runSimpleItemsDemo(): void {
         this.setupSections();
-        this.haze.startTutorialSection('simpleItems');
+        this.haze.startTutorialSection('section-one');
     }
 
     public runCustomEventsItemsDemo(): void {
         this.setupSections();
-        this.haze.startTutorialSection('customEventsItems');
+        this.haze.startTutorialSection('section-two');
     }
 
     private setupSections(): void {
         this.haze.addTutorialSection(
             {
-                id: 'simpleItems',
+                id: 'section-one',
                 steps: [
                     {
-                        id: 'step-one',
                         selector: '#simpleItem01',
-                        htmlContent: 'Step one description',
+                        text: 'Step one description',
                     },
                     {
-                        id: 'step-two',
                         selector: '#simpleItem02',
-                        htmlContent: 'You can click on this item, and the event listener attached to it will fire.',
+                        beforeStartDelay: 2000,
+                        text: 'You can click on this item, and the event listener attached to it will fire.',
                     },
                     {
-                        id: 'step-three',
                         selector: '#simpleItem03',
-                        htmlContent: 'Step three description',
+                        text: 'Step three description',
                     },
                     {
-                        id: 'step-four',
                         selector: '#simpleItem04',
-                        htmlContent: `
+                        text: `
                     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi ut nulla ac nulla auctor interdum. Integer faucibus efficitur arcu eu porttitor. Donec semper vestibulum leo ac convallis. Etiam non blandit tortor. Maecenas ac arcu sed augue fermentum maximus. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Morbi fringilla, nunc nec ullamcorper fringilla, purus nulla ornare leo, vel tristique felis libero ut eros. Quisque ex nisl, bibendum nec turpis ac, varius sodales ex. Donec risus enim, pharetra sed tellus sed, pharetra laoreet orci.`,
                     }
                 ]
             });
         this.haze.addTutorialSection(
             {
-                id: 'customEventsItems',
+                id: 'section-two',
                 steps: [
                     {
-                        id: 'step-one',
                         selector: '#usernameInput',
-                        htmlContent: 'Type in your name, and press Enter',
+                        text: 'Type in your name, and press Enter',
                         triggers: {
                             next: {
                                 event: 'keyup',
@@ -89,9 +85,8 @@ class HazelineDemo {
                         }
                     },
                     {
-                        id: 'step-two',
                         selector: '#passwordInput',
-                        htmlContent: 'Type in your password, and press <strong>Next</strong>',
+                        text: 'Type in your password, and press <strong>Next</strong>',
                     }
                 ],
             }

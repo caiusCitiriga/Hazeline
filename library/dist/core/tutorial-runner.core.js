@@ -19,8 +19,7 @@ class TutorialRunner {
     }
     run(section) {
         if (!section) {
-            console.log('HAZELINE: Cannot run a null section');
-            return;
+            throw new Error('HAZELINE: Cannot run a null section');
         }
         this.ensureAllStepsElementsExistsOrThrow(section);
         this.runInternal(section);
@@ -28,7 +27,7 @@ class TutorialRunner {
     ensureAllStepsElementsExistsOrThrow(section) {
         section.steps.forEach(sectionStep => {
             if (!this.getElement(sectionStep.selector).length) {
-                throw new Error(`HAZELINE: The element cannot be found on the page. SELECTOR: ${sectionStep.selector} ID: ${sectionStep.id}`);
+                throw new Error(`HAZELINE: The element cannot be found on the page. SELECTOR: ${sectionStep.selector}`);
             }
         });
     }

@@ -14,15 +14,6 @@ class SectionsLoader {
         const section = this.tutorialSections.find(s => s.id === id);
         return !!section ? section : null;
     }
-    getSectionStep(sectionId, stepId) {
-        let sectionStep;
-        this.tutorialSections.forEach(s => {
-            if (s.id === sectionId) {
-                sectionStep = s.steps.find(ss => ss.id === stepId);
-            }
-        });
-        return !!sectionStep ? sectionStep : null;
-    }
 }
 exports.SectionsLoader = SectionsLoader;
 //# sourceMappingURL=sections-loader.core.js.map

@@ -38,14 +38,56 @@ class Drawer {
     static drawStep(step, isFirstStep, isLastStep) {
         styles_manager_core_1.StylesManager.resetStyles();
         this.applyStepCustomStylesIfAny(step.styles);
-        const element = jquery_1.default(step.selector);
-        if (!!step.onStart) {
-            step = step.onStart(element[0], step);
+        if (step.beforeStartDelay !== null && step.beforeStartDelay !== undefined) {
+            this.showPleaseWait()
+                .pipe(operators_1.filter(res => !!res), operators_1.delay(step.beforeStartDelay), operators_1.switchMap(() => this.hidePleaseWait()), operators_1.switchMap(() => this.bringToFrontHTMLElement(step)), operators_1.tap(() => this.callOnStarForThisStep(step)), operators_1.filter(elementIsReady => !!elementIsReady), operators_1.switchMap(() => this.drawTutorialStepInfoBox(step, isFirstStep, isLastStep))).subscribe();
         }
-        this.bringToFrontHTMLElement(step)
-            .pipe(operators_1.filter(elementIsReady => !!elementIsReady), operators_1.switchMap(() => this.drawTutorialStepInfoBox(step, isFirstStep, isLastStep)))
-            .subscribe();
+        else {
+            this.bringToFrontHTMLElement(step)
+                .pipe(operators_1.tap(() => this.callOnStarForThisStep(step)), operators_1.filter(elementIsReady => !!elementIsReady), operators_1.switchMap(() => this.drawTutorialStepInfoBox(step, isFirstStep, isLastStep)))
+                .subscribe();
+        }
         return this._$nextStep;
+    }
+    static showPleaseWait() {
+        const pleaseWaitIsReady = new rxjs_1.BehaviorSubject(false);
+        let pleaseWaitElement = document.getElementById('HAZELINE-PLEASE-WAIT');
+        if (!pleaseWaitElement) {
+            pleaseWaitElement = document.createElement('h1');
+            pleaseWaitElement.id = 'HAZELINE-PLEASE-WAIT';
+            pleaseWaitElement.style.top = '50%';
+            pleaseWaitElement.style.opacity = '0';
+            pleaseWaitElement.style.color = '#fff';
+            pleaseWaitElement.style.width = '100%';
+            pleaseWaitElement.style.height = '54px';
+            pleaseWaitElement.style.position = 'fixed';
+            pleaseWaitElement.style.textAlign = 'center';
+            pleaseWaitElement.style.marginTop = '-27px';
+            pleaseWaitElement.style.zIndex = this.clothZIndex;
+            pleaseWaitElement.style.transition = 'opacity 120ms ease-in-out';
+            pleaseWaitElement.innerHTML = 'Please wait...';
+        }
+        jquery_1.default('body').append(pleaseWaitElement);
+        setTimeout(() => {
+            pleaseWaitElement.style.opacity = '1';
+            pleaseWaitIsReady.next(true);
+            pleaseWaitIsReady.complete();
+        }, 100);
+        return pleaseWaitIsReady.asObservable();
+    }
+    static hidePleaseWait() {
+        const pleaseWaitIsGone = new rxjs_1.BehaviorSubject(false);
+        let pleaseWaitElement = document.getElementById('HAZELINE-PLEASE-WAIT');
+        if (!pleaseWaitElement) {
+            return;
+        }
+        pleaseWaitElement.style.opacity = '0';
+        setTimeout(() => {
+            document.getElementsByTagName('body')[0].removeChild(pleaseWaitElement);
+            pleaseWaitIsGone.next(true);
+            pleaseWaitIsGone.complete();
+        }, +pleaseWaitElement.style.transitionDuration);
+        return pleaseWaitIsGone.asObservable();
     }
     static removeEverything() {
         if (this.prevElSelector) {
@@ -61,6 +103,12 @@ class Drawer {
         this.infoBoxAlreadyDrawn = false;
         this._$nextStep.complete();
         this._$nextStep = new rxjs_1.BehaviorSubject(null);
+    }
+    static callOnStarForThisStep(step) {
+        const element = jquery_1.default(step.selector);
+        if (!!step.onStart) {
+            step = step.onStart(element[0], step);
+        }
     }
     static getViewportSizes() {
         this.viewportSizes = {
@@ -83,23 +131,22 @@ class Drawer {
         return elementBroughtToFront;
     }
     static backupCurrentElementPropertiesAndChangeThem(element, step, elementBroughtToFront) {
-        const skipFirstOpacityChange = !this.prevElSelector;
+        const skipFirstAnimation = !this.prevElSelector;
         this.prevElSelector = step.selector;
         this.prevElZIndex = element.style.zIndex;
         this.prevElOpacity = element.style.opacity;
         this.prevElPosition = element.style.position;
         this.prevElTransition = element.style.transition;
-        if (!skipFirstOpacityChange) {
-            element.style.opacity = '0';
+        if (!skipFirstAnimation) {
+            jquery_1.default(element).animate({ 'opacity': '0' }, 100);
         }
         element = this.attachCustomTriggersIfAny(element, step);
         setTimeout(() => {
             element.style.position = 'relative';
             element.style.zIndex = this.clothZIndex;
-            element.style.transition = 'opacity 200ms ease-in-out';
             setTimeout(() => {
-                if (!skipFirstOpacityChange) {
-                    element.style.opacity = '1';
+                if (!skipFirstAnimation) {
+                    jquery_1.default(element).animate({ 'opacity': '1' }, 100);
                 }
                 elementBroughtToFront.next(true);
                 elementBroughtToFront.complete();
@@ -164,7 +211,7 @@ class Drawer {
     static defineTutorialCloseButton(step) {
         const tutorialCloseButton = styles_manager_core_1.StylesManager.styleTutorialCloseButton(document.createElement('div'));
         tutorialCloseButton.id = this.tutorialCloseBtnId;
-        tutorialCloseButton.textContent = 'X';
+        tutorialCloseButton.innerHTML = 'X';
         tutorialCloseButton.addEventListener('click', () => {
             this.onTutorialCloseBtn();
         });
@@ -173,7 +220,7 @@ class Drawer {
     static defineButtons(infoBoxElement, step, isLastStep) {
         const nextStepButton = styles_manager_core_1.StylesManager.styleInfoBoxNextBtn(document.createElement('button'));
         nextStepButton.id = this.nextStepBtnId;
-        nextStepButton.textContent = this.getNextButtonText(step, isLastStep);
+        nextStepButton.innerHTML = this.getNextButtonText(step, isLastStep);
         nextStepButton.addEventListener('click', () => {
             if (step.onNext) {
                 step = step.onNext(jquery_1.default(step.selector)[0], step);
@@ -189,7 +236,7 @@ class Drawer {
         //  Define the previous step button element
         const prevStepButton = styles_manager_core_1.StylesManager.styleInfoBoxPrevBtn(document.createElement('button'));
         prevStepButton.id = this.prevStepBtnId;
-        prevStepButton.textContent = step.prevBtnText ? step.prevBtnText : this.defaultPreviousButtonText;
+        prevStepButton.innerHTML = step.prevBtnText ? step.prevBtnText : this.defaultPreviousButtonText;
         prevStepButton.addEventListener('click', () => {
             infoBoxElement.style.opacity = '0';
             this.onPreviousStep();
@@ -247,7 +294,7 @@ class Drawer {
     static updateInfoBoxContent(step) {
         const infoBoxElement = styles_manager_core_1.StylesManager.styleInfoBox(document.getElementById(this.infoBoxId));
         const stepDescriptionParagraphElement = styles_manager_core_1.StylesManager.styleInfoBoxContent(document.createElement('p'));
-        stepDescriptionParagraphElement.innerHTML = step.htmlContent;
+        stepDescriptionParagraphElement.innerHTML = step.text;
         stepDescriptionParagraphElement.id = this.infoStepBoxContentElId;
         if (document.getElementById(this.infoStepBoxContentElId)) {
             infoBoxElement.removeChild(document.getElementById(this.infoStepBoxContentElId));

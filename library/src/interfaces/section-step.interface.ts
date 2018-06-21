@@ -3,10 +3,10 @@ import { InfoBoxPlacement } from "../enums/info-box-placement.enum";
 import { StepStylableElements } from "./stylable-elements";
 
 export interface SectionStep {
-    //  Properties
-    id: string;
-    htmlContent: string;
+    //  General Properties
+    text: string;
     selector: string;
+    beforeStartDelay?: number;
 
     //  Placement options
     infoBoxPlacement?: InfoBoxPlacement | string;

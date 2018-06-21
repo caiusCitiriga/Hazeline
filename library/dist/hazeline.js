@@ -28,9 +28,6 @@ class Hazeline {
     getTutorialSectionById(sectionId) {
         return this.sectionsLoader.getTutorialSection(sectionId);
     }
-    getSectionStepById(sectionId, stepId) {
-        return this.sectionsLoader.getSectionStep(sectionId, stepId);
-    }
 }
 exports.Hazeline = Hazeline;
 //# sourceMappingURL=hazeline.js.map
