@@ -50,8 +50,14 @@ class HazelineDemo {
                     },
                     {
                         selector: '#simpleItem02',
-                        beforeStartDelay: 2000,
+                        beforeStartDelay: 1000,
                         text: 'You can click on this item, and the event listener attached to it will fire.',
+                        pleaseWaitText: 'Waiting for a dialog to come up...',
+                        styles: {
+                            pleaseWait: {
+                                color: '#00E676'
+                            }
+                        }
                     },
                     {
                         selector: '#simpleItem03',
@@ -87,6 +93,9 @@ class HazelineDemo {
                     {
                         selector: '#passwordInput',
                         text: 'Type in your password, and press <strong>Next</strong>',
+                        classes: {
+                            tutorialCloseBtn: ['my-awesome-class'],
+                        }
                     }
                 ],
             }
