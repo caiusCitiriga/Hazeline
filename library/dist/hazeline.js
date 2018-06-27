@@ -7,8 +7,6 @@ class Hazeline {
     constructor() {
         this.sectionsLoader = new sections_loader_core_1.SectionsLoader();
         this.tutorialRunner = new tutorial_runner_core_1.TutorialRunner();
-        var bootstrap_enabled = (typeof $().emulateTransitionEnd == 'function');
-        console.log('%cBootsrap found: ' + bootstrap_enabled, 'color: green; font-weight: bold');
     }
     setInfoBoxCSSRules(styles) { styles_manager_core_1.StylesManager.deafultInfoBoxStyle = styles; }
     setInfoBoxContentCSSRules(styles) { styles_manager_core_1.StylesManager.defaultInfoBoxContentStyle = styles; }

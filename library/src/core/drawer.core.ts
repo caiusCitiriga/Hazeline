@@ -4,20 +4,28 @@ import Tether from 'tether';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { switchMap, filter, tap, delay } from 'rxjs/operators';
 
+import { StylesManager } from './styles-manager.core';
+import { SectionStep } from "../interfaces/section-step.interface";
 import { InfoBoxPlacement } from '../enums/info-box-placement.enum';
 import { NextStepPossibilities } from '../enums/next-step-possibilities.enum';
-
-import { SectionStep } from "../interfaces/section-step.interface";
-import { StepStylableElements } from '../interfaces/stylable-elements';
-
-import { StylesManager } from './styles-manager.core';
 
 export class Drawer {
 
     private static tether: Tether;
-    private static viewportSizes: ViewportSizes;
-    private static windowResizeListenerAttached = false;
+    private static currentStep: SectionStep = null;
     private static _$nextStep: BehaviorSubject<NextStepPossibilities> = new BehaviorSubject(null);
+
+    private static onResizeEventListener = () => {
+        if (!document.getElementById(StylesManager.clothId)) {
+            return;
+        }
+
+        StylesManager.updateClothSize(document.getElementById(StylesManager.clothId));
+        if (Drawer.infoBoxAlreadyDrawn) {
+            const infoBoxElement = document.getElementById(StylesManager.infoBoxId);
+            Drawer.updateTetherPosition(Drawer.currentStep, infoBoxElement);
+        }
+    };
 
     //  Custom triggers events wrappers
     private static nextStepCustomTriggerWrapper: (event: any) => void = null;
@@ -31,101 +39,68 @@ export class Drawer {
 
     //  Elements misc properties
     private static clothZIndex = '999';
-    private static infoBoxMargin = '10px';
     private static infoBoxAlreadyDrawn = false;
 
-    //  Elements IDs
-    private static clothId = 'HAZELINE-TUTORIAL-CLOTH';
-    private static infoBoxId = 'HAZELINE-TUTORIAL-INFO-BOX';
-    private static tutorialCloseBtnId = 'HAZELINE-TUTORIAL-CLOSE';
-    private static nextStepBtnId = 'HAZELINE-TUTORIAL-INFO-BOX-NEXT-STEP';
-    private static prevStepBtnId = 'HAZELINE-TUTORIAL-INFO-BOX-PREV-STEP';
-    private static infoStepBoxContentElId = 'HAZELINE-TUTORIAL-INFO-BOX-CONTENT';
-
-    //  Info box buttons stuff
-    private static defaultEndButtonText = 'End';
-    private static defaultNextButtonText = 'Next';
-    private static defaultPreviousButtonText = 'Previous';
-
-    ////////////////////////////////////////////////////////////    
-    //  Static methods
-    ////////////////////////////////////////////////////////////    
     public static drawCloth(): Observable<boolean> {
         const clothIsReady = new BehaviorSubject(false);
 
-        const viewportSizes = this.getViewportSizes();
         const cloth = StylesManager.styleTutorialCloth(document.createElement('div'));
-
-        cloth.setAttribute('id', this.clothId);
-        cloth.style.width = `${viewportSizes.width.toString()}px`;
-        cloth.style.height = `${viewportSizes.height.toString()}px`;
-
         $('body').prepend(cloth);
 
         setTimeout(() => {
-            document.getElementById(this.clothId).style.opacity = '1';
+            StylesManager.revealCloth(cloth);
             clothIsReady.next(true);
             clothIsReady.complete();
-
-            if (!this.windowResizeListenerAttached) {
-                window.onresize = () => {
-                    this.updateClothSize();
-                    this.windowResizeListenerAttached = true;
-                }
-            }
         }, 200);
 
         return clothIsReady;
     }
 
     public static drawStep(step: SectionStep, isFirstStep?: boolean, isLastStep?: boolean): Observable<NextStepPossibilities> {
+        //  Remove the old event listener attached if any
+        window.removeEventListener('resize', this.onResizeEventListener);
+
+        this.currentStep = step;
+        window.addEventListener('resize', this.onResizeEventListener);
+
         StylesManager.resetStyles();
-        this.applyStepCustomStylesIfAny(step.styles);
+        StylesManager.applyStepCustomStylesIfAny(step.styles);
 
         if (step.beforeStartDelay !== null && step.beforeStartDelay !== undefined) {
-            this.showPleaseWait()
+            this.drawPleaseWait(step)
                 .pipe(
                     filter(res => !!res),
                     delay(step.beforeStartDelay),
                     switchMap(() => this.hidePleaseWait()),
                     switchMap(() => this.bringToFrontHTMLElement(step)),
-                    tap(() => this.callOnStarForThisStep(step)),
+                    tap(() => this.callOnStartForThisStep(step)),
                     filter(elementIsReady => !!elementIsReady),
                     switchMap(() => this.drawTutorialStepInfoBox(step, isFirstStep, isLastStep))
                 ).subscribe();
         } else {
             this.bringToFrontHTMLElement(step)
                 .pipe(
-                    tap(() => this.callOnStarForThisStep(step)),
+                    tap(() => this.callOnStartForThisStep(step)),
                     filter(elementIsReady => !!elementIsReady),
                     switchMap(() => this.drawTutorialStepInfoBox(step, isFirstStep, isLastStep))
-                )
-                .subscribe();
+                ).subscribe();
         }
 
         return this._$nextStep;
     }
 
-    public static showPleaseWait(): Observable<boolean> {
+    public static drawPleaseWait(step: SectionStep): Observable<boolean> {
         const pleaseWaitIsReady = new BehaviorSubject(false);
+        let pleaseWaitElement = document.getElementById(StylesManager.pleaseWaitId);
 
-        let pleaseWaitElement = document.getElementById('HAZELINE-PLEASE-WAIT');
         if (!pleaseWaitElement) {
             pleaseWaitElement = document.createElement('h1');
-            pleaseWaitElement.id = 'HAZELINE-PLEASE-WAIT';
-            pleaseWaitElement.style.top = '50%';
-            pleaseWaitElement.style.opacity = '0';
-            pleaseWaitElement.style.color = '#fff';
-            pleaseWaitElement.style.width = '100%';
-            pleaseWaitElement.style.height = '54px';
-            pleaseWaitElement.style.position = 'fixed';
-            pleaseWaitElement.style.textAlign = 'center';
-            pleaseWaitElement.style.marginTop = '-27px';
-            pleaseWaitElement.style.zIndex = this.clothZIndex;
-            pleaseWaitElement.style.transition = 'opacity 120ms ease-in-out';
-
-            pleaseWaitElement.innerHTML = 'Please wait...';
         }
+
+        //  Finally style it to prevent null values passed to the StylesManager
+        pleaseWaitElement = step.classes && step.classes.pleaseWait
+            ? StylesManager.applyPleaseWaitClasses(pleaseWaitElement, step.classes.pleaseWait, step.pleaseWaitText)
+            : StylesManager.stylePleaseWait(pleaseWaitElement, step.pleaseWaitText);
 
         $('body').append(pleaseWaitElement);
 
@@ -141,7 +116,7 @@ export class Drawer {
     public static hidePleaseWait(): Observable<boolean> {
         const pleaseWaitIsGone = new BehaviorSubject(false);
 
-        let pleaseWaitElement = document.getElementById('HAZELINE-PLEASE-WAIT');
+        let pleaseWaitElement = document.getElementById(StylesManager.pleaseWaitId);
         if (!pleaseWaitElement) {
             return;
         }
@@ -162,11 +137,12 @@ export class Drawer {
             this.restorePreviousElementStatus();
         }
 
+        document.removeEventListener('resize', this.onResizeEventListener);
         document.getElementsByTagName('body')[0]
-            .removeChild(document.getElementById(this.clothId));
+            .removeChild(document.getElementById(StylesManager.clothId));
 
         document.getElementsByTagName('body')[0]
-            .removeChild(document.getElementById(this.infoBoxId));
+            .removeChild(document.getElementById(StylesManager.infoBoxId));
 
         if (this.tether) {
             this.tether.destroy();
@@ -177,20 +153,11 @@ export class Drawer {
         this._$nextStep = new BehaviorSubject(null);
     }
 
-    private static callOnStarForThisStep(step: SectionStep): void {
+    private static callOnStartForThisStep(step: SectionStep): void {
         const element = $(step.selector);
         if (!!step.onStart) {
             step = step.onStart(element[0], step);
         }
-    }
-
-    private static getViewportSizes(): ViewportSizes {
-        this.viewportSizes = {
-            width: $(window).width(),
-            height: $(window).height(),
-        };
-
-        return this.viewportSizes;
     }
 
     private static bringToFrontHTMLElement(step: SectionStep): Observable<boolean> {
@@ -303,31 +270,27 @@ export class Drawer {
     }
 
     private static defineInfoBoxElement(step: SectionStep): HTMLDivElement {
-        const infoBoxElement = StylesManager.styleInfoBox(document.createElement('div'));
-        const infoBoxMarginSettings = this.getMarginSettingsBasedOnPositioning(step.infoBoxPlacement);
-
-        infoBoxElement.id = this.infoBoxId;
-        infoBoxElement.style[infoBoxMarginSettings.margin] = infoBoxMarginSettings.value;
+        const infoBoxElement = step.classes && step.classes.infoBox
+            ? StylesManager.applyInfoBoxClasses(document.createElement('div'), step.classes.infoBox, step.infoBoxPlacement)
+            : StylesManager.styleInfoBox(document.createElement('div'), step.infoBoxPlacement);
 
         return infoBoxElement as HTMLDivElement;
     }
 
     private static defineTutorialCloseButton(step: SectionStep): HTMLDivElement {
-        const tutorialCloseButton = StylesManager.styleTutorialCloseButton(document.createElement('div'));
-        tutorialCloseButton.id = this.tutorialCloseBtnId;
-        tutorialCloseButton.innerHTML = 'X';
+        const tutorialCloseButton = step.classes && step.classes.tutorialCloseBtn
+            ? StylesManager.applyTutorialCloseBtnClasses(document.createElement('div'), step.classes.tutorialCloseBtn)
+            : StylesManager.styleTutorialCloseButton(document.createElement('div'));
 
-        tutorialCloseButton.addEventListener('click', () => {
-            this.onTutorialCloseBtn();
-        });
+        tutorialCloseButton.addEventListener('click', () => this.onTutorialCloseBtn());
 
         return tutorialCloseButton as HTMLDivElement;
     }
 
     private static defineButtons(infoBoxElement: HTMLDivElement, step: SectionStep, isLastStep?: boolean): ButtonsDefinitionResult {
-        const nextStepButton = StylesManager.styleInfoBoxNextBtn(document.createElement('button'));
-        nextStepButton.id = this.nextStepBtnId;
-        nextStepButton.innerHTML = this.getNextButtonText(step, isLastStep);
+        const nextStepButton = step.classes && step.classes.infoBoxNextOrEndBtn
+            ? StylesManager.applyInfoBoxNextBtnClasses(document.createElement('button'), step.classes.infoBoxNextOrEndBtn, step.nextBtnText, isLastStep)
+            : StylesManager.styleInfoBoxNextBtn(document.createElement('button'), step.nextBtnText, isLastStep);
 
         nextStepButton.addEventListener('click', () => {
             if (step.onNext) {
@@ -344,9 +307,9 @@ export class Drawer {
         });
 
         //  Define the previous step button element
-        const prevStepButton = StylesManager.styleInfoBoxPrevBtn(document.createElement('button'));
-        prevStepButton.id = this.prevStepBtnId;
-        prevStepButton.innerHTML = step.prevBtnText ? step.prevBtnText : this.defaultPreviousButtonText;
+        const prevStepButton = step.classes && step.classes.infoBoxPreviousBtn
+            ? StylesManager.applyInfoBoxPrevBtnClasses(document.createElement('button'), step.classes.infoBoxPreviousBtn)
+            : StylesManager.styleInfoBoxPrevBtn(document.createElement('button'), step.prevBtnText);
 
         prevStepButton.addEventListener('click', () => {
             infoBoxElement.style.opacity = '0';
@@ -359,27 +322,14 @@ export class Drawer {
         };
     }
 
-    private static getNextButtonText(step: SectionStep, isLastStep: boolean): string {
-        if (isLastStep) {
-            if (step.endBtnText) {
-                return step.endBtnText;
-            }
-            return this.defaultEndButtonText;
-        }
-
-        if (step.nextBtnText) {
-            return step.nextBtnText;
-        }
-
-        return this.defaultNextButtonText;
+    private static setValuesOnInfoBox(step: SectionStep, isFirstStep?: boolean, isLastStep?: boolean): void {
+        const infoBoxElement = document.getElementById(StylesManager.infoBoxId) as HTMLDivElement;
+        this.updateInfoBoxContent(step, infoBoxElement);
+        this.updateInfoBoxButtons(step, isFirstStep, isLastStep);
+        this.updateTetherPosition(step, infoBoxElement);
     }
 
-    private static setValuesOnInfoBox(step: SectionStep, isFirstStep?: boolean, isLastStep?: boolean): void {
-        this.updateInfoBoxContent(step);
-        this.updateInfoBoxButtons(step, isFirstStep, isLastStep);
-        this.updateInfoBoxMargins(step);
-        const infoBoxElement = document.getElementById(this.infoBoxId) as HTMLDivElement;
-
+    private static updateTetherPosition(step: SectionStep, infoBoxElement: HTMLElement): void {
         setTimeout(() => {
             if (this.tether) {
                 this.tether.setOptions({
@@ -402,94 +352,58 @@ export class Drawer {
         }, 150);
     }
 
-    private static updateInfoBoxMargins(step: SectionStep): void {
-        const marginSettings = this.getMarginSettingsBasedOnPositioning(step.infoBoxPlacement);
-        const infoBoxElement = document.getElementById(this.infoBoxId) as HTMLDivElement;
+    private static updateInfoBoxContent(step: SectionStep, infoBoxEl: HTMLElement): void {
+        const infoBoxElement = step.classes && step.classes.infoBox
+            ? StylesManager.applyInfoBoxClasses(infoBoxEl, step.classes.infoBox, step.infoBoxPlacement)
+            : StylesManager.styleInfoBox(infoBoxEl, step.infoBoxPlacement);
 
-        //  Reset all the margins
-        infoBoxElement.style.margin = '0';
-        //  Apply the new margins
-        infoBoxElement.style[marginSettings.margin] = marginSettings.value;
-    }
+        //  Update styles on the close button 
+        step.classes && step.classes.tutorialCloseBtn
+            ? StylesManager.applyTutorialCloseBtnClasses(document.getElementById(StylesManager.tutorialCloseBtnId), step.classes.tutorialCloseBtn)
+            : StylesManager.styleTutorialCloseButton(document.getElementById(StylesManager.tutorialCloseBtnId));
 
-    private static updateInfoBoxContent(step: SectionStep): void {
-        const infoBoxElement = StylesManager.styleInfoBox(document.getElementById(this.infoBoxId));
-        const stepDescriptionParagraphElement = StylesManager.styleInfoBoxContent(document.createElement('p'));
+        const stepDescriptionParagraphElement = step.classes && step.classes.infoBoxContent
+            ? StylesManager.applyInfoBoxContentClasses(document.createElement('p'), step.classes.infoBoxContent, step.text)
+            : StylesManager.styleInfoBoxContent(document.createElement('p'), step.text);
 
-        stepDescriptionParagraphElement.innerHTML = step.text;
-        stepDescriptionParagraphElement.id = this.infoStepBoxContentElId;
-
-        if (document.getElementById(this.infoStepBoxContentElId)) {
-            infoBoxElement.removeChild(document.getElementById(this.infoStepBoxContentElId));
+        if (document.getElementById(StylesManager.infoStepBoxContentElId)) {
+            infoBoxElement.removeChild(document.getElementById(StylesManager.infoStepBoxContentElId));
         }
 
         infoBoxElement.appendChild(stepDescriptionParagraphElement);
     }
 
     private static updateInfoBoxButtons(step: SectionStep, isFirstStep: boolean, isLastStep: boolean): void {
-        const infoBoxElement = document.getElementById(this.infoBoxId) as HTMLDivElement;
+        const infoBoxElement = document.getElementById(StylesManager.infoBoxId) as HTMLDivElement;
 
         //  Define the buttons for the info box
         const buttons = this.defineButtons(infoBoxElement, step, isLastStep);
         if (!isFirstStep) {
-            if (infoBoxElement.contains(document.getElementById(this.prevStepBtnId))) {
+            if (infoBoxElement.contains(document.getElementById(StylesManager.prevStepBtnId))) {
                 //  Remove the previous button and it's listeners
-                infoBoxElement.removeChild(document.getElementById(this.prevStepBtnId));
+                infoBoxElement.removeChild(document.getElementById(StylesManager.prevStepBtnId));
             }
 
             //  Append the button on the info box
             infoBoxElement.appendChild(buttons.prevButton);
-        } if (!!isFirstStep && infoBoxElement.contains(document.getElementById(this.prevStepBtnId))) {
+        } if (!!isFirstStep && infoBoxElement.contains(document.getElementById(StylesManager.prevStepBtnId))) {
             //  Remove the button from the info box if is present
-            infoBoxElement.removeChild(document.getElementById(this.prevStepBtnId));
+            infoBoxElement.removeChild(document.getElementById(StylesManager.prevStepBtnId));
         }
 
         if (!isLastStep) {
-            if (infoBoxElement.contains(document.getElementById(this.nextStepBtnId))) {
+            if (infoBoxElement.contains(document.getElementById(StylesManager.nextStepBtnId))) {
                 //  Remove the previous button and it's listeners
-                infoBoxElement.removeChild(document.getElementById(this.nextStepBtnId));
+                infoBoxElement.removeChild(document.getElementById(StylesManager.nextStepBtnId));
             }
             //  Append the button on the info box
             infoBoxElement.appendChild(buttons.nextButton);
-        } if (!!isLastStep && infoBoxElement.contains(document.getElementById(this.nextStepBtnId))) {
+        } if (!!isLastStep && infoBoxElement.contains(document.getElementById(StylesManager.nextStepBtnId))) {
             //  Remove the button from the info box if is present
-            infoBoxElement.removeChild(document.getElementById(this.nextStepBtnId));
+            infoBoxElement.removeChild(document.getElementById(StylesManager.nextStepBtnId));
             //  Now add the "next" button, this time configured to end the tutorial
             infoBoxElement.appendChild(buttons.nextButton);
         }
-    }
-
-    private static getMarginSettingsBasedOnPositioning(infoBoxPlacement: InfoBoxPlacement | string): { margin: string, value: string } {
-        const result = {
-            margin: null,
-            value: null,
-        };
-
-        switch (infoBoxPlacement) {
-            case InfoBoxPlacement.LEFT:
-                result.margin = 'marginLeft';
-                result.value = `-${this.infoBoxMargin}`;
-                break;
-
-            case InfoBoxPlacement.ABOVE:
-                result.margin = 'marginTop';
-                result.value = `-${this.infoBoxMargin}`;
-                break;
-
-            case InfoBoxPlacement.RIGHT:
-                result.margin = 'marginLeft';
-                result.value = this.infoBoxMargin;
-                break;
-
-
-            case InfoBoxPlacement.BELOW:
-            default:
-                result.margin = 'marginTop';
-                result.value = this.infoBoxMargin;
-                break;
-        }
-
-        return result;
     }
 
     private static getTetherAttachmentForInfoBox(infoBoxPlacement: InfoBoxPlacement | string): string {
@@ -527,29 +441,6 @@ export class Drawer {
     private static onTutorialCloseBtn(): void {
         this._$nextStep.next(NextStepPossibilities.TUTORIAL_CLOSE);
     }
-
-    private static updateClothSize(): void {
-        const newSizes = this.getViewportSizes();
-
-        document.getElementById(this.clothId).style.width = `${newSizes.width}px`;
-        document.getElementById(this.clothId).style.height = `${newSizes.height}px`;
-    }
-
-    private static applyStepCustomStylesIfAny(customStyles: StepStylableElements): void {
-        if (!customStyles) {
-            return;
-        }
-
-        if (customStyles.infoBox) { StylesManager.deafultInfoBoxStyle = customStyles.infoBox; }
-        if (customStyles.infoBoxContent) { StylesManager.defaultInfoBoxContentStyle = customStyles.infoBoxContent; }
-        if (customStyles.infoBoxPreviousBtn) { StylesManager.defaultInfoBoxPrevBtnStyle = customStyles.infoBoxPreviousBtn; }
-        if (customStyles.infoBoxNextOrEndBtn) { StylesManager.defaultInfoBoxNextBtnStyle = customStyles.infoBoxNextOrEndBtn; }
-    }
-}
-
-interface ViewportSizes {
-    width: number;
-    height: number;
 }
 
 interface ButtonsDefinitionResult {

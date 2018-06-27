@@ -1,6 +1,6 @@
-import { InfoBoxPlacement } from "../enums/info-box-placement.enum";
-
 import { StepStylableElements } from "./stylable-elements";
+import { StepClassableElements } from "./classable-elements";
+import { InfoBoxPlacement } from "../enums/info-box-placement.enum";
 
 export interface SectionStep {
     //  General Properties
@@ -15,10 +15,11 @@ export interface SectionStep {
     onNext?: (element: HTMLElement, step: SectionStep) => SectionStep;
     onStart?: (element: HTMLElement, step: SectionStep) => SectionStep;
 
-    //  Buttons text customization
+    //  Text customization
     endBtnText?: string;
     nextBtnText?: string;
     prevBtnText?: string;
+    pleaseWaitText?: string;
 
     triggers?: {
         next: {
@@ -29,4 +30,6 @@ export interface SectionStep {
 
     //  Styles override for current step
     styles?: StepStylableElements;
+    //  Classes override for current step (wins over styles property if set)
+    classes?: StepClassableElements;
 }

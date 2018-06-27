@@ -7,66 +7,48 @@ const jquery_1 = __importDefault(require("jquery"));
 const tether_1 = __importDefault(require("tether"));
 const rxjs_1 = require("rxjs");
 const operators_1 = require("rxjs/operators");
+const styles_manager_core_1 = require("./styles-manager.core");
 const info_box_placement_enum_1 = require("../enums/info-box-placement.enum");
 const next_step_possibilities_enum_1 = require("../enums/next-step-possibilities.enum");
-const styles_manager_core_1 = require("./styles-manager.core");
 class Drawer {
-    ////////////////////////////////////////////////////////////    
-    //  Static methods
-    ////////////////////////////////////////////////////////////    
     static drawCloth() {
         const clothIsReady = new rxjs_1.BehaviorSubject(false);
-        const viewportSizes = this.getViewportSizes();
         const cloth = styles_manager_core_1.StylesManager.styleTutorialCloth(document.createElement('div'));
-        cloth.setAttribute('id', this.clothId);
-        cloth.style.width = `${viewportSizes.width.toString()}px`;
-        cloth.style.height = `${viewportSizes.height.toString()}px`;
         jquery_1.default('body').prepend(cloth);
         setTimeout(() => {
-            document.getElementById(this.clothId).style.opacity = '1';
+            styles_manager_core_1.StylesManager.revealCloth(cloth);
             clothIsReady.next(true);
             clothIsReady.complete();
-            if (!this.windowResizeListenerAttached) {
-                window.onresize = () => {
-                    this.updateClothSize();
-                    this.windowResizeListenerAttached = true;
-                };
-            }
         }, 200);
         return clothIsReady;
     }
     static drawStep(step, isFirstStep, isLastStep) {
+        //  Remove the old event listener attached if any
+        window.removeEventListener('resize', this.onResizeEventListener);
+        this.currentStep = step;
+        window.addEventListener('resize', this.onResizeEventListener);
         styles_manager_core_1.StylesManager.resetStyles();
-        this.applyStepCustomStylesIfAny(step.styles);
+        styles_manager_core_1.StylesManager.applyStepCustomStylesIfAny(step.styles);
         if (step.beforeStartDelay !== null && step.beforeStartDelay !== undefined) {
-            this.showPleaseWait()
-                .pipe(operators_1.filter(res => !!res), operators_1.delay(step.beforeStartDelay), operators_1.switchMap(() => this.hidePleaseWait()), operators_1.switchMap(() => this.bringToFrontHTMLElement(step)), operators_1.tap(() => this.callOnStarForThisStep(step)), operators_1.filter(elementIsReady => !!elementIsReady), operators_1.switchMap(() => this.drawTutorialStepInfoBox(step, isFirstStep, isLastStep))).subscribe();
+            this.drawPleaseWait(step)
+                .pipe(operators_1.filter(res => !!res), operators_1.delay(step.beforeStartDelay), operators_1.switchMap(() => this.hidePleaseWait()), operators_1.switchMap(() => this.bringToFrontHTMLElement(step)), operators_1.tap(() => this.callOnStartForThisStep(step)), operators_1.filter(elementIsReady => !!elementIsReady), operators_1.switchMap(() => this.drawTutorialStepInfoBox(step, isFirstStep, isLastStep))).subscribe();
         }
         else {
             this.bringToFrontHTMLElement(step)
-                .pipe(operators_1.tap(() => this.callOnStarForThisStep(step)), operators_1.filter(elementIsReady => !!elementIsReady), operators_1.switchMap(() => this.drawTutorialStepInfoBox(step, isFirstStep, isLastStep)))
-                .subscribe();
+                .pipe(operators_1.tap(() => this.callOnStartForThisStep(step)), operators_1.filter(elementIsReady => !!elementIsReady), operators_1.switchMap(() => this.drawTutorialStepInfoBox(step, isFirstStep, isLastStep))).subscribe();
         }
         return this._$nextStep;
     }
-    static showPleaseWait() {
+    static drawPleaseWait(step) {
         const pleaseWaitIsReady = new rxjs_1.BehaviorSubject(false);
-        let pleaseWaitElement = document.getElementById('HAZELINE-PLEASE-WAIT');
+        let pleaseWaitElement = document.getElementById(styles_manager_core_1.StylesManager.pleaseWaitId);
         if (!pleaseWaitElement) {
             pleaseWaitElement = document.createElement('h1');
-            pleaseWaitElement.id = 'HAZELINE-PLEASE-WAIT';
-            pleaseWaitElement.style.top = '50%';
-            pleaseWaitElement.style.opacity = '0';
-            pleaseWaitElement.style.color = '#fff';
-            pleaseWaitElement.style.width = '100%';
-            pleaseWaitElement.style.height = '54px';
-            pleaseWaitElement.style.position = 'fixed';
-            pleaseWaitElement.style.textAlign = 'center';
-            pleaseWaitElement.style.marginTop = '-27px';
-            pleaseWaitElement.style.zIndex = this.clothZIndex;
-            pleaseWaitElement.style.transition = 'opacity 120ms ease-in-out';
-            pleaseWaitElement.innerHTML = 'Please wait...';
         }
+        //  Finally style it to prevent null values passed to the StylesManager
+        pleaseWaitElement = step.classes && step.classes.pleaseWait
+            ? styles_manager_core_1.StylesManager.applyPleaseWaitClasses(pleaseWaitElement, step.classes.pleaseWait, step.pleaseWaitText)
+            : styles_manager_core_1.StylesManager.stylePleaseWait(pleaseWaitElement, step.pleaseWaitText);
         jquery_1.default('body').append(pleaseWaitElement);
         setTimeout(() => {
             pleaseWaitElement.style.opacity = '1';
@@ -77,7 +59,7 @@ class Drawer {
     }
     static hidePleaseWait() {
         const pleaseWaitIsGone = new rxjs_1.BehaviorSubject(false);
-        let pleaseWaitElement = document.getElementById('HAZELINE-PLEASE-WAIT');
+        let pleaseWaitElement = document.getElementById(styles_manager_core_1.StylesManager.pleaseWaitId);
         if (!pleaseWaitElement) {
             return;
         }
@@ -93,10 +75,11 @@ class Drawer {
         if (this.prevElSelector) {
             this.restorePreviousElementStatus();
         }
+        document.removeEventListener('resize', this.onResizeEventListener);
         document.getElementsByTagName('body')[0]
-            .removeChild(document.getElementById(this.clothId));
+            .removeChild(document.getElementById(styles_manager_core_1.StylesManager.clothId));
         document.getElementsByTagName('body')[0]
-            .removeChild(document.getElementById(this.infoBoxId));
+            .removeChild(document.getElementById(styles_manager_core_1.StylesManager.infoBoxId));
         if (this.tether) {
             this.tether.destroy();
         }
@@ -104,18 +87,11 @@ class Drawer {
         this._$nextStep.complete();
         this._$nextStep = new rxjs_1.BehaviorSubject(null);
     }
-    static callOnStarForThisStep(step) {
+    static callOnStartForThisStep(step) {
         const element = jquery_1.default(step.selector);
         if (!!step.onStart) {
             step = step.onStart(element[0], step);
         }
-    }
-    static getViewportSizes() {
-        this.viewportSizes = {
-            width: jquery_1.default(window).width(),
-            height: jquery_1.default(window).height(),
-        };
-        return this.viewportSizes;
     }
     static bringToFrontHTMLElement(step) {
         const elementBroughtToFront = new rxjs_1.BehaviorSubject(false);
@@ -202,25 +178,22 @@ class Drawer {
         return infoBoxIsReady;
     }
     static defineInfoBoxElement(step) {
-        const infoBoxElement = styles_manager_core_1.StylesManager.styleInfoBox(document.createElement('div'));
-        const infoBoxMarginSettings = this.getMarginSettingsBasedOnPositioning(step.infoBoxPlacement);
-        infoBoxElement.id = this.infoBoxId;
-        infoBoxElement.style[infoBoxMarginSettings.margin] = infoBoxMarginSettings.value;
+        const infoBoxElement = step.classes && step.classes.infoBox
+            ? styles_manager_core_1.StylesManager.applyInfoBoxClasses(document.createElement('div'), step.classes.infoBox, step.infoBoxPlacement)
+            : styles_manager_core_1.StylesManager.styleInfoBox(document.createElement('div'), step.infoBoxPlacement);
         return infoBoxElement;
     }
     static defineTutorialCloseButton(step) {
-        const tutorialCloseButton = styles_manager_core_1.StylesManager.styleTutorialCloseButton(document.createElement('div'));
-        tutorialCloseButton.id = this.tutorialCloseBtnId;
-        tutorialCloseButton.innerHTML = 'X';
-        tutorialCloseButton.addEventListener('click', () => {
-            this.onTutorialCloseBtn();
-        });
+        const tutorialCloseButton = step.classes && step.classes.tutorialCloseBtn
+            ? styles_manager_core_1.StylesManager.applyTutorialCloseBtnClasses(document.createElement('div'), step.classes.tutorialCloseBtn)
+            : styles_manager_core_1.StylesManager.styleTutorialCloseButton(document.createElement('div'));
+        tutorialCloseButton.addEventListener('click', () => this.onTutorialCloseBtn());
         return tutorialCloseButton;
     }
     static defineButtons(infoBoxElement, step, isLastStep) {
-        const nextStepButton = styles_manager_core_1.StylesManager.styleInfoBoxNextBtn(document.createElement('button'));
-        nextStepButton.id = this.nextStepBtnId;
-        nextStepButton.innerHTML = this.getNextButtonText(step, isLastStep);
+        const nextStepButton = step.classes && step.classes.infoBoxNextOrEndBtn
+            ? styles_manager_core_1.StylesManager.applyInfoBoxNextBtnClasses(document.createElement('button'), step.classes.infoBoxNextOrEndBtn, step.nextBtnText, isLastStep)
+            : styles_manager_core_1.StylesManager.styleInfoBoxNextBtn(document.createElement('button'), step.nextBtnText, isLastStep);
         nextStepButton.addEventListener('click', () => {
             if (step.onNext) {
                 step = step.onNext(jquery_1.default(step.selector)[0], step);
@@ -234,9 +207,9 @@ class Drawer {
             }
         });
         //  Define the previous step button element
-        const prevStepButton = styles_manager_core_1.StylesManager.styleInfoBoxPrevBtn(document.createElement('button'));
-        prevStepButton.id = this.prevStepBtnId;
-        prevStepButton.innerHTML = step.prevBtnText ? step.prevBtnText : this.defaultPreviousButtonText;
+        const prevStepButton = step.classes && step.classes.infoBoxPreviousBtn
+            ? styles_manager_core_1.StylesManager.applyInfoBoxPrevBtnClasses(document.createElement('button'), step.classes.infoBoxPreviousBtn)
+            : styles_manager_core_1.StylesManager.styleInfoBoxPrevBtn(document.createElement('button'), step.prevBtnText);
         prevStepButton.addEventListener('click', () => {
             infoBoxElement.style.opacity = '0';
             this.onPreviousStep();
@@ -246,23 +219,13 @@ class Drawer {
             prevButton: prevStepButton
         };
     }
-    static getNextButtonText(step, isLastStep) {
-        if (isLastStep) {
-            if (step.endBtnText) {
-                return step.endBtnText;
-            }
-            return this.defaultEndButtonText;
-        }
-        if (step.nextBtnText) {
-            return step.nextBtnText;
-        }
-        return this.defaultNextButtonText;
-    }
     static setValuesOnInfoBox(step, isFirstStep, isLastStep) {
-        this.updateInfoBoxContent(step);
+        const infoBoxElement = document.getElementById(styles_manager_core_1.StylesManager.infoBoxId);
+        this.updateInfoBoxContent(step, infoBoxElement);
         this.updateInfoBoxButtons(step, isFirstStep, isLastStep);
-        this.updateInfoBoxMargins(step);
-        const infoBoxElement = document.getElementById(this.infoBoxId);
+        this.updateTetherPosition(step, infoBoxElement);
+    }
+    static updateTetherPosition(step, infoBoxElement) {
         setTimeout(() => {
             if (this.tether) {
                 this.tether.setOptions({
@@ -283,80 +246,52 @@ class Drawer {
             infoBoxElement.style.opacity = '1';
         }, 150);
     }
-    static updateInfoBoxMargins(step) {
-        const marginSettings = this.getMarginSettingsBasedOnPositioning(step.infoBoxPlacement);
-        const infoBoxElement = document.getElementById(this.infoBoxId);
-        //  Reset all the margins
-        infoBoxElement.style.margin = '0';
-        //  Apply the new margins
-        infoBoxElement.style[marginSettings.margin] = marginSettings.value;
-    }
-    static updateInfoBoxContent(step) {
-        const infoBoxElement = styles_manager_core_1.StylesManager.styleInfoBox(document.getElementById(this.infoBoxId));
-        const stepDescriptionParagraphElement = styles_manager_core_1.StylesManager.styleInfoBoxContent(document.createElement('p'));
-        stepDescriptionParagraphElement.innerHTML = step.text;
-        stepDescriptionParagraphElement.id = this.infoStepBoxContentElId;
-        if (document.getElementById(this.infoStepBoxContentElId)) {
-            infoBoxElement.removeChild(document.getElementById(this.infoStepBoxContentElId));
+    static updateInfoBoxContent(step, infoBoxEl) {
+        const infoBoxElement = step.classes && step.classes.infoBox
+            ? styles_manager_core_1.StylesManager.applyInfoBoxClasses(infoBoxEl, step.classes.infoBox, step.infoBoxPlacement)
+            : styles_manager_core_1.StylesManager.styleInfoBox(infoBoxEl, step.infoBoxPlacement);
+        //  Update styles on the close button 
+        step.classes && step.classes.tutorialCloseBtn
+            ? styles_manager_core_1.StylesManager.applyTutorialCloseBtnClasses(document.getElementById(styles_manager_core_1.StylesManager.tutorialCloseBtnId), step.classes.tutorialCloseBtn)
+            : styles_manager_core_1.StylesManager.styleTutorialCloseButton(document.getElementById(styles_manager_core_1.StylesManager.tutorialCloseBtnId));
+        const stepDescriptionParagraphElement = step.classes && step.classes.infoBoxContent
+            ? styles_manager_core_1.StylesManager.applyInfoBoxContentClasses(document.createElement('p'), step.classes.infoBoxContent, step.text)
+            : styles_manager_core_1.StylesManager.styleInfoBoxContent(document.createElement('p'), step.text);
+        if (document.getElementById(styles_manager_core_1.StylesManager.infoStepBoxContentElId)) {
+            infoBoxElement.removeChild(document.getElementById(styles_manager_core_1.StylesManager.infoStepBoxContentElId));
         }
         infoBoxElement.appendChild(stepDescriptionParagraphElement);
     }
     static updateInfoBoxButtons(step, isFirstStep, isLastStep) {
-        const infoBoxElement = document.getElementById(this.infoBoxId);
+        const infoBoxElement = document.getElementById(styles_manager_core_1.StylesManager.infoBoxId);
         //  Define the buttons for the info box
         const buttons = this.defineButtons(infoBoxElement, step, isLastStep);
         if (!isFirstStep) {
-            if (infoBoxElement.contains(document.getElementById(this.prevStepBtnId))) {
+            if (infoBoxElement.contains(document.getElementById(styles_manager_core_1.StylesManager.prevStepBtnId))) {
                 //  Remove the previous button and it's listeners
-                infoBoxElement.removeChild(document.getElementById(this.prevStepBtnId));
+                infoBoxElement.removeChild(document.getElementById(styles_manager_core_1.StylesManager.prevStepBtnId));
             }
             //  Append the button on the info box
             infoBoxElement.appendChild(buttons.prevButton);
         }
-        if (!!isFirstStep && infoBoxElement.contains(document.getElementById(this.prevStepBtnId))) {
+        if (!!isFirstStep && infoBoxElement.contains(document.getElementById(styles_manager_core_1.StylesManager.prevStepBtnId))) {
             //  Remove the button from the info box if is present
-            infoBoxElement.removeChild(document.getElementById(this.prevStepBtnId));
+            infoBoxElement.removeChild(document.getElementById(styles_manager_core_1.StylesManager.prevStepBtnId));
         }
         if (!isLastStep) {
-            if (infoBoxElement.contains(document.getElementById(this.nextStepBtnId))) {
+            if (infoBoxElement.contains(document.getElementById(styles_manager_core_1.StylesManager.nextStepBtnId))) {
                 //  Remove the previous button and it's listeners
-                infoBoxElement.removeChild(document.getElementById(this.nextStepBtnId));
+                infoBoxElement.removeChild(document.getElementById(styles_manager_core_1.StylesManager.nextStepBtnId));
             }
             //  Append the button on the info box
             infoBoxElement.appendChild(buttons.nextButton);
         }
-        if (!!isLastStep && infoBoxElement.contains(document.getElementById(this.nextStepBtnId))) {
+        if (!!isLastStep && infoBoxElement.contains(document.getElementById(styles_manager_core_1.StylesManager.nextStepBtnId))) {
             //  Remove the button from the info box if is present
-            infoBoxElement.removeChild(document.getElementById(this.nextStepBtnId));
+            infoBoxElement.removeChild(document.getElementById(styles_manager_core_1.StylesManager.nextStepBtnId));
             //  Now add the "next" button, this time configured to end the tutorial
             infoBoxElement.appendChild(buttons.nextButton);
         }
-    }
-    static getMarginSettingsBasedOnPositioning(infoBoxPlacement) {
-        const result = {
-            margin: null,
-            value: null,
-        };
-        switch (infoBoxPlacement) {
-            case info_box_placement_enum_1.InfoBoxPlacement.LEFT:
-                result.margin = 'marginLeft';
-                result.value = `-${this.infoBoxMargin}`;
-                break;
-            case info_box_placement_enum_1.InfoBoxPlacement.ABOVE:
-                result.margin = 'marginTop';
-                result.value = `-${this.infoBoxMargin}`;
-                break;
-            case info_box_placement_enum_1.InfoBoxPlacement.RIGHT:
-                result.margin = 'marginLeft';
-                result.value = this.infoBoxMargin;
-                break;
-            case info_box_placement_enum_1.InfoBoxPlacement.BELOW:
-            default:
-                result.margin = 'marginTop';
-                result.value = this.infoBoxMargin;
-                break;
-        }
-        return result;
     }
     static getTetherAttachmentForInfoBox(infoBoxPlacement) {
         switch (infoBoxPlacement) {
@@ -389,31 +324,19 @@ class Drawer {
     static onTutorialCloseBtn() {
         this._$nextStep.next(next_step_possibilities_enum_1.NextStepPossibilities.TUTORIAL_CLOSE);
     }
-    static updateClothSize() {
-        const newSizes = this.getViewportSizes();
-        document.getElementById(this.clothId).style.width = `${newSizes.width}px`;
-        document.getElementById(this.clothId).style.height = `${newSizes.height}px`;
-    }
-    static applyStepCustomStylesIfAny(customStyles) {
-        if (!customStyles) {
-            return;
-        }
-        if (customStyles.infoBox) {
-            styles_manager_core_1.StylesManager.deafultInfoBoxStyle = customStyles.infoBox;
-        }
-        if (customStyles.infoBoxContent) {
-            styles_manager_core_1.StylesManager.defaultInfoBoxContentStyle = customStyles.infoBoxContent;
-        }
-        if (customStyles.infoBoxPreviousBtn) {
-            styles_manager_core_1.StylesManager.defaultInfoBoxPrevBtnStyle = customStyles.infoBoxPreviousBtn;
-        }
-        if (customStyles.infoBoxNextOrEndBtn) {
-            styles_manager_core_1.StylesManager.defaultInfoBoxNextBtnStyle = customStyles.infoBoxNextOrEndBtn;
-        }
-    }
 }
-Drawer.windowResizeListenerAttached = false;
+Drawer.currentStep = null;
 Drawer._$nextStep = new rxjs_1.BehaviorSubject(null);
+Drawer.onResizeEventListener = () => {
+    if (!document.getElementById(styles_manager_core_1.StylesManager.clothId)) {
+        return;
+    }
+    styles_manager_core_1.StylesManager.updateClothSize(document.getElementById(styles_manager_core_1.StylesManager.clothId));
+    if (Drawer.infoBoxAlreadyDrawn) {
+        const infoBoxElement = document.getElementById(styles_manager_core_1.StylesManager.infoBoxId);
+        Drawer.updateTetherPosition(Drawer.currentStep, infoBoxElement);
+    }
+};
 //  Custom triggers events wrappers
 Drawer.nextStepCustomTriggerWrapper = null;
 //  Previous step element status properties
@@ -424,18 +347,6 @@ Drawer.prevElSelector = null;
 Drawer.prevElTransition = null;
 //  Elements misc properties
 Drawer.clothZIndex = '999';
-Drawer.infoBoxMargin = '10px';
 Drawer.infoBoxAlreadyDrawn = false;
-//  Elements IDs
-Drawer.clothId = 'HAZELINE-TUTORIAL-CLOTH';
-Drawer.infoBoxId = 'HAZELINE-TUTORIAL-INFO-BOX';
-Drawer.tutorialCloseBtnId = 'HAZELINE-TUTORIAL-CLOSE';
-Drawer.nextStepBtnId = 'HAZELINE-TUTORIAL-INFO-BOX-NEXT-STEP';
-Drawer.prevStepBtnId = 'HAZELINE-TUTORIAL-INFO-BOX-PREV-STEP';
-Drawer.infoStepBoxContentElId = 'HAZELINE-TUTORIAL-INFO-BOX-CONTENT';
-//  Info box buttons stuff
-Drawer.defaultEndButtonText = 'End';
-Drawer.defaultNextButtonText = 'Next';
-Drawer.defaultPreviousButtonText = 'Previous';
 exports.Drawer = Drawer;
 //# sourceMappingURL=drawer.core.js.map

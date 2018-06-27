@@ -10,6 +10,18 @@ exports.DEFAULT_STYLES = {
         background: '#007bffe6',
         transition: 'opacity 120ms ease-in-out',
     },
+    pleaseWait: {
+        top: '50%',
+        opacity: '0',
+        color: '#fff',
+        width: '100%',
+        height: '54px',
+        position: 'fixed',
+        textAlign: 'center',
+        marginTop: '-27px',
+        zIndex: '999',
+        transition: 'opacity 120ms ease-in-out',
+    },
     tutorialCloseBtn: {
         width: '40px',
         height: '40px',

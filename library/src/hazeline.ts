@@ -1,9 +1,8 @@
-import { CSSRules } from "./interfaces/css-rules.interface";
-import { TutorialSection } from "./interfaces/tutorial-section.interface";
-
 import { StylesManager } from "./core/styles-manager.core";
 import { SectionsLoader } from "./core/sections-loader.core";
 import { TutorialRunner } from './core/tutorial-runner.core';
+import { CSSRules } from "./interfaces/css-rules.interface";
+import { TutorialSection } from "./interfaces/tutorial-section.interface";
 
 export class Hazeline {
     private sectionsLoader: SectionsLoader;
@@ -12,9 +11,6 @@ export class Hazeline {
     public constructor() {
         this.sectionsLoader = new SectionsLoader();
         this.tutorialRunner = new TutorialRunner();
-
-        var bootstrap_enabled = (typeof ($() as any).emulateTransitionEnd == 'function');
-        console.log('%cBootsrap found: ' + bootstrap_enabled, 'color: green; font-weight: bold');
     }
 
     public setInfoBoxCSSRules(styles: CSSRules): void { StylesManager.deafultInfoBoxStyle = styles; }

@@ -2,8 +2,9 @@ import { CSSRules } from "../interfaces/css-rules.interface";
 
 export interface StepStylableElements {
     infoBox?: CSSRules;
+    pleaseWait?: CSSRules;
     infoBoxContent?: CSSRules;
     tutorialCloseBtn?: CSSRules;
-    infoBoxNextOrEndBtn?: CSSRules;
     infoBoxPreviousBtn?: CSSRules;
+    infoBoxNextOrEndBtn?: CSSRules;
 }
