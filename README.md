@@ -36,17 +36,54 @@ Anything, and literally **ANYTHING** you see on screen is CSS customizable.
 
 You can define a Global styling, or you can style each step individually.
 
-Still not happy? We've got you covered, you can pass a CSS classes too, and each step can take **RAW HTML** strings, so you can also define the template.
+Still not happy? We've got you covered, you can pass **CSS classes** too, and each step can take **RAW HTML** strings, so you can also define the template.
 
-<br>
 
 ## Getting started
 
 ## Structure
 
 ## How it works
+**Hazeline** does not use Canvas, or SVG graphics. In fact, it doesn't use graphics at all. 
 
-## Styling
+All that it does is to prepend a **div** that acts as an overlay with **z-index: 999** inside your body.
+
+Then, when each step is about to be executed:
++ It looks inside the DOM for the element with the specified selector. 
++ Backups all the CSS properties that it will override 
++ Changes it's *z-index* and some other properties 
++ It draws (or reuses the previously drawn) *InfoBox*
++ It updates the *InfoBox* styles and content
+
+The *InfoBox* is the actual element that the user will see above, below, on right, or on left (by default is below) of the concerned tutorial step element.
+
+**Hazeline** is capable of holding several tutorial sections. Each section contains multiple steps.
+
+When a tutorial section is started, a `onStart` event fires, and when a tutorial section is about to end, a `onEnd` event is fired. You can specify callbacks for these events.
+
+Similarly you can specify a `onNext` and `onStart` events for each section step. Along with a lot of other properties that you can customize for each step.
+
+## Customization
+**Section Configuration**
+
+`\\ Talk about section properties`
+
+**Section Step Configuration**
+
+`\\ Talk about steps properties, like text contents, etc.`
+
+**Default Stylings**
+
+`\\ Talk about the default CSS styles applied`
+
+**Global Stylings**
+
+`\\ Talk about the one time CSS config for all steps`
+
+**Section Step Stylings**
+
+`\\ Talk about the step by step stylings`
+
 
 ## Events
 
