@@ -16,11 +16,11 @@ export class Drawer {
     private static _$nextStep: BehaviorSubject<NextStepPossibilities> = new BehaviorSubject(null);
 
     private static onResizeEventListener = () => {
-        if (!document.getElementById(StylesManager.clothId)) {
+        if (!document.getElementById(StylesManager.overlayId)) {
             return;
         }
 
-        StylesManager.updateClothSize(document.getElementById(StylesManager.clothId));
+        StylesManager.updateOverlaySize(document.getElementById(StylesManager.overlayId));
         if (Drawer.infoBoxAlreadyDrawn) {
             const infoBoxElement = document.getElementById(StylesManager.infoBoxId);
             Drawer.updateTetherPosition(Drawer.currentStep, infoBoxElement);
@@ -38,22 +38,22 @@ export class Drawer {
     private static prevElTransition: string = null;
 
     //  Elements misc properties
-    private static clothZIndex = '999';
+    private static overlayZIndex = '999';
     private static infoBoxAlreadyDrawn = false;
 
-    public static drawCloth(): Observable<boolean> {
-        const clothIsReady = new BehaviorSubject(false);
+    public static drawOverlay(): Observable<boolean> {
+        const overlayIsReady = new BehaviorSubject(false);
 
-        const cloth = StylesManager.styleTutorialCloth(document.createElement('div'));
-        $('body').prepend(cloth);
+        const overlay = StylesManager.styleTutorialOverlay(document.createElement('div'));
+        $('body').prepend(overlay);
 
         setTimeout(() => {
-            StylesManager.revealCloth(cloth);
-            clothIsReady.next(true);
-            clothIsReady.complete();
+            StylesManager.revealOverlay(overlay);
+            overlayIsReady.next(true);
+            overlayIsReady.complete();
         }, 200);
 
-        return clothIsReady;
+        return overlayIsReady;
     }
 
     public static drawStep(step: SectionStep, isFirstStep?: boolean, isLastStep?: boolean): Observable<NextStepPossibilities> {
@@ -139,7 +139,7 @@ export class Drawer {
 
         document.removeEventListener('resize', this.onResizeEventListener);
         document.getElementsByTagName('body')[0]
-            .removeChild(document.getElementById(StylesManager.clothId));
+            .removeChild(document.getElementById(StylesManager.overlayId));
 
         document.getElementsByTagName('body')[0]
             .removeChild(document.getElementById(StylesManager.infoBoxId));
@@ -194,7 +194,7 @@ export class Drawer {
 
         setTimeout(() => {
             element.style.position = 'relative';
-            element.style.zIndex = this.clothZIndex;
+            element.style.zIndex = this.overlayZIndex;
 
             setTimeout(() => {
                 if (!skipFirstAnimation) {

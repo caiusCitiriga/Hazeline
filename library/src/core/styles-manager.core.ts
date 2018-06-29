@@ -8,7 +8,7 @@ export class StylesManager {
 
     private static viewportSizes: ViewportSizes;
 
-    public static readonly clothId = 'HAZELINE-TUTORIAL-CLOTH';
+    public static readonly overlayId = 'HAZELINE-TUTORIAL-OVERLAY';
     public static readonly pleaseWaitId = 'HAZELINE-PLEASE-WAIT';
     public static readonly infoBoxId = 'HAZELINE-TUTORIAL-INFO-BOX';
     public static readonly tutorialCloseBtnId = 'HAZELINE-TUTORIAL-CLOSE';
@@ -25,7 +25,7 @@ export class StylesManager {
 
     private static defaultInfoBoxStyles = Object.assign({}, DEFAULT_STYLES.infoBox);
     private static defaultPleaseWaitStyles = Object.assign({}, DEFAULT_STYLES.pleaseWait);
-    private static defaultTutorialClothStyles = Object.assign({}, DEFAULT_STYLES.tutorialCloth);
+    private static defaultTutorialOverlayStyles = Object.assign({}, DEFAULT_STYLES.tutorialOverlay);
     private static defaultInfoBoxContentStyles = Object.assign({}, DEFAULT_STYLES.infoBoxContent);
     private static defaultTutorialCloseButtonStyles = Object.assign({}, DEFAULT_STYLES.tutorialCloseBtn);
     private static defaultInfoBoxPrevButtonStyles = Object.assign({}, DEFAULT_STYLES.infoBoxPreviousBtn);
@@ -33,8 +33,8 @@ export class StylesManager {
 
     public static set deafultInfoBoxStyle(value: CSSRules) { this.defaultInfoBoxStyles = Object.assign(this.defaultInfoBoxStyles, value); }
     public static set defaultPleaseWaitStyle(value: CSSRules) { this.defaultPleaseWaitStyles = Object.assign(this.defaultPleaseWaitStyles, value); }
-    public static set defaultTutorialClothStyle(value: CSSRules) { this.defaultTutorialClothStyles = Object.assign(this.defaultTutorialClothStyles, value); }
     public static set defaultInfoBoxContentStyle(value: CSSRules) { this.defaultInfoBoxContentStyles = Object.assign(this.defaultInfoBoxContentStyles, value); }
+    public static set defaultTutorialOverlayStyle(value: CSSRules) { this.defaultTutorialOverlayStyles = Object.assign(this.defaultTutorialOverlayStyles, value); }
     public static set defaultInfoBoxNextBtnStyle(value: CSSRules) { this.defaultInfoBoxNextButtonStyles = Object.assign(this.defaultInfoBoxNextButtonStyles, value); }
     public static set defaultInfoBoxPrevBtnStyle(value: CSSRules) { this.defaultInfoBoxPrevButtonStyles = Object.assign(this.defaultInfoBoxPrevButtonStyles, value); }
     public static set defaultTutorialCloseButtonStyle(value: CSSRules) { this.defaultTutorialCloseButtonStyles = Object.assign(this.defaultTutorialCloseButtonStyles, value); }
@@ -45,7 +45,7 @@ export class StylesManager {
     public static resetStyles(): void {
         this.defaultInfoBoxStyles = Object.assign({}, DEFAULT_STYLES.infoBox);
         this.defaultPleaseWaitStyles = Object.assign({}, DEFAULT_STYLES.pleaseWait);
-        this.defaultTutorialClothStyles = Object.assign({}, DEFAULT_STYLES.tutorialCloth);
+        this.defaultTutorialOverlayStyles = Object.assign({}, DEFAULT_STYLES.tutorialOverlay);
         this.defaultInfoBoxContentStyles = Object.assign({}, DEFAULT_STYLES.infoBoxContent);
         this.defaultTutorialCloseButtonStyles = Object.assign({}, DEFAULT_STYLES.tutorialCloseBtn);
         this.defaultInfoBoxPrevButtonStyles = Object.assign({}, DEFAULT_STYLES.infoBoxPreviousBtn);
@@ -66,31 +66,31 @@ export class StylesManager {
     }
 
     ////////////////////////////////////////////////////////////////
-    //  Cloth controls
+    //  Overlay controls
     ////////////////////////////////////////////////////////////////
-    public static updateClothSize(cloth: HTMLElement): void {
+    public static updateOverlaySize(overlay: HTMLElement): void {
         const newSizes = this.getViewportSizes();
-        cloth.style.width = `${newSizes.width}px`;
-        cloth.style.height = `${newSizes.height}px`;
+        overlay.style.width = `${newSizes.width}px`;
+        overlay.style.height = `${newSizes.height}px`;
     }
 
-    public static revealCloth(cloth: HTMLElement): void {
-        cloth.style.opacity = '1';
+    public static revealOverlay(overlay: HTMLElement): void {
+        overlay.style.opacity = '1';
     }
 
     ////////////////////////////////////////////////////////////////
     //  Style setters
     ////////////////////////////////////////////////////////////////
-    public static styleTutorialCloth(cloth: HTMLElement): HTMLElement {
+    public static styleTutorialOverlay(overlay: HTMLElement): HTMLElement {
         this.getViewportSizes();
 
-        cloth = this.applyStyles(cloth, this.defaultTutorialClothStyles);
+        overlay = this.applyStyles(overlay, this.defaultTutorialOverlayStyles);
 
-        cloth.setAttribute('id', this.clothId);
-        cloth.style.width = `${this.viewportSizes.width.toString()}px`;
-        cloth.style.height = `${this.viewportSizes.height.toString()}px`;
+        overlay.setAttribute('id', this.overlayId);
+        overlay.style.width = `${this.viewportSizes.width.toString()}px`;
+        overlay.style.height = `${this.viewportSizes.height.toString()}px`;
 
-        return cloth;
+        return overlay;
     }
 
     public static stylePleaseWait(pleaseWaitElement: HTMLElement, alternativeTextContent?: string): HTMLElement {

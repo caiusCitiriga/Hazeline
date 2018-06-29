@@ -1,7 +1,7 @@
 import { StylableElements } from "../interfaces/step-stylable-elements";
 
 export const DEFAULT_STYLES: StylableElements = {
-    tutorialCloth: {
+    tutorialOverlay: {
         top: '0',
         left: '0',
         opacity: '0',

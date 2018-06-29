@@ -43,9 +43,9 @@ export class TutorialRunner {
     private runInternal(section: TutorialSection): void {
         this.initializeTutorial(section);
         Drawer
-            .drawCloth()
+            .drawOverlay()
             .pipe(
-                filter(clothIsReady => !!clothIsReady),
+                filter(overlayIsReady => !!overlayIsReady),
                 switchMap(() => Drawer.drawStep(section.steps[this.currentTutorialStep], true, false)),
                 tap(nextStep => {
                     if (nextStep === NextStepPossibilities.FORWARD) {

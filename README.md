@@ -41,9 +41,15 @@ Still not happy? We've got you covered, you can pass **CSS classes** too, and ea
 
 ## Getting started
 
-## Structure
-
 ## How it works
+There are **six** pieces that works together while **Hazeline** is running:
++ The tutorial cloth
++ The InfoBox
++ The InfoBox content
++ The InfoBox next or end button
++ The tutorial close button
++ The timeout text when a step is waiting to begin
+
 **Hazeline** does not use Canvas, or SVG graphics. In fact, it doesn't use graphics at all. 
 
 All that it does is to prepend a **div** that acts as an overlay with **z-index: 999** inside your body.

@@ -3,5 +3,5 @@ import { StepStylableElements } from "./stylable-elements";
 
 export interface StylableElements extends StepStylableElements {
     pleaseWait?: CSSRules;
-    tutorialCloth?: CSSRules;
+    tutorialOverlay?: CSSRules;
 }
