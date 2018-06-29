@@ -1,4 +1,3 @@
-import $ from 'jquery';
 import { Hazeline } from 'hazeline';
 
 class HazelineDemo {
@@ -100,6 +99,6 @@ class HazelineDemo {
     }
 }
 
-$(document).ready(() => {
+window.onload = () => {
     const demo = new HazelineDemo();
-});
+}
