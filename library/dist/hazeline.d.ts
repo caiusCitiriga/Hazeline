@@ -14,4 +14,3 @@ export declare class Hazeline {
     addTutorialSections(sections: TutorialSection[]): void;
     getTutorialSectionById(sectionId: string): TutorialSection | null;
 }
-//# sourceMappingURL=hazeline.d.ts.map

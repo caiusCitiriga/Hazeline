@@ -4,4 +4,3 @@ export interface StepTriggers {
         action: (event: any) => boolean;
     };
 }
-//# sourceMappingURL=step-triggers.interface.d.ts.map

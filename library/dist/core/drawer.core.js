@@ -352,4 +352,3 @@ Drawer.prevElTransition = null;
 Drawer.overlayZIndex = '999';
 Drawer.infoBoxAlreadyDrawn = false;
 exports.Drawer = Drawer;
-//# sourceMappingURL=drawer.core.js.map

@@ -40,4 +40,3 @@ export declare class Drawer {
     private static onPreviousStep;
     private static onTutorialCloseBtn;
 }
-//# sourceMappingURL=drawer.core.d.ts.map

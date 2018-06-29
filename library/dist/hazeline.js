@@ -29,4 +29,3 @@ class Hazeline {
     }
 }
 exports.Hazeline = Hazeline;
-//# sourceMappingURL=hazeline.js.map

@@ -4,4 +4,3 @@ export declare enum NextStepPossibilities {
     FINISHED = 2,
     TUTORIAL_CLOSE = 3
 }
-//# sourceMappingURL=next-step-possibilities.enum.d.ts.map

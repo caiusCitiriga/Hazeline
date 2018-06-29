@@ -5,4 +5,3 @@ export interface TutorialSection {
     onEnd?: () => void;
     onStart?: () => void;
 }
-//# sourceMappingURL=tutorial-section.interface.d.ts.map

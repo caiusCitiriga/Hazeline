@@ -4,4 +4,3 @@ export declare enum InfoBoxPlacement {
     BELOW = "below",
     RIGHT = "right"
 }
-//# sourceMappingURL=info-box-placement.enum.d.ts.map

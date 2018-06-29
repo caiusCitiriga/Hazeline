@@ -4,4 +4,3 @@ export interface TutorialStatus {
     runningSection: TutorialSection;
     tutorialStatus: TutorialStatuses;
 }
-//# sourceMappingURL=tutorial-status.interface.d.ts.map

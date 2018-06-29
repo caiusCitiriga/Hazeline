@@ -5,4 +5,3 @@ export declare class SectionsLoader {
     addSections(sections: TutorialSection[]): void;
     getTutorialSection(id: string): TutorialSection;
 }
-//# sourceMappingURL=sections-loader.core.d.ts.map

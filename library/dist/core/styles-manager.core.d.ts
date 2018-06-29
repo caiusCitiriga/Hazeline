@@ -55,4 +55,3 @@ export declare class StylesManager {
     private static setAttribute;
     private static setHTMLTextContent;
 }
-//# sourceMappingURL=styles-manager.core.d.ts.map

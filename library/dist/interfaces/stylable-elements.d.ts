@@ -7,4 +7,3 @@ export interface StepStylableElements {
     infoBoxPreviousBtn?: CSSRules;
     infoBoxNextOrEndBtn?: CSSRules;
 }
-//# sourceMappingURL=stylable-elements.d.ts.map

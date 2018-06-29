@@ -6,4 +6,3 @@ export interface StepClassableElements {
     infoBoxPreviousBtn?: string[];
     infoBoxNextOrEndBtn?: string[];
 }
-//# sourceMappingURL=classable-elements.d.ts.map

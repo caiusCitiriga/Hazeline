@@ -7,4 +7,3 @@ var InfoBoxPlacement;
     InfoBoxPlacement["BELOW"] = "below";
     InfoBoxPlacement["RIGHT"] = "right";
 })(InfoBoxPlacement = exports.InfoBoxPlacement || (exports.InfoBoxPlacement = {}));
-//# sourceMappingURL=info-box-placement.enum.js.map

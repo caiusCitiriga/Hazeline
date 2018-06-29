@@ -372,4 +372,3 @@ export interface CSSRules {
     zIndex?: string;
     zoom?: string;
 }
-//# sourceMappingURL=css-rules.interface.d.ts.map

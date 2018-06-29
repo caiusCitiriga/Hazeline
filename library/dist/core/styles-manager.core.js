@@ -223,4 +223,3 @@ StylesManager.defaultTutorialCloseButtonStyles = Object.assign({}, default_style
 StylesManager.defaultInfoBoxPrevButtonStyles = Object.assign({}, default_styles_const_1.DEFAULT_STYLES.infoBoxPreviousBtn);
 StylesManager.defaultInfoBoxNextButtonStyles = Object.assign({}, default_styles_const_1.DEFAULT_STYLES.infoBoxNextOrEndBtn);
 exports.StylesManager = StylesManager;
-//# sourceMappingURL=styles-manager.core.js.map

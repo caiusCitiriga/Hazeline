@@ -1,1 +1,0 @@
-{"version":3,"file":"step-triggers.interface.d.ts","sourceRoot":"","sources":["../../src/interfaces/step-triggers.interface.ts"],"names":[],"mappings":"AAAA,MAAM,WAAW,YAAY;IACzB,IAAI,EAAE;QACF,KAAK,EAAE,MAAM,CAAC;QACd,MAAM,EAAE,CAAC,KAAK,EAAE,GAAG,KAAK,OAAO,CAAC;KACnC,CAAA;CACJ"}

@@ -17,4 +17,3 @@ export interface SectionStep {
     styles?: StepStylableElements;
     classes?: StepClassableElements;
 }
-//# sourceMappingURL=section-step.interface.d.ts.map

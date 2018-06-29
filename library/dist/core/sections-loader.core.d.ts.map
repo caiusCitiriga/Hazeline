@@ -1,1 +1,0 @@
-{"version":3,"file":"sections-loader.core.d.ts","sourceRoot":"","sources":["../../src/core/sections-loader.core.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,eAAe,EAAE,MAAM,0CAA0C,CAAC;AAE3E;IAEI,OAAO,CAAC,gBAAgB,CAAyB;IAE1C,UAAU,CAAC,OAAO,EAAE,eAAe,GAAG,IAAI;IAI1C,WAAW,CAAC,QAAQ,EAAE,eAAe,EAAE,GAAG,IAAI;IAI9C,kBAAkB,CAAC,EAAE,EAAE,MAAM,GAAG,eAAe;CAIzD"}

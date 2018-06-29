@@ -16,4 +16,3 @@ class SectionsLoader {
     }
 }
 exports.SectionsLoader = SectionsLoader;
-//# sourceMappingURL=sections-loader.core.js.map
