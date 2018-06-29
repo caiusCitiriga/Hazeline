@@ -43,7 +43,7 @@ Still not happy? We've got you covered, you can pass **CSS classes** too, and ea
 
 ## How it works
 There are **six** pieces that works together while **Hazeline** is running:
-+ The tutorial cloth
++ The tutorial overlay
 + The InfoBox
 + The InfoBox content
 + The InfoBox next or end button
