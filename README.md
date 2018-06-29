@@ -1,4 +1,4 @@
-# Hazeline [WIP]
+# Hazeline
 ### A step by step tutorial library for the web, as you would expect it.
 
 ## Philosophy
