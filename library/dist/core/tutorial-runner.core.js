@@ -3,12 +3,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+//  Third party imports
 const jquery_1 = __importDefault(require("jquery"));
 const rxjs_1 = require("rxjs");
 const operators_1 = require("rxjs/operators");
+//  Core imports
+const drawer_core_1 = require("./drawer.core");
+//  Enums imports
 const tutorial_statuses_enum_1 = require("../enums/tutorial-statuses.enum");
 const next_step_possibilities_enum_1 = require("../enums/next-step-possibilities.enum");
-const drawer_core_1 = require("./drawer.core");
 class TutorialRunner {
     constructor() {
         this._$tutorialStatus = new rxjs_1.BehaviorSubject(null);
@@ -37,8 +40,8 @@ class TutorialRunner {
     runInternal(section) {
         this.initializeTutorial(section);
         drawer_core_1.Drawer
-            .drawCloth()
-            .pipe(operators_1.filter(clothIsReady => !!clothIsReady), operators_1.switchMap(() => drawer_core_1.Drawer.drawStep(section.steps[this.currentTutorialStep], true, false)), operators_1.tap(nextStep => {
+            .drawOverlay()
+            .pipe(operators_1.filter(overlayIsReady => !!overlayIsReady), operators_1.switchMap(() => drawer_core_1.Drawer.drawStep(section.steps[this.currentTutorialStep], true, false)), operators_1.tap(nextStep => {
             if (nextStep === next_step_possibilities_enum_1.NextStepPossibilities.FORWARD) {
                 this.loadNextStep(section);
             }

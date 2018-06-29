@@ -3,24 +3,27 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+//  Third party imports
 const jquery_1 = __importDefault(require("jquery"));
 const tether_1 = __importDefault(require("tether"));
 const rxjs_1 = require("rxjs");
 const operators_1 = require("rxjs/operators");
+//  Core imports
 const styles_manager_core_1 = require("./styles-manager.core");
+//  Enums imports
 const info_box_placement_enum_1 = require("../enums/info-box-placement.enum");
 const next_step_possibilities_enum_1 = require("../enums/next-step-possibilities.enum");
 class Drawer {
-    static drawCloth() {
-        const clothIsReady = new rxjs_1.BehaviorSubject(false);
-        const cloth = styles_manager_core_1.StylesManager.styleTutorialCloth(document.createElement('div'));
-        jquery_1.default('body').prepend(cloth);
+    static drawOverlay() {
+        const overlayIsReady = new rxjs_1.BehaviorSubject(false);
+        const overlay = styles_manager_core_1.StylesManager.styleTutorialOverlay(document.createElement('div'));
+        jquery_1.default('body').prepend(overlay);
         setTimeout(() => {
-            styles_manager_core_1.StylesManager.revealCloth(cloth);
-            clothIsReady.next(true);
-            clothIsReady.complete();
+            styles_manager_core_1.StylesManager.revealOverlay(overlay);
+            overlayIsReady.next(true);
+            overlayIsReady.complete();
         }, 200);
-        return clothIsReady;
+        return overlayIsReady;
     }
     static drawStep(step, isFirstStep, isLastStep) {
         //  Remove the old event listener attached if any
@@ -77,7 +80,7 @@ class Drawer {
         }
         document.removeEventListener('resize', this.onResizeEventListener);
         document.getElementsByTagName('body')[0]
-            .removeChild(document.getElementById(styles_manager_core_1.StylesManager.clothId));
+            .removeChild(document.getElementById(styles_manager_core_1.StylesManager.overlayId));
         document.getElementsByTagName('body')[0]
             .removeChild(document.getElementById(styles_manager_core_1.StylesManager.infoBoxId));
         if (this.tether) {
@@ -119,7 +122,7 @@ class Drawer {
         element = this.attachCustomTriggersIfAny(element, step);
         setTimeout(() => {
             element.style.position = 'relative';
-            element.style.zIndex = this.clothZIndex;
+            element.style.zIndex = this.overlayZIndex;
             setTimeout(() => {
                 if (!skipFirstAnimation) {
                     jquery_1.default(element).animate({ 'opacity': '1' }, 100);
@@ -328,10 +331,10 @@ class Drawer {
 Drawer.currentStep = null;
 Drawer._$nextStep = new rxjs_1.BehaviorSubject(null);
 Drawer.onResizeEventListener = () => {
-    if (!document.getElementById(styles_manager_core_1.StylesManager.clothId)) {
+    if (!document.getElementById(styles_manager_core_1.StylesManager.overlayId)) {
         return;
     }
-    styles_manager_core_1.StylesManager.updateClothSize(document.getElementById(styles_manager_core_1.StylesManager.clothId));
+    styles_manager_core_1.StylesManager.updateOverlaySize(document.getElementById(styles_manager_core_1.StylesManager.overlayId));
     if (Drawer.infoBoxAlreadyDrawn) {
         const infoBoxElement = document.getElementById(styles_manager_core_1.StylesManager.infoBoxId);
         Drawer.updateTetherPosition(Drawer.currentStep, infoBoxElement);
@@ -346,7 +349,7 @@ Drawer.prevElPosition = null;
 Drawer.prevElSelector = null;
 Drawer.prevElTransition = null;
 //  Elements misc properties
-Drawer.clothZIndex = '999';
+Drawer.overlayZIndex = '999';
 Drawer.infoBoxAlreadyDrawn = false;
 exports.Drawer = Drawer;
 //# sourceMappingURL=drawer.core.js.map

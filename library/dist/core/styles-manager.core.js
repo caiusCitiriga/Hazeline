@@ -1,12 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+//  Consts imports
 const default_styles_const_1 = require("../consts/default-styles.const");
+//  Enums imports
 const info_box_placement_enum_1 = require("../enums/info-box-placement.enum");
 class StylesManager {
     static set deafultInfoBoxStyle(value) { this.defaultInfoBoxStyles = Object.assign(this.defaultInfoBoxStyles, value); }
     static set defaultPleaseWaitStyle(value) { this.defaultPleaseWaitStyles = Object.assign(this.defaultPleaseWaitStyles, value); }
-    static set defaultTutorialClothStyle(value) { this.defaultTutorialClothStyles = Object.assign(this.defaultTutorialClothStyles, value); }
     static set defaultInfoBoxContentStyle(value) { this.defaultInfoBoxContentStyles = Object.assign(this.defaultInfoBoxContentStyles, value); }
+    static set defaultTutorialOverlayStyle(value) { this.defaultTutorialOverlayStyles = Object.assign(this.defaultTutorialOverlayStyles, value); }
     static set defaultInfoBoxNextBtnStyle(value) { this.defaultInfoBoxNextButtonStyles = Object.assign(this.defaultInfoBoxNextButtonStyles, value); }
     static set defaultInfoBoxPrevBtnStyle(value) { this.defaultInfoBoxPrevButtonStyles = Object.assign(this.defaultInfoBoxPrevButtonStyles, value); }
     static set defaultTutorialCloseButtonStyle(value) { this.defaultTutorialCloseButtonStyles = Object.assign(this.defaultTutorialCloseButtonStyles, value); }
@@ -16,7 +18,7 @@ class StylesManager {
     static resetStyles() {
         this.defaultInfoBoxStyles = Object.assign({}, default_styles_const_1.DEFAULT_STYLES.infoBox);
         this.defaultPleaseWaitStyles = Object.assign({}, default_styles_const_1.DEFAULT_STYLES.pleaseWait);
-        this.defaultTutorialClothStyles = Object.assign({}, default_styles_const_1.DEFAULT_STYLES.tutorialCloth);
+        this.defaultTutorialOverlayStyles = Object.assign({}, default_styles_const_1.DEFAULT_STYLES.tutorialOverlay);
         this.defaultInfoBoxContentStyles = Object.assign({}, default_styles_const_1.DEFAULT_STYLES.infoBoxContent);
         this.defaultTutorialCloseButtonStyles = Object.assign({}, default_styles_const_1.DEFAULT_STYLES.tutorialCloseBtn);
         this.defaultInfoBoxPrevButtonStyles = Object.assign({}, default_styles_const_1.DEFAULT_STYLES.infoBoxPreviousBtn);
@@ -46,26 +48,26 @@ class StylesManager {
         }
     }
     ////////////////////////////////////////////////////////////////
-    //  Cloth controls
+    //  Overlay controls
     ////////////////////////////////////////////////////////////////
-    static updateClothSize(cloth) {
+    static updateOverlaySize(overlay) {
         const newSizes = this.getViewportSizes();
-        cloth.style.width = `${newSizes.width}px`;
-        cloth.style.height = `${newSizes.height}px`;
+        overlay.style.width = `${newSizes.width}px`;
+        overlay.style.height = `${newSizes.height}px`;
     }
-    static revealCloth(cloth) {
-        cloth.style.opacity = '1';
+    static revealOverlay(overlay) {
+        overlay.style.opacity = '1';
     }
     ////////////////////////////////////////////////////////////////
     //  Style setters
     ////////////////////////////////////////////////////////////////
-    static styleTutorialCloth(cloth) {
+    static styleTutorialOverlay(overlay) {
         this.getViewportSizes();
-        cloth = this.applyStyles(cloth, this.defaultTutorialClothStyles);
-        cloth.setAttribute('id', this.clothId);
-        cloth.style.width = `${this.viewportSizes.width.toString()}px`;
-        cloth.style.height = `${this.viewportSizes.height.toString()}px`;
-        return cloth;
+        overlay = this.applyStyles(overlay, this.defaultTutorialOverlayStyles);
+        overlay.setAttribute('id', this.overlayId);
+        overlay.style.width = `${this.viewportSizes.width.toString()}px`;
+        overlay.style.height = `${this.viewportSizes.height.toString()}px`;
+        return overlay;
     }
     static stylePleaseWait(pleaseWaitElement, alternativeTextContent) {
         pleaseWaitElement = this.applyStyles(pleaseWaitElement, this.defaultPleaseWaitStyles);
@@ -201,7 +203,7 @@ class StylesManager {
         return el;
     }
 }
-StylesManager.clothId = 'HAZELINE-TUTORIAL-CLOTH';
+StylesManager.overlayId = 'HAZELINE-TUTORIAL-OVERLAY';
 StylesManager.pleaseWaitId = 'HAZELINE-PLEASE-WAIT';
 StylesManager.infoBoxId = 'HAZELINE-TUTORIAL-INFO-BOX';
 StylesManager.tutorialCloseBtnId = 'HAZELINE-TUTORIAL-CLOSE';
@@ -215,7 +217,7 @@ StylesManager.defaultPreviousButtonText = 'Previous';
 StylesManager.defaultPleaseWaitText = 'Please wait...';
 StylesManager.defaultInfoBoxStyles = Object.assign({}, default_styles_const_1.DEFAULT_STYLES.infoBox);
 StylesManager.defaultPleaseWaitStyles = Object.assign({}, default_styles_const_1.DEFAULT_STYLES.pleaseWait);
-StylesManager.defaultTutorialClothStyles = Object.assign({}, default_styles_const_1.DEFAULT_STYLES.tutorialCloth);
+StylesManager.defaultTutorialOverlayStyles = Object.assign({}, default_styles_const_1.DEFAULT_STYLES.tutorialOverlay);
 StylesManager.defaultInfoBoxContentStyles = Object.assign({}, default_styles_const_1.DEFAULT_STYLES.infoBoxContent);
 StylesManager.defaultTutorialCloseButtonStyles = Object.assign({}, default_styles_const_1.DEFAULT_STYLES.tutorialCloseBtn);
 StylesManager.defaultInfoBoxPrevButtonStyles = Object.assign({}, default_styles_const_1.DEFAULT_STYLES.infoBoxPreviousBtn);

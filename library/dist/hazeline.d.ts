@@ -4,11 +4,11 @@ export declare class Hazeline {
     private sectionsLoader;
     private tutorialRunner;
     constructor();
-    setInfoBoxCSSRules(styles: CSSRules): void;
-    setInfoBoxContentCSSRules(styles: CSSRules): void;
-    setTutorialOverlayCSSRules(styles: CSSRules): void;
-    setInfoBoxNextButtonCSSRules(styles: CSSRules): void;
-    setInfoBoxPreviousButtonCSSRules(styles: CSSRules): void;
+    setGlobalInfoBoxCSSRules(styles: CSSRules): void;
+    setGlobalInfoBoxContentCSSRules(styles: CSSRules): void;
+    setGlobalTutorialOverlayCSSRules(styles: CSSRules): void;
+    setGlobalInfoBoxNextButtonCSSRules(styles: CSSRules): void;
+    setGlobalInfoBoxPreviousButtonCSSRules(styles: CSSRules): void;
     startTutorialSection(sectionId: string): void;
     addTutorialSection(section: TutorialSection): void;
     addTutorialSections(sections: TutorialSection[]): void;

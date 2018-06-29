@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DEFAULT_STYLES = {
-    tutorialCloth: {
+    tutorialOverlay: {
         top: '0',
         left: '0',
         opacity: '0',

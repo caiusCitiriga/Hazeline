@@ -12,9 +12,9 @@ export declare class Drawer {
     private static prevElPosition;
     private static prevElSelector;
     private static prevElTransition;
-    private static clothZIndex;
+    private static overlayZIndex;
     private static infoBoxAlreadyDrawn;
-    static drawCloth(): Observable<boolean>;
+    static drawOverlay(): Observable<boolean>;
     static drawStep(step: SectionStep, isFirstStep?: boolean, isLastStep?: boolean): Observable<NextStepPossibilities>;
     static drawPleaseWait(step: SectionStep): Observable<boolean>;
     static hidePleaseWait(): Observable<boolean>;

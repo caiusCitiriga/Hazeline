@@ -1,4 +1,4 @@
-import { CSSRules } from "../interfaces/css-rules.interface";
+import { CSSRules } from "./css-rules.interface";
 export interface StepStylableElements {
     infoBox?: CSSRules;
     pleaseWait?: CSSRules;
