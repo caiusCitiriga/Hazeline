@@ -1,13 +1,18 @@
+//  Third party imports
 import $ from 'jquery';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { filter, tap, switchMap } from 'rxjs/operators';
 
-import { TutorialStatuses } from '../enums/tutorial-statuses.enum';
+//  Core imports
+import { Drawer } from './drawer.core';
+
+//  Interfaces imports
 import { TutorialStatus } from '../interfaces/tutorial-status.interface';
 import { TutorialSection } from "../interfaces/tutorial-section.interface";
-import { NextStepPossibilities } from '../enums/next-step-possibilities.enum';
 
-import { Drawer } from './drawer.core';
+//  Enums imports
+import { TutorialStatuses } from '../enums/tutorial-statuses.enum';
+import { NextStepPossibilities } from '../enums/next-step-possibilities.enum';
 
 export class TutorialRunner {
 

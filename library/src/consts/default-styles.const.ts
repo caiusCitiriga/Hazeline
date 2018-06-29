@@ -1,3 +1,4 @@
+//  Interfaces imports
 import { StylableElements } from "../interfaces/step-stylable-elements";
 
 export const DEFAULT_STYLES: StylableElements = {

@@ -1,11 +1,16 @@
+//  Third party imports
 import $ from 'jquery';
 import Tether from 'tether';
-
 import { BehaviorSubject, Observable } from 'rxjs';
 import { switchMap, filter, tap, delay } from 'rxjs/operators';
 
+//  Core imports
 import { StylesManager } from './styles-manager.core';
+
+//  Interfaces imports
 import { SectionStep } from "../interfaces/section-step.interface";
+
+//  Enums imports
 import { InfoBoxPlacement } from '../enums/info-box-placement.enum';
 import { NextStepPossibilities } from '../enums/next-step-possibilities.enum';
 

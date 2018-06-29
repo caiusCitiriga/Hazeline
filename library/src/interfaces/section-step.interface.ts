@@ -1,5 +1,8 @@
+//  Interfaces imports
 import { StepStylableElements } from "./stylable-elements";
 import { StepClassableElements } from "./classable-elements";
+
+//  Enums imports
 import { InfoBoxPlacement } from "../enums/info-box-placement.enum";
 
 export interface SectionStep {

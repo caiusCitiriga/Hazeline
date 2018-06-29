@@ -1,8 +1,12 @@
+//  Consts imports
 import { DEFAULT_STYLES } from "../consts/default-styles.const";
 
+//  Interfaces imports
 import { CSSRules } from "../interfaces/css-rules.interface";
-import { InfoBoxPlacement } from "../enums/info-box-placement.enum";
 import { StepStylableElements } from "../interfaces/stylable-elements";
+
+//  Enums imports
+import { InfoBoxPlacement } from "../enums/info-box-placement.enum";
 
 export class StylesManager {
 

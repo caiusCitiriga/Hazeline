@@ -1,6 +1,9 @@
+//  Core imports
 import { StylesManager } from "./core/styles-manager.core";
 import { SectionsLoader } from "./core/sections-loader.core";
 import { TutorialRunner } from './core/tutorial-runner.core';
+
+//  Interfaces imports
 import { CSSRules } from "./interfaces/css-rules.interface";
 import { TutorialSection } from "./interfaces/tutorial-section.interface";
 

@@ -1,3 +1,4 @@
+//  Interfaces imports
 import { TutorialSection } from "../interfaces/tutorial-section.interface";
 
 export class SectionsLoader {
