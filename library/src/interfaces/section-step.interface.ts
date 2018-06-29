@@ -1,4 +1,5 @@
 //  Interfaces imports
+import { StepTriggers } from "./step-triggers.interface";
 import { StepStylableElements } from "./stylable-elements";
 import { StepClassableElements } from "./classable-elements";
 
@@ -24,12 +25,7 @@ export interface SectionStep {
     prevBtnText?: string;
     pleaseWaitText?: string;
 
-    triggers?: {
-        next: {
-            event: string;
-            action: (event: any) => boolean;
-        }
-    }
+    triggers?: StepTriggers;
 
     //  Styles override for current step
     styles?: StepStylableElements;

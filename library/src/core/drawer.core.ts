@@ -214,7 +214,7 @@ export class Drawer {
 
     private static attachCustomTriggersIfAny(element: HTMLElement, step: SectionStep): HTMLElement {
         if (step.triggers && step.triggers.next) {
-            this.nextStepCustomTriggerWrapper = (event: any) => {
+            this.nextStepCustomTriggerWrapper = (event: Event) => {
                 if (step.triggers.next.action(event)) {
                     this.onNextStep(step);
                 }
@@ -354,7 +354,7 @@ export class Drawer {
             }
 
             infoBoxElement.style.opacity = '1';
-        }, 150);
+        }, 250);
     }
 
     private static updateInfoBoxContent(step: SectionStep, infoBoxEl: HTMLElement): void {

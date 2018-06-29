@@ -247,7 +247,7 @@ class Drawer {
                 });
             }
             infoBoxElement.style.opacity = '1';
-        }, 150);
+        }, 250);
     }
     static updateInfoBoxContent(step, infoBoxEl) {
         const infoBoxElement = step.classes && step.classes.infoBox
