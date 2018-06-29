@@ -36,7 +36,7 @@ Anything, and literally **ANYTHING** you see on screen is CSS customizable.
 
 You can define a Global styling, or you can style each step individually.
 
-Still not happy? We've got you covered, you can pass **CSS classes** too, and each step can take **RAW HTML** strings, so you can also define the template.
+Still not happy? I've got you covered, you can pass **CSS classes** too, and each step can take **RAW HTML** strings, so you can also define the template.
 
 
 ## Getting started
@@ -50,18 +50,32 @@ There are **six** pieces that works together while **Hazeline** is running:
 + The tutorial close button
 + The timeout text when a step is waiting to begin
 
-**Hazeline** does not use Canvas, or SVG graphics. In fact, it doesn't use graphics at all. 
+**The tutorial overlay:** this is a div that will be prepended on the body, before any element. It will act like a cloth that covers all your application, and reveals **only** the concerned element for the current step.
 
-All that it does is to prepend a **div** that acts as an overlay with **z-index: 999** inside your body.
+**The InfoBox:** this is the element that describes step that the user is seeing. This element can be positioned on any of the four sides of the element you're concerned with, and it will remain attached to it even if the window resizes, or the element changes it's position.
 
-Then, when each step is about to be executed:
-+ It looks inside the DOM for the element with the specified selector. 
-+ Backups all the CSS properties that it will override 
-+ Changes it's *z-index* and some other properties 
-+ It draws (or reuses the previously drawn) *InfoBox*
-+ It updates the *InfoBox* styles and content
+The InfoBox also contains three other elements, the tutorial close button, the previous and next/end buttons. I wanted to keep this as simple as possible, so there are no divs nesting or nasty stuff goin on. You have just one container (the InfoBox), and you can style it however you like. The same goes for its children.
 
-The *InfoBox* is the actual element that the user will see above, below, on right, or on left (by default is below) of the concerned tutorial step element.
+*Note that the InfoBox will automatically center itself with the step element. Both horizontally or vertically.*
+
+**The InfoBox content:** this is a paragraph element that will hold the content you've specified as description for the current step.
+
+**The InfoBox tutorial close button:** from each step the user should be able to interrupt the tutorial, this is the element that if clicked triggers that. It's a simple div, styled to be round by default, with an 'X' character inside.
+
+**The InfoBox step control buttons:** these buttons are the tutorial flow control buttons. The previous button, if present and clicked loads the previous step from the section. Similarly the next button loads the next one and the end button (if present) ends the tutorial. 
+
+*Note that the end button is drawn only for the last step*
+
+As you can see, **Hazeline** does not use Canvas, or SVG graphics. In fact, it doesn't use graphics at all. 
+
+When each step is about to be executed:
++ It looks inside the DOM for the element with the selector that you specified for this step 
++ Backups all the CSS properties that it will override on the element
++ Changes it's *z-index* and some other properties for easing animations
++ It draws (or reuses the previously drawn) *InfoBox* 
++ It updates the *InfoBox* styles
++ It updates the *InfoBox* properties
++ It updates the *InfoBox* content with the content you've specified in the step configuration
 
 **Hazeline** is capable of holding several tutorial sections. Each section contains multiple steps.
 

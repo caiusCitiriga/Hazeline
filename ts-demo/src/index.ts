@@ -93,7 +93,7 @@ class HazelineDemo {
                     {
                         selector: '#passwordInput',
                         text: 'Type in your password, and press <strong>Next</strong>',
-                    }
+                    },
                 ],
             }
         )
