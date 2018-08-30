@@ -1,11 +1,24 @@
-"use strict";
-function __export(m) {
-    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-}
-Object.defineProperty(exports, "__esModule", { value: true });
-//  Core library
-__export(require("./hazeline"));
-//  Enums
-__export(require("./enums/tutorial-statuses.enum"));
-__export(require("./enums/info-box-placement.enum"));
-__export(require("./enums/next-step-possibilities.enum"));
+var HazelineCanvas = /** @class */ (function () {
+    function HazelineCanvas() {
+        this.initializeCanvas();
+        this.resizeCanvas();
+        this.appendCanvasToBody();
+    }
+    HazelineCanvas.prototype.setCanvasBGColor = function (color) {
+        this.canvas.style.background = color;
+    };
+    HazelineCanvas.prototype.initializeCanvas = function () {
+        this.canvas = document.createElement('canvas');
+        this.ctx = this.canvas.getContext('2d');
+    };
+    HazelineCanvas.prototype.resizeCanvas = function () {
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+    };
+    HazelineCanvas.prototype.appendCanvasToBody = function () {
+        document.querySelector('body').appendChild(this.canvas);
+    };
+    return HazelineCanvas;
+}());
+export { HazelineCanvas };
+//# sourceMappingURL=index.js.map
