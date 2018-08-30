@@ -1,5 +1,4 @@
 export class HazelineCanvas {
-
     private canvasZIndex = 2000;
     private currentElementZIndex = 2001;
     private currentElement: HTMLElement;
