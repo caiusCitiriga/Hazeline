@@ -20,4 +20,8 @@ window.onload = () => {
     setTimeout(() => {
         canvas.surroundElement(elements[2]);
     }, 4000);
+
+    setTimeout(() => {
+        canvas.destroy();
+    }, 6000);
 }

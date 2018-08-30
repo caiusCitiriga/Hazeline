@@ -2,6 +2,7 @@ export class HazelineCanvas {
     private canvasZIndex = 2000;
     private currentElementZIndex = 2001;
     private currentElement: HTMLElement;
+    private canvasID = 'hazeline-canvas';
     private currentElementOriginalZIndex = undefined;
     private currentElementOriginalCSSPosition = undefined;
     private currentElementCoordinates: ElementCoordinates = {
@@ -32,6 +33,11 @@ export class HazelineCanvas {
 
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.currentElement = html instanceof HTMLElement ? html : this.fetchHTMLElementBySelector();
+
+        if (!this.currentElement) {
+            return;
+        }
+
         this.getCoordinates();
 
         this.bringElementToFront();
@@ -39,6 +45,12 @@ export class HazelineCanvas {
         this.drawRightSideRect();
         this.drawTopSideRect();
         this.drawBottomSideRect();
+    }
+
+    public destroy(): void {
+        this.ctx = null;
+        this.canvas = null;
+        document.querySelector('body').removeChild(document.getElementById(this.canvasID))
     }
 
     private initializeCanvas(): void {
@@ -49,10 +61,12 @@ export class HazelineCanvas {
     private styleCanvas(): void {
         this.canvas.width = window.innerWidth;
         this.canvas.height = window.innerHeight;
+        this.canvas.setAttribute('id', this.canvasID);
 
         this.canvas.style.top = '0';
         this.canvas.style.left = '0';
         this.canvas.style.position = 'absolute';
+        this.canvas.style.zIndex = this.canvasZIndex.toString();
     }
 
     private appendCanvasToBody(): void {

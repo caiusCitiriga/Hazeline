@@ -2,6 +2,7 @@ var HazelineCanvas = /** @class */ (function () {
     function HazelineCanvas() {
         this.canvasZIndex = 2000;
         this.currentElementZIndex = 2001;
+        this.canvasID = 'hazeline-canvas';
         this.currentElementOriginalZIndex = undefined;
         this.currentElementOriginalCSSPosition = undefined;
         this.currentElementCoordinates = {
@@ -23,12 +24,20 @@ var HazelineCanvas = /** @class */ (function () {
         }
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.currentElement = html instanceof HTMLElement ? html : this.fetchHTMLElementBySelector();
+        if (!this.currentElement) {
+            return;
+        }
         this.getCoordinates();
         this.bringElementToFront();
         this.drawLeftSideRect();
         this.drawRightSideRect();
         this.drawTopSideRect();
         this.drawBottomSideRect();
+    };
+    HazelineCanvas.prototype.destroy = function () {
+        this.ctx = null;
+        this.canvas = null;
+        document.querySelector('body').removeChild(document.getElementById(this.canvasID));
     };
     HazelineCanvas.prototype.initializeCanvas = function () {
         this.canvas = document.createElement('canvas');
@@ -37,9 +46,11 @@ var HazelineCanvas = /** @class */ (function () {
     HazelineCanvas.prototype.styleCanvas = function () {
         this.canvas.width = window.innerWidth;
         this.canvas.height = window.innerHeight;
+        this.canvas.setAttribute('id', this.canvasID);
         this.canvas.style.top = '0';
         this.canvas.style.left = '0';
         this.canvas.style.position = 'absolute';
+        this.canvas.style.zIndex = this.canvasZIndex.toString();
     };
     HazelineCanvas.prototype.appendCanvasToBody = function () {
         document.querySelector('body').appendChild(this.canvas);

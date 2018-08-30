@@ -2,6 +2,7 @@ export declare class HazelineCanvas {
     private canvasZIndex;
     private currentElementZIndex;
     private currentElement;
+    private canvasID;
     private currentElementOriginalZIndex;
     private currentElementOriginalCSSPosition;
     private currentElementCoordinates;
@@ -10,6 +11,7 @@ export declare class HazelineCanvas {
     constructor();
     setCanvasBGColor(color: string): void;
     surroundElement(html: HTMLElement | string): void;
+    destroy(): void;
     private initializeCanvas;
     private styleCanvas;
     private appendCanvasToBody;
