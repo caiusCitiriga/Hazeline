@@ -12,3 +12,17 @@ body {
     height: 100%;
     overflow: hidden;
 }
+
+input {
+    display: inline-block;
+    height: 1rem;
+}
+
+main {
+    padding: 2.5rem;
+}
+
+hr{
+    margin-top: .5rem;
+    margin-bottom: .5rem;
+}
