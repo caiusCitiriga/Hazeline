@@ -39,7 +39,6 @@ export class HazelineCanvas {
         }
 
         this.getCoordinates();
-
         this.bringElementToFront();
         this.drawLeftSideRect();
         this.drawRightSideRect();
@@ -50,7 +49,7 @@ export class HazelineCanvas {
     public destroy(): void {
         this.ctx = null;
         this.canvas = null;
-        document.querySelector('body').removeChild(document.getElementById(this.canvasID))
+        document.querySelector('body').removeChild(document.getElementById(this.canvasID));
     }
 
     private initializeCanvas(): void {
@@ -74,7 +73,7 @@ export class HazelineCanvas {
     }
 
     private fetchHTMLElementBySelector(): HTMLElement {
-        return null;
+        return null;    //  TODO implement this
     }
 
     private getCoordinates(): void {
