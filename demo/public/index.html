@@ -1,31 +1,218 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>HazelineDemo</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+        crossorigin="anonymous">
     <link rel="stylesheet" href="index.css">
-
-    <!-- Demo imports -->
-    <script src="../dist/bundle.js"></script>
+    <title>Hazeline demo</title>
 </head>
 
 <body>
     <main>
-        <label for="test-1">Test 1 input</label>
-        <input type="text" id="test-1">
-        <hr>
-        <label for="test-2">Test 2 input</label>
-        <input type="text" id="test-2">
-        <hr>
-        <label for="test-3">Test 3 input</label>
-        <input type="text" id="test-3">
-        <hr>
-        <button id="start">Start</button>
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <h3 class="mt-3 text-center haze-font">
+                        <strong class="haze-font">Hazeline</strong> demo page
+                    </h3>
+                    <hr>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12 text-left">
+                    <h3>Personal information</h3>
+                    <hr>
+                </div>
+                <div class="mt-3 col-lg-6 col-sm-12">
+                    <form>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="inputEmail4">Email</label>
+                                <input type="email" class="form-control" id="input-1" placeholder="Email">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="inputPassword4">Password</label>
+                                <input type="password" class="form-control" id="input-2" placeholder="Password">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputAddress">Address</label>
+                            <input type="text" class="form-control" id="input-3" placeholder="1234 Main St">
+                        </div>
+                        <div class="form-group">
+                            <label for="inputAddress2">Address 2</label>
+                            <input type="text" class="form-control" id="inputAddress2" placeholder="Apartment, studio, or floor">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="inputCity">City</label>
+                                <input type="text" class="form-control" id="inputCity">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="inputState">State</label>
+                                <select id="inputState" class="form-control">
+                                    <option selected>Choose...</option>
+                                    <option>...</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-2">
+                                <label for="inputZip">Zip</label>
+                                <input type="text" class="form-control" id="inputZip">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-check">
+                                <span id="input-4">
+                                    <input class="form-check-input" type="checkbox" id="gridCheck">
+                                    <label class="form-check-label" for="gridCheck">
+                                        Check me out
+                                    </label>
+                                </span>
+                            </div>
+                        </div>
+                        <button id="input-5" type="submit" class="btn btn-primary">Sign in</button>
+                    </form>
+                </div>
+                <div class="mt-5 col-lg-6 col-sm-12">
+                    <div class="card text-center" id="input-6">
+                        <div class="card-header">
+                            Featured
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">Special title treatment</h5>
+                            <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                            <a href="#" class="btn btn-primary">Go somewhere</a>
+                        </div>
+                        <div class="card-footer text-muted">
+                            2 days ago
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12 text-left">
+                    <h3>Contractual terms</h3>
+                    <hr>
+                </div>
+                <div class="mt-3col-12">
+                    <p>
+                        <span id="first-paragraph">
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean elementum arcu sed arcu congue consectetur. Duis pellentesque,
+                            eros eu tincidunt eleifend, ipsum magna aliquet magna, ac cursus ipsum libero in libero. Vestibulum
+                            vulputate placerat ornare.
+                        </span> Nam ullamcorper molestie sapien et placerat. Ut tincidunt cursus consequat. Aenean tincidunt
+                        malesuada dui vitae mattis. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut feugiat turpis
+                        sit amet purus mattis sollicitudin. Duis quam quam, elementum bibendum metus nec, feugiat ornare
+                        elit. Pellentesque vitae lectus vitae libero ultricies ullamcorper. Praesent accumsan, nunc quis
+                        auctor fermentum, risus eros eleifend dui, at viverra purus metus non nunc. Donec in sollicitudin
+                        justo. Fusce at elementum orci.
+                        <br><br> <span id="second-paragraph">
+                            Nunc congue bibendum tellus sit amet cursus. Duis rhoncus quis metus non tincidunt. In vulputate quam eget ex sagittis, et
+                            viverra arcu consequat. Pellentesque ornare vehicula leo sed vulputate. In sit amet eros odio.
+                            Maecenas eu ullamcorper nulla. Pellentesque nec augue condimentum, imperdiet quam nec, interdum
+                            ligula. Cras volutpat efficitur elit, vitae mattis velit aliquet nec. Sed nec lacus id neque
+                            sagittis ultricies.
+                        </span>
+                        <br><br> Mauris non libero mollis purus elementum ultricies. In venenatis eros lacinia felis dictum,
+                        sed luctus purus suscipit. Vivamus ante neque, maximus ac ex quis, sollicitudin iaculis nisl. Aliquam
+                        vulputate, est id faucibus convallis, erat dolor pharetra augue, vel vulputate nisl nisi blandit
+                        lectus. Nunc sodales nec eros eget bibendum. Ut ac commodo libero. Suspendisse potenti. Cras ac aliquam
+                        urna. Fusce tempus tincidunt mattis. Sed pretium tortor at lacinia luctus. Nunc vulputate bibendum
+                        eros nec ultricies. Nullam pulvinar vel est a malesuada. Aliquam lorem nunc, sagittis in gravida
+                        vitae, fermentum quis est.
+                        <br><br> Mauris facilisis lorem eros, sodales ultricies libero volutpat vitae. Donec viverra venenatis
+                        erat a imperdiet. Phasellus nulla nunc, pulvinar ut velit vitae, consequat auctor sapien. Ut porttitor
+                        purus vel suscipit efficitur. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere
+                        cubilia Curae; Praesent luctus sit amet velit et placerat. Aliquam non tellus vitae mi lacinia imperdiet.
+                        Vestibulum congue eleifend eros sit amet pulvinar.
+                        <br><br> In ullamcorper dignissim sem non commodo. Etiam vel neque vulputate, porttitor libero vitae,
+                        ultricies leo. Integer sed hendrerit ipsum. Nam auctor odio nec arcu dignissim, eget tempor sapien
+                        fringilla. Fusce quis congue elit. Mauris mattis sapien et dui vestibulum, non sodales neque faucibus.
+                        Aliquam mattis ex et ante scelerisque placerat. Nam ac enim tincidunt, lobortis turpis dignissim,
+                        eleifend ipsum. Proin at neque eu ipsum malesuada maximus vitae eu elit. Nullam egestas aliquam finibus.
+                        Aliquam molestie dolor nec urna tincidunt, in blandit nisl venenatis.
+                    </p>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12 text-left">
+                    <h3>Newsletter subscription</h3>
+                    <hr>
+                </div>
+                <div class="col-12">
+                    <form>
+                        <div class="form-group row">
+                            <label for="inputEmail3" class="col-sm-2 col-form-label">Email</label>
+                            <div class="col-sm-10">
+                                <input type="email" class="form-control" id="inputEmail3" placeholder="Email">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="inputPassword3" class="col-sm-2 col-form-label">Email again</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="inputPassword3" placeholder="Email confirmation">
+                            </div>
+                        </div>
+                        <fieldset class="form-group">
+                            <div class="row">
+                                <legend class="col-form-label col-sm-2 pt-0">Radios</legend>
+                                <div class="col-sm-10">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios1" value="option1" checked>
+                                        <label class="form-check-label" for="gridRadios1">
+                                            First radio
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios2" value="option2">
+                                        <label class="form-check-label" for="gridRadios2">
+                                            Second radio
+                                        </label>
+                                    </div>
+                                    <div class="form-check disabled">
+                                        <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios3" value="option3" disabled>
+                                        <label class="form-check-label" for="gridRadios3">
+                                            Third disabled radio
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                        <div class="form-group row">
+                            <div class="col-sm-2">Checkbox</div>
+                            <div class="col-sm-10">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="gridCheck1">
+                                    <label class="form-check-label" for="gridCheck1">
+                                        Example checkbox
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-sm-10">
+                                <button type="submit" class="btn btn-primary">Sign in</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </main>
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+    <script src="../dist/bundle.js"></script>
 </body>
 
 </html>

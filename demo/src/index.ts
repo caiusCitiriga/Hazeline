@@ -2,26 +2,47 @@ import { HazelineTutorialRunner } from 'hazeline';
 
 window.onload = () => {
     const runner = new HazelineTutorialRunner();
-
+    runner.setOverlayBackground('#007bffe6');
     runner.addSection({
         id: 'section-one',
         steps: [
             {
-                elementSelector: '#test-1',
-                text: 'Some text for the step one'
+                elementSelector: '#input-1',
+                text: 'Type in your email address'
             },
             {
-                elementSelector: '#test-2',
-                text: 'Some text for the step two'
+                elementSelector: '#input-2',
+                text: 'Then your password'
             },
             {
-                elementSelector: '#test-3',
-                text: 'Some long text for this step, that should force an overflow. Therefore a scrollbar should appear in the ligthbox paragraph section'
+                elementSelector: '#input-3',
+                text: 'Your current address'
+            },
+            {
+                elementSelector: '#input-4',
+                text: 'Check this checkbox out!'
+            },
+            {
+                elementSelector: '#input-5',
+                text: 'Click this button!'
+            },
+            {
+                elementSelector: '#input-6',
+                text: 'You can also hightlight entire elements'
+            },
+            {
+                elementSelector: '#first-paragraph',
+                text: 'You can higlight portions of text inside paragraphs'
+            },
+            {
+                elementSelector: '#second-paragraph',
+                text: 'You can higlight portions of text inside paragraphs'
             }
         ]
     });
 
-    (document.getElementById('start') as HTMLButtonElement).addEventListener('click', () => {
+    setTimeout(() => {
+        alert('Press OK to start the tour');
         runner.runSection('section-one');
-    });
+    }, 1000);
 }

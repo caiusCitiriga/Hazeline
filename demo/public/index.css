@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto');
+@import url('https://fonts.googleapis.com/css?family=Kalam:400,700');
 
 :root{
     font-size: 16px;
@@ -10,19 +11,17 @@ body {
     margin: 0;
     padding: 0;
     height: 100%;
-    overflow: hidden;
 }
 
-input {
-    display: inline-block;
-    height: 1rem;
+.haze-font {
+    font-family: 'Kalam', cursive;
+    line-height: 35px;
 }
 
-main {
-    padding: 2.5rem;
-}
-
-hr{
-    margin-top: .5rem;
-    margin-bottom: .5rem;
+strong.haze-font {
+    font-size: 30px;
+    display: inline !important;
+    color: #ff7a00;
+    font-style: italic;
+    line-height: 0;
 }
