@@ -69,10 +69,10 @@ var HazelineCanvas = /** @class */ (function () {
         return element;
     };
     HazelineCanvas.prototype.getCoordinates = function () {
-        this.currentElementCoordinates.y = this.currentElement.offsetTop;
-        this.currentElementCoordinates.x = this.currentElement.offsetLeft;
-        this.currentElementCoordinates.w = this.currentElement.offsetWidth;
-        this.currentElementCoordinates.h = this.currentElement.offsetHeight;
+        this.currentElementCoordinates.y = this.currentElement.getBoundingClientRect().top;
+        this.currentElementCoordinates.x = this.currentElement.getBoundingClientRect().left;
+        this.currentElementCoordinates.w = this.currentElement.getBoundingClientRect().width;
+        this.currentElementCoordinates.h = this.currentElement.getBoundingClientRect().height;
     };
     HazelineCanvas.prototype.bringElementToFront = function () {
         this.currentElementOriginalZIndex = this.currentElement.style.zIndex;
