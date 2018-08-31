@@ -2,7 +2,9 @@ import { HazelineTutorialRunner } from 'hazeline';
 
 window.onload = () => {
     const runner = new HazelineTutorialRunner();
+
     runner.setOverlayBackground('#007bffe6');
+
     runner.addSection({
         id: 'section-one',
         steps: [
@@ -12,7 +14,11 @@ window.onload = () => {
             },
             {
                 elementSelector: '#input-2',
-                text: 'Then your password'
+                text: 'Then your password',
+                onEnd: () => {
+                    console.log('Step 2 started');
+                    runner.enableScalingAnimation();
+                }
             },
             {
                 elementSelector: '#input-3',
@@ -36,7 +42,7 @@ window.onload = () => {
             },
             {
                 elementSelector: '#second-paragraph',
-                text: 'You can higlight portions of text inside paragraphs'
+                text: 'You can higlight portions of text inside paragraphs',
             }
         ]
     });
