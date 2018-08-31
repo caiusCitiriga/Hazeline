@@ -75,7 +75,7 @@ var HazelineLightbox = /** @class */ (function () {
         }
         this.setOptions(opts);
         this.setStylesIfAny(opts);
-        this.currentElementCoordinates = element_utils_1.ElementUtils.getCoordinates(element_utils_1.ElementUtils.fetchHTMLElementBySelector(opts.elementSelector));
+        this.currentElementCoordinates = element_utils_1.ElementUtils.getCoordinates(element_utils_1.ElementUtils.getHTMLElementBySelector(opts.elementSelector));
         this.buildLightbox();
     };
     HazelineLightbox.prototype.showLightbox = function () {

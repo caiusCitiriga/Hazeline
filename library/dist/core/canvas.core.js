@@ -3,19 +3,25 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var element_utils_1 = require("../utilities/element.utils");
 var HazelineCanvas = /** @class */ (function () {
     function HazelineCanvas() {
-        this.canvasZIndex = 2000;
+        //  Behaviour control properties
         this.useScalingAnimation = false;
+        //  Canvas style properties
+        this.canvasZIndex = 2000;
         this.currentElementZIndex = 2001;
         this.canvasID = 'hazeline-canvas';
         this.defaultFillStyle = 'rgba(0,0,0,.8)';
-        this.currentElementOriginalZIndex = undefined;
-        this.currentElementOriginalCSSPosition = undefined;
         this.currentElementCoordinates = {
             x: null,
             y: null,
             w: null,
             h: null,
         };
+        //  Current element style backup properties
+        this.currentElementOriginalZIndex = undefined;
+        this.currentElementOriginalDisplay = undefined;
+        this.currentElementOriginalTransform = undefined;
+        this.currentElementOriginalTransition = undefined;
+        this.currentElementOriginalCSSPosition = undefined;
     }
     Object.defineProperty(HazelineCanvas.prototype, "enableScalingAnimation", {
         get: function () {
@@ -37,14 +43,14 @@ var HazelineCanvas = /** @class */ (function () {
     };
     HazelineCanvas.prototype.wrapElement = function (element) {
         if (!!this.currentElement) {
-            this.disposeCurrentElement();
+            this.restoreCurrentElementStyleProperties();
         }
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.currentElement = element instanceof HTMLElement
             ? element
-            : element_utils_1.ElementUtils.fetchHTMLElementBySelector(element);
+            : element_utils_1.ElementUtils.getHTMLElementBySelector(element);
         if (!this.currentElement) {
-            return;
+            throw new Error("HAZELINE-CANVAS: Cannot find the wanted element: [" + element + "]");
         }
         this.currentElementCoordinates = element_utils_1.ElementUtils.getCoordinates(this.currentElement);
         this.bringElementToFront();
@@ -73,24 +79,39 @@ var HazelineCanvas = /** @class */ (function () {
         document.querySelector('body').appendChild(this.canvas);
     };
     HazelineCanvas.prototype.bringElementToFront = function () {
+        this.backupElementStyleProperties();
+        this.assignBasicStyleProperties();
+        if (this.useScalingAnimation) {
+            this.assignScalingStyleProperties();
+        }
+    };
+    HazelineCanvas.prototype.assignScalingStyleProperties = function () {
         var _this = this;
-        this.currentElementOriginalZIndex = this.currentElement.style.zIndex;
-        this.currentElementOriginalCSSPosition = this.currentElement.style.position;
+        this.currentElement.style.transform = 'scale(1.8)';
+        this.currentElement.style.display = 'inline-block';
+        this.currentElement.style.transition = 'all 120ms ease-in-out';
+        setTimeout(function () {
+            _this.currentElement.style.transform = 'scale(1)';
+        }, 120);
+    };
+    HazelineCanvas.prototype.assignBasicStyleProperties = function () {
         this.currentElement.style.borderRadius = '0';
         this.currentElement.style.position = 'relative';
         this.currentElement.style.zIndex = this.currentElementZIndex.toString();
-        if (this.useScalingAnimation) {
-            this.currentElement.style.transform = 'scale(1.8)';
-            this.currentElement.style.display = 'inline-block';
-            this.currentElement.style.transition = 'all 120ms ease-in-out';
-            setTimeout(function () {
-                _this.currentElement.style.transform = 'scale(1)';
-            }, 120);
-        }
     };
-    HazelineCanvas.prototype.disposeCurrentElement = function () {
+    HazelineCanvas.prototype.backupElementStyleProperties = function () {
+        this.currentElementOriginalZIndex = this.currentElement.style.zIndex;
+        this.currentElementOriginalDisplay = this.currentElement.style.display;
+        this.currentElementOriginalTransform = this.currentElement.style.transform;
+        this.currentElementOriginalCSSPosition = this.currentElement.style.position;
+        this.currentElementOriginalTransition = this.currentElement.style.transition;
+    };
+    HazelineCanvas.prototype.restoreCurrentElementStyleProperties = function () {
         this.currentElement.style.zIndex = this.currentElementOriginalZIndex;
+        this.currentElement.style.display = this.currentElementOriginalDisplay;
+        this.currentElement.style.transform = this.currentElementOriginalTransform;
         this.currentElement.style.position = this.currentElementOriginalCSSPosition;
+        this.currentElement.style.transition = this.currentElementOriginalTransition;
     };
     HazelineCanvas.prototype.drawRectsAround = function () {
         this.ctx.fillStyle = this.overlayBackground ? this.overlayBackground : 'rgba(0,0,0,.8)';

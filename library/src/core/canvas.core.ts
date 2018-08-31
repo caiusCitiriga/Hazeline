@@ -3,14 +3,20 @@ import { ElementUtils } from '../utilities/element.utils';
 
 export class HazelineCanvas {
 
-    private canvasZIndex = 2000;
-    private useScalingAnimation = false;
-    private currentElementZIndex = 2001;
+    //  Objects properties
+    private canvas: HTMLCanvasElement;
     private currentElement: HTMLElement;
+    private ctx: CanvasRenderingContext2D;
+
+    //  Behaviour control properties
+    private useScalingAnimation = false;
+
+    //  Canvas style properties
+    private canvasZIndex = 2000;
+    private overlayBackground: string;
+    private currentElementZIndex = 2001;
     private canvasID = 'hazeline-canvas';
     private defaultFillStyle = 'rgba(0,0,0,.8)';
-    private currentElementOriginalZIndex = undefined;
-    private currentElementOriginalCSSPosition = undefined;
     private currentElementCoordinates: ElementCoordinates = {
         x: null,
         y: null,
@@ -18,9 +24,13 @@ export class HazelineCanvas {
         h: null,
     };
 
-    private overlayBackground;
-    private canvas: HTMLCanvasElement;
-    private ctx: CanvasRenderingContext2D;
+    //  Current element style backup properties
+    private currentElementOriginalZIndex = undefined;
+    private currentElementOriginalDisplay = undefined;
+    private currentElementOriginalTransform = undefined;
+    private currentElementOriginalTransition = undefined;
+    private currentElementOriginalCSSPosition = undefined;
+
 
     public set enableScalingAnimation(value: boolean) {
         this.useScalingAnimation = value;
@@ -43,16 +53,16 @@ export class HazelineCanvas {
     public wrapElement(element: HTMLElement | string): void {
 
         if (!!this.currentElement) {
-            this.disposeCurrentElement();
+            this.restoreCurrentElementStyleProperties();
         }
 
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.currentElement = element instanceof HTMLElement
             ? element
-            : ElementUtils.fetchHTMLElementBySelector(element);
+            : ElementUtils.getHTMLElementBySelector(element);
 
         if (!this.currentElement) {
-            return;
+            throw new Error(`HAZELINE-CANVAS: Cannot find the wanted element: [${element}]`);
         }
 
         this.currentElementCoordinates = ElementUtils.getCoordinates(this.currentElement);
@@ -89,27 +99,43 @@ export class HazelineCanvas {
     }
 
     private bringElementToFront(): void {
-        this.currentElementOriginalZIndex = this.currentElement.style.zIndex;
-        this.currentElementOriginalCSSPosition = this.currentElement.style.position;
+        this.backupElementStyleProperties();
+        this.assignBasicStyleProperties();
 
+        if (this.useScalingAnimation) {
+            this.assignScalingStyleProperties();
+        }
+    }
+
+    private assignScalingStyleProperties(): void {
+        this.currentElement.style.transform = 'scale(1.8)';
+        this.currentElement.style.display = 'inline-block';
+        this.currentElement.style.transition = 'all 120ms ease-in-out';
+        setTimeout(() => {
+            this.currentElement.style.transform = 'scale(1)';
+        }, 120);
+    }
+
+    private assignBasicStyleProperties(): void {
         this.currentElement.style.borderRadius = '0';
         this.currentElement.style.position = 'relative';
         this.currentElement.style.zIndex = this.currentElementZIndex.toString();
-
-        if (this.useScalingAnimation) {
-            this.currentElement.style.transform = 'scale(1.8)';
-            this.currentElement.style.display = 'inline-block';
-            this.currentElement.style.transition = 'all 120ms ease-in-out';
-            setTimeout(() => {
-                this.currentElement.style.transform = 'scale(1)';
-            }, 120);
-        }
-
     }
 
-    private disposeCurrentElement(): void {
+    private backupElementStyleProperties(): void {
+        this.currentElementOriginalZIndex = this.currentElement.style.zIndex;
+        this.currentElementOriginalDisplay = this.currentElement.style.display;
+        this.currentElementOriginalTransform = this.currentElement.style.transform;
+        this.currentElementOriginalCSSPosition = this.currentElement.style.position;
+        this.currentElementOriginalTransition = this.currentElement.style.transition;
+    }
+
+    private restoreCurrentElementStyleProperties(): void {
         this.currentElement.style.zIndex = this.currentElementOriginalZIndex;
+        this.currentElement.style.display = this.currentElementOriginalDisplay;
+        this.currentElement.style.transform = this.currentElementOriginalTransform;
         this.currentElement.style.position = this.currentElementOriginalCSSPosition;
+        this.currentElement.style.transition = this.currentElementOriginalTransition;
     }
 
     private drawRectsAround(): void {

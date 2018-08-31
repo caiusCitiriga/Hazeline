@@ -93,7 +93,7 @@ export class HazelineLightbox {
         this.setOptions(opts);
         this.setStylesIfAny(opts);
 
-        this.currentElementCoordinates = ElementUtils.getCoordinates(ElementUtils.fetchHTMLElementBySelector(opts.elementSelector));
+        this.currentElementCoordinates = ElementUtils.getCoordinates(ElementUtils.getHTMLElementBySelector(opts.elementSelector));
 
         this.buildLightbox();
     }

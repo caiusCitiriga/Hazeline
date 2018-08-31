@@ -8,7 +8,7 @@ export class ElementUtils {
         h: null,
     };
 
-    public static fetchHTMLElementBySelector(selector: string): HTMLElement {
+    public static getHTMLElementBySelector(selector: string): HTMLElement {
         const element = document.querySelector(selector) as HTMLElement;
         if (!element) {
             throw new Error(`HAZELINE-ELEMENT-UTILS: Cannot find the [${selector}] element`);

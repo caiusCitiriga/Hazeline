@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var ElementUtils = /** @class */ (function () {
     function ElementUtils() {
     }
-    ElementUtils.fetchHTMLElementBySelector = function (selector) {
+    ElementUtils.getHTMLElementBySelector = function (selector) {
         var element = document.querySelector(selector);
         if (!element) {
             throw new Error("HAZELINE-ELEMENT-UTILS: Cannot find the [" + selector + "] element");
