@@ -94,6 +94,19 @@ export class HazelineLightbox {
         return lightboxShown;
     }
 
+    public destroy(): void {
+        this.lightbox = null;
+        this.controlsWrapper = null;
+        this.lightboxControls = null;
+        this.lightboxParagraph = null;
+
+        if (!!document.querySelector(`#${this.ligthboxID}`)) {
+            document.querySelector('body').removeChild(document.querySelector(`#${this.ligthboxID}`));
+            return;
+        }
+
+        console.warn('HAZELINE: Warning, cannot find the lightbox to destroy');
+    }
 
     //////////////////////////////////////
     //  Private methods

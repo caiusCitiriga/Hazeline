@@ -67,7 +67,7 @@ export class HazelineCanvas {
 
         this.canvas.style.top = '0';
         this.canvas.style.left = '0';
-        this.canvas.style.position = 'absolute';
+        this.canvas.style.position = 'fixed';
         this.canvas.style.zIndex = this.canvasZIndex.toString();
         this.ctx.fillStyle = this.defaultFillStyle;
     }

@@ -37,6 +37,20 @@ export class HazelineTutorialRunner {
         this.lightbox = new HazelineLightbox();
 
         this.currentStepIndex = -1;
+
+        window.addEventListener('resize', () => this.pauseAndResume(sectionId));
+        window.addEventListener('scroll', () => this.pauseAndResume(sectionId));
+
+        this.loadStep(this.tutorialSections.find(s => s.id === sectionId));
+    }
+
+    private pauseAndResume(sectionId: string): void {
+        this.canvas.destroy();
+        this.lightbox.destroy();
+        this.canvas.init();
+        this.lightbox = new HazelineLightbox();
+
+        this.currentStepIndex--;
         this.loadStep(this.tutorialSections.find(s => s.id === sectionId));
     }
 

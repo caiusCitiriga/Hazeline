@@ -22,6 +22,7 @@ export declare class HazelineLightbox {
     onNextBtnClick: () => void;
     onPrevBtnClick: () => void;
     showLightbox(opts: LightboxOptions): Observable<boolean>;
+    destroy(): void;
     private setStylesIfAny;
     private update;
     private setOptions;

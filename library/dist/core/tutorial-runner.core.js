@@ -17,6 +17,7 @@ var HazelineTutorialRunner = /** @class */ (function () {
         sections.forEach(function (s) { return _this.tutorialSections.push(s); });
     };
     HazelineTutorialRunner.prototype.runSection = function (sectionId) {
+        var _this = this;
         var section = this.tutorialSections.find(function (s) { return s.id === sectionId; });
         if (!section) {
             throw new Error("HAZELINE-RUNNER: Cannot find the given section id: [" + sectionId + "]");
@@ -27,6 +28,16 @@ var HazelineTutorialRunner = /** @class */ (function () {
         this.canvas.init();
         this.lightbox = new lightbox_core_1.HazelineLightbox();
         this.currentStepIndex = -1;
+        window.addEventListener('resize', function () { return _this.pauseAndResume(sectionId); });
+        window.addEventListener('scroll', function () { return _this.pauseAndResume(sectionId); });
+        this.loadStep(this.tutorialSections.find(function (s) { return s.id === sectionId; }));
+    };
+    HazelineTutorialRunner.prototype.pauseAndResume = function (sectionId) {
+        this.canvas.destroy();
+        this.lightbox.destroy();
+        this.canvas.init();
+        this.lightbox = new lightbox_core_1.HazelineLightbox();
+        this.currentStepIndex--;
         this.loadStep(this.tutorialSections.find(function (s) { return s.id === sectionId; }));
     };
     HazelineTutorialRunner.prototype.loadStep = function (section, backwards) {

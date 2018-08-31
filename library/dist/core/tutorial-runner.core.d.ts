@@ -8,6 +8,7 @@ export declare class HazelineTutorialRunner {
     addSection(section: TutorialSection): void;
     addSections(sections: TutorialSection[]): void;
     runSection(sectionId: string): void;
+    private pauseAndResume;
     private loadStep;
 }
 export interface TutorialSection {
