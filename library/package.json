@@ -34,7 +34,7 @@
   },
   "homepage": "https://github.com/caiuscitiriga/hazeline#readme",
   "dependencies": {
-    "rxjs": "6.2.1"
+    "rxjs": "^6.3.0"
   },
   "devDependencies": {
     "rimraf": "2.6.2",
