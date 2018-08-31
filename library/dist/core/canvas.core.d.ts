@@ -7,6 +7,7 @@ export declare class HazelineCanvas {
     private currentElementOriginalZIndex;
     private currentElementOriginalCSSPosition;
     private currentElementCoordinates;
+    private overlayBackground;
     private canvas;
     private ctx;
     init(): void;
@@ -16,13 +17,11 @@ export declare class HazelineCanvas {
     private initializeCanvas;
     private styleCanvas;
     private appendCanvasToBody;
-    private fetchHTMLElementBySelector;
-    private getCoordinates;
     private bringElementToFront;
     private disposeCurrentElement;
+    private drawRectsAround;
     private drawLeftSideRect;
     private drawRightSideRect;
     private drawTopSideRect;
     private drawBottomSideRect;
 }
-//# sourceMappingURL=canvas.core.d.ts.map

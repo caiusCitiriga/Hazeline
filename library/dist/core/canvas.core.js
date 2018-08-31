@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+var element_utils_1 = require("../utilities/element.utils");
 var HazelineCanvas = /** @class */ (function () {
     function HazelineCanvas() {
         this.canvasZIndex = 2000;
@@ -21,23 +22,22 @@ var HazelineCanvas = /** @class */ (function () {
         this.appendCanvasToBody();
     };
     HazelineCanvas.prototype.setCanvasBGColor = function (color) {
-        this.ctx.fillStyle = color;
+        this.overlayBackground = color;
     };
     HazelineCanvas.prototype.wrapElement = function (element) {
         if (!!this.currentElement) {
             this.disposeCurrentElement();
         }
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.currentElement = element instanceof HTMLElement ? element : this.fetchHTMLElementBySelector(element);
+        this.currentElement = element instanceof HTMLElement
+            ? element
+            : element_utils_1.ElementUtils.fetchHTMLElementBySelector(element);
         if (!this.currentElement) {
             return;
         }
-        this.getCoordinates();
+        this.currentElementCoordinates = element_utils_1.ElementUtils.getCoordinates(this.currentElement);
         this.bringElementToFront();
-        this.drawLeftSideRect();
-        this.drawRightSideRect();
-        this.drawTopSideRect();
-        this.drawBottomSideRect();
+        this.drawRectsAround();
     };
     HazelineCanvas.prototype.destroy = function () {
         this.ctx = null;
@@ -49,55 +49,55 @@ var HazelineCanvas = /** @class */ (function () {
         this.ctx = this.canvas.getContext('2d');
     };
     HazelineCanvas.prototype.styleCanvas = function () {
+        this.ctx.fillStyle = this.defaultFillStyle;
+        this.canvas.setAttribute('id', this.canvasID);
         this.canvas.width = window.innerWidth;
         this.canvas.height = window.innerHeight;
-        this.canvas.setAttribute('id', this.canvasID);
-        this.canvas.style.top = '0';
-        this.canvas.style.left = '0';
         this.canvas.style.position = 'fixed';
+        this.canvas.style.top = "0";
+        this.canvas.style.left = "0";
         this.canvas.style.zIndex = this.canvasZIndex.toString();
-        this.ctx.fillStyle = this.defaultFillStyle;
     };
     HazelineCanvas.prototype.appendCanvasToBody = function () {
         document.querySelector('body').appendChild(this.canvas);
     };
-    HazelineCanvas.prototype.fetchHTMLElementBySelector = function (selector) {
-        var element = document.querySelector(selector);
-        if (!element) {
-            throw new Error("HAZELINE-CANVAS: Cannot find the [" + selector + "] element");
-        }
-        return element;
-    };
-    HazelineCanvas.prototype.getCoordinates = function () {
-        this.currentElementCoordinates.y = this.currentElement.getBoundingClientRect().top;
-        this.currentElementCoordinates.x = this.currentElement.getBoundingClientRect().left;
-        this.currentElementCoordinates.w = this.currentElement.getBoundingClientRect().width;
-        this.currentElementCoordinates.h = this.currentElement.getBoundingClientRect().height;
-    };
     HazelineCanvas.prototype.bringElementToFront = function () {
+        var _this = this;
         this.currentElementOriginalZIndex = this.currentElement.style.zIndex;
         this.currentElementOriginalCSSPosition = this.currentElement.style.position;
+        this.currentElement.style.borderRadius = '0';
         this.currentElement.style.position = 'relative';
+        this.currentElement.style.transform = 'scale(1.8)';
+        this.currentElement.style.transition = 'all 120ms ease-in-out';
+        setTimeout(function () {
+            _this.currentElement.style.transform = 'scale(1)';
+        }, 120);
         this.currentElement.style.zIndex = this.currentElementZIndex.toString();
     };
     HazelineCanvas.prototype.disposeCurrentElement = function () {
         this.currentElement.style.zIndex = this.currentElementOriginalZIndex;
         this.currentElement.style.position = this.currentElementOriginalCSSPosition;
     };
+    HazelineCanvas.prototype.drawRectsAround = function () {
+        this.ctx.fillStyle = this.overlayBackground ? this.overlayBackground : 'rgba(0,0,0,.8)';
+        this.drawTopSideRect();
+        this.drawLeftSideRect();
+        this.drawRightSideRect();
+        this.drawBottomSideRect();
+    };
     HazelineCanvas.prototype.drawLeftSideRect = function () {
         this.ctx.fillRect(0, this.currentElementCoordinates.y, this.currentElementCoordinates.x, this.currentElementCoordinates.h);
     };
     HazelineCanvas.prototype.drawRightSideRect = function () {
         var width = this.canvas.width - (this.currentElementCoordinates.x + this.currentElementCoordinates.w);
-        this.ctx.fillRect(this.currentElementCoordinates.x + this.currentElementCoordinates.w, this.currentElementCoordinates.y, width, this.currentElementCoordinates.h);
+        this.ctx.fillRect((this.currentElementCoordinates.x + this.currentElementCoordinates.w), (this.currentElementCoordinates.y), width, this.currentElementCoordinates.h);
     };
     HazelineCanvas.prototype.drawTopSideRect = function () {
         this.ctx.fillRect(0, 0, this.canvas.width, this.currentElementCoordinates.y);
     };
     HazelineCanvas.prototype.drawBottomSideRect = function () {
-        this.ctx.fillRect(0, this.currentElementCoordinates.y + this.currentElementCoordinates.h, this.canvas.width, this.canvas.height - (this.currentElementCoordinates.y + this.currentElementCoordinates.h));
+        this.ctx.fillRect(0, (this.currentElementCoordinates.y + this.currentElementCoordinates.h), this.canvas.width, this.canvas.height - (this.currentElementCoordinates.y + this.currentElementCoordinates.h));
     };
     return HazelineCanvas;
 }());
 exports.HazelineCanvas = HazelineCanvas;
-//# sourceMappingURL=canvas.core.js.map

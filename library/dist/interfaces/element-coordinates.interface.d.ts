@@ -4,4 +4,3 @@ export interface ElementCoordinates {
     h: number;
     w: number;
 }
-//# sourceMappingURL=element-coordinates.interface.d.ts.map

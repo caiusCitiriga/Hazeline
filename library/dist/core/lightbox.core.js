@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var rxjs_1 = require("rxjs");
+var element_utils_1 = require("../utilities/element.utils");
 var HazelineLightbox = /** @class */ (function () {
     function HazelineLightbox() {
         this.ligthboxID = 'hazeline-lightbox';
@@ -20,10 +21,11 @@ var HazelineLightbox = /** @class */ (function () {
             padding: '8px',
             width: '250px',
             zIndex: '2001',
-            margin: '0 auto',
             maxHeight: '200px',
             background: '#fff',
             position: 'absolute',
+            borderRadius: '5px',
+            boxShadow: 'rgb(0, 0, 0) 0px 5px 20px -2px'
         };
         this.lightboxParagraphCSS = {
             width: '98%',
@@ -57,19 +59,31 @@ var HazelineLightbox = /** @class */ (function () {
                 height: '30px'
             }
         };
+        this.currentElementCoordinates = {
+            x: null,
+            y: null,
+            w: null,
+            h: null,
+        };
     }
     //////////////////////////////////////
     //  Public methods
     //////////////////////////////////////
-    HazelineLightbox.prototype.showLightbox = function (opts) {
+    HazelineLightbox.prototype.init = function (opts) {
         if (!!this.lightbox) {
             this.update(opts);
         }
-        var lightboxShown = new rxjs_1.BehaviorSubject(false);
         this.setOptions(opts);
         this.setStylesIfAny(opts);
+        this.currentElementCoordinates = element_utils_1.ElementUtils.getCoordinates(element_utils_1.ElementUtils.fetchHTMLElementBySelector(opts.elementSelector));
         this.buildLightbox();
-        document.querySelector('body').appendChild(this.lightbox);
+    };
+    HazelineLightbox.prototype.showLightbox = function () {
+        var lightboxShown = new rxjs_1.BehaviorSubject(false);
+        if (!document.querySelector('body').querySelector("#" + this.ligthboxID)) {
+            document.querySelector('body').appendChild(this.lightbox);
+        }
+        this.updateLightboxPosition();
         lightboxShown.next(true);
         lightboxShown.complete();
         return lightboxShown;
@@ -107,6 +121,7 @@ var HazelineLightbox = /** @class */ (function () {
     };
     HazelineLightbox.prototype.update = function (opts) {
         this.setOptions(opts);
+        this.updateLightboxPosition();
         this.lightboxParagraph.innerText = this.paragraphText;
         this.lightboxControls.next.disabled = this.disableNextBtn;
         this.lightboxControls.prev.disabled = this.disablePrevBtn;
@@ -125,6 +140,15 @@ var HazelineLightbox = /** @class */ (function () {
         this.lightbox = this.applyStyles(this.lightbox, this.lightboxCSS);
         this.attachParagraph();
         this.attachControlButtons();
+        this.updateLightboxPosition();
+    };
+    HazelineLightbox.prototype.updateLightboxPosition = function () {
+        var y = this.currentElementCoordinates.y + this.currentElementCoordinates.h + 10;
+        var x = (this.currentElementCoordinates.x + (this.currentElementCoordinates.w / 2)) - (+this.lightboxCSS.width.replace('px', '') / 2);
+        this.lightbox.style.top = y + "px";
+        this.lightbox.style.left = x + "px";
+        this.lightbox.style.position = 'fixed';
+        this.lightbox.style.transition = 'all 120ms ease-in-out';
     };
     HazelineLightbox.prototype.attachParagraph = function () {
         this.buildParagraph();
@@ -177,4 +201,3 @@ var HazelineLightbox = /** @class */ (function () {
     return HazelineLightbox;
 }());
 exports.HazelineLightbox = HazelineLightbox;
-//# sourceMappingURL=lightbox.core.js.map

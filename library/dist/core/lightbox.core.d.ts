@@ -1,6 +1,8 @@
 import { CSSRules } from '../interfaces/css-rules';
 import { Observable } from 'rxjs';
 export declare class HazelineLightbox {
+    onNextBtnClick: () => void;
+    onPrevBtnClick: () => void;
     private lightbox;
     private controlsWrapper;
     private lightboxParagraph;
@@ -19,14 +21,15 @@ export declare class HazelineLightbox {
     private lightboxParagraphCSS;
     private lightboxControlsWrapperCSS;
     private lightboxControlButtonsCSS;
-    onNextBtnClick: () => void;
-    onPrevBtnClick: () => void;
-    showLightbox(opts: LightboxOptions): Observable<boolean>;
+    private currentElementCoordinates;
+    init(opts: LightboxOptions): void;
+    showLightbox(): Observable<boolean>;
     destroy(): void;
     private setStylesIfAny;
     private update;
     private setOptions;
     private buildLightbox;
+    private updateLightboxPosition;
     private attachParagraph;
     private buildParagraph;
     private attachControlButtons;
@@ -37,6 +40,7 @@ export declare class HazelineLightbox {
 export interface LightboxOptions {
     lightboxCSS?: CSSRules;
     paragraphCSS?: CSSRules;
+    elementSelector: string;
     controlButtonsCSS?: {
         next?: CSSRules;
         prev?: CSSRules;
@@ -50,4 +54,3 @@ export interface LigthboxControls {
     next: HTMLElement;
     prev: HTMLElement;
 }
-//# sourceMappingURL=lightbox.core.d.ts.map

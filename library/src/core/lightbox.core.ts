@@ -1,7 +1,12 @@
 import { CSSRules } from '../interfaces/css-rules';
 import { Observable, BehaviorSubject } from 'rxjs';
+import { ElementCoordinates } from '../interfaces/element-coordinates.interface';
+import { ElementUtils } from '../utilities/element.utils';
 
 export class HazelineLightbox {
+
+    public onNextBtnClick: () => void;
+    public onPrevBtnClick: () => void;
 
     private lightbox: HTMLElement;
     private controlsWrapper: HTMLElement;
@@ -28,10 +33,11 @@ export class HazelineLightbox {
         padding: '8px',
         width: '250px',
         zIndex: '2001',
-        margin: '0 auto',
         maxHeight: '200px',
         background: '#fff',
         position: 'absolute',
+        borderRadius: '5px',
+        boxShadow: 'rgb(0, 0, 0) 0px 5px 20px -2px'
     };
 
     private lightboxParagraphCSS: CSSRules = {
@@ -69,25 +75,37 @@ export class HazelineLightbox {
         }
     };
 
-    public onNextBtnClick: () => void;
-    public onPrevBtnClick: () => void;
+    private currentElementCoordinates: ElementCoordinates = {
+        x: null,
+        y: null,
+        w: null,
+        h: null,
+    };
 
     //////////////////////////////////////
     //  Public methods
     //////////////////////////////////////
-    public showLightbox(opts: LightboxOptions): Observable<boolean> {
+    public init(opts: LightboxOptions): void {
         if (!!this.lightbox) {
             this.update(opts);
         }
 
-        const lightboxShown = new BehaviorSubject(false);
-
         this.setOptions(opts);
         this.setStylesIfAny(opts);
 
-        this.buildLightbox();
-        document.querySelector('body').appendChild(this.lightbox);
+        this.currentElementCoordinates = ElementUtils.getCoordinates(ElementUtils.fetchHTMLElementBySelector(opts.elementSelector));
 
+        this.buildLightbox();
+    }
+
+    public showLightbox(): Observable<boolean> {
+        const lightboxShown = new BehaviorSubject(false);
+
+        if (!document.querySelector('body').querySelector(`#${this.ligthboxID}`)) {
+            document.querySelector('body').appendChild(this.lightbox);
+        }
+
+        this.updateLightboxPosition();
         lightboxShown.next(true);
         lightboxShown.complete();
 
@@ -131,6 +149,7 @@ export class HazelineLightbox {
 
     private update(opts): void {
         this.setOptions(opts);
+        this.updateLightboxPosition();
         this.lightboxParagraph.innerText = this.paragraphText;
         (this.lightboxControls.next as HTMLButtonElement).disabled = this.disableNextBtn;
         (this.lightboxControls.prev as HTMLButtonElement).disabled = this.disablePrevBtn;
@@ -153,6 +172,17 @@ export class HazelineLightbox {
 
         this.attachParagraph();
         this.attachControlButtons();
+        this.updateLightboxPosition();
+    }
+
+    private updateLightboxPosition(): void {
+        const y = this.currentElementCoordinates.y + this.currentElementCoordinates.h + 10;
+        const x = (this.currentElementCoordinates.x + (this.currentElementCoordinates.w / 2)) - (+this.lightboxCSS.width.replace('px', '') / 2);
+
+        this.lightbox.style.top = `${y}px`;
+        this.lightbox.style.left = `${x}px`;
+        this.lightbox.style.position = 'fixed';
+        this.lightbox.style.transition = 'all 120ms ease-in-out';
     }
 
     private attachParagraph(): void {
@@ -212,11 +242,13 @@ export class HazelineLightbox {
 
         return element;
     }
+
 }
 
 export interface LightboxOptions {
     lightboxCSS?: CSSRules;
     paragraphCSS?: CSSRules;
+    elementSelector: string;
     controlButtonsCSS?: {
         next?: CSSRules,
         prev?: CSSRules
