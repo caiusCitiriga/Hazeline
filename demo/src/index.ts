@@ -3,7 +3,8 @@ import { HazelineTutorialRunner } from 'hazeline';
 window.onload = () => {
     const runner = new HazelineTutorialRunner();
 
-    runner.setOverlayBackground('#007bffe6');
+    runner.enableScalingAnimation();
+    // runner.setOverlayBackground('#007bffe6');
 
     runner.addSection({
         id: 'section-one',
@@ -17,7 +18,6 @@ window.onload = () => {
                 text: 'Then your password',
                 onEnd: () => {
                     console.log('Step 2 started');
-                    runner.enableScalingAnimation();
                 }
             },
             {
@@ -35,11 +35,6 @@ window.onload = () => {
             {
                 elementSelector: '#input-6',
                 text: 'You can also hightlight entire elements',
-                onStart: () => {
-                    console.log('Step 2 started');
-                    runner.disableScalingAnimation();
-                    runner.setOverlayBackground('#ff0000ba');
-                }
             },
             {
                 elementSelector: '#first-paragraph',
@@ -52,8 +47,5 @@ window.onload = () => {
         ]
     });
 
-    setTimeout(() => {
-        alert('Press OK to start the tour');
-        runner.runSection('section-one');
-    }, 1000);
+    runner.runSection('section-one');
 }
