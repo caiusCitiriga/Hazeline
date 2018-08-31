@@ -23,6 +23,40 @@ export class HazelineCanvas {
         w: null,
         h: null,
     };
+    private rectsToBeDrawn: DrawableRects = {
+        top: {
+            x: undefined,
+            y: undefined,
+            targetWidth: undefined,
+            currentWidth: undefined,
+            targetHeight: undefined,
+            currentHeight: undefined,
+        },
+        left: {
+            x: undefined,
+            y: undefined,
+            targetWidth: undefined,
+            currentWidth: undefined,
+            targetHeight: undefined,
+            currentHeight: undefined,
+        },
+        right: {
+            x: undefined,
+            y: undefined,
+            targetWidth: undefined,
+            currentWidth: undefined,
+            targetHeight: undefined,
+            currentHeight: undefined,
+        },
+        bottom: {
+            x: undefined,
+            y: undefined,
+            targetWidth: undefined,
+            currentWidth: undefined,
+            targetHeight: undefined,
+            currentHeight: undefined,
+        }
+    }
 
     //  Current element style backup properties
     private currentElementOriginalZIndex = undefined;
@@ -50,7 +84,7 @@ export class HazelineCanvas {
         this.overlayBackground = color;
     }
 
-    public wrapElement(element: HTMLElement | string): void {
+    public wrapElement(element: HTMLElement | string, skipScalingAnimation?: boolean): void {
 
         if (!!this.currentElement) {
             this.restoreCurrentElementStyleProperties();
@@ -67,7 +101,8 @@ export class HazelineCanvas {
 
         this.currentElementCoordinates = ElementUtils.getCoordinates(this.currentElement);
 
-        this.bringElementToFront();
+        this.bringElementToFront(skipScalingAnimation);
+        this.calculateRectsCoordinates();
         this.drawRectsAround();
     }
 
@@ -98,11 +133,11 @@ export class HazelineCanvas {
         document.querySelector('body').appendChild(this.canvas);
     }
 
-    private bringElementToFront(): void {
+    private bringElementToFront(forceSkipScalingAnimation?: boolean): void {
         this.backupElementStyleProperties();
         this.assignBasicStyleProperties();
 
-        if (this.useScalingAnimation) {
+        if (this.useScalingAnimation && !forceSkipScalingAnimation) {
             this.assignScalingStyleProperties();
         }
     }
@@ -138,6 +173,28 @@ export class HazelineCanvas {
         this.currentElement.style.transition = this.currentElementOriginalTransition;
     }
 
+    private calculateRectsCoordinates(): void {
+        this.rectsToBeDrawn.top.x = 0;
+        this.rectsToBeDrawn.top.y = 0;
+        this.rectsToBeDrawn.top.targetWidth = this.canvas.width;
+        this.rectsToBeDrawn.top.targetHeight = this.currentElementCoordinates.y;
+
+        this.rectsToBeDrawn.bottom.x = 0;
+        this.rectsToBeDrawn.bottom.y = this.currentElementCoordinates.y + this.currentElementCoordinates.h;
+        this.rectsToBeDrawn.bottom.targetWidth = this.canvas.width;
+        this.rectsToBeDrawn.bottom.targetHeight = this.canvas.height - (this.currentElementCoordinates.y + this.currentElementCoordinates.h);
+
+        this.rectsToBeDrawn.left.x = 0;
+        this.rectsToBeDrawn.left.y = this.currentElementCoordinates.y;
+        this.rectsToBeDrawn.left.targetWidth = this.currentElementCoordinates.x;
+        this.rectsToBeDrawn.left.targetHeight = this.currentElementCoordinates.h;
+
+        this.rectsToBeDrawn.right.x = this.currentElementCoordinates.x + this.currentElementCoordinates.w;
+        this.rectsToBeDrawn.right.y = this.currentElementCoordinates.y;
+        this.rectsToBeDrawn.right.targetWidth = this.canvas.width - (this.currentElementCoordinates.x + this.currentElementCoordinates.w);
+        this.rectsToBeDrawn.right.targetHeight = this.currentElementCoordinates.h;
+    }
+
     private drawRectsAround(): void {
         this.ctx.fillStyle = this.overlayBackground ? this.overlayBackground : 'rgba(0,0,0,.8)';
 
@@ -149,40 +206,54 @@ export class HazelineCanvas {
 
     private drawLeftSideRect(): void {
         this.ctx.fillRect(
-            0,
-            this.currentElementCoordinates.y,
-            this.currentElementCoordinates.x,
-            this.currentElementCoordinates.h
+            this.rectsToBeDrawn.left.x,
+            this.rectsToBeDrawn.left.y,
+            this.rectsToBeDrawn.left.targetWidth,
+            this.rectsToBeDrawn.left.targetHeight
         );
     }
 
     private drawRightSideRect(): void {
-        const width = this.canvas.width - (this.currentElementCoordinates.x + this.currentElementCoordinates.w);
-
         this.ctx.fillRect(
-            (this.currentElementCoordinates.x + this.currentElementCoordinates.w),
-            (this.currentElementCoordinates.y),
-            width,
-            this.currentElementCoordinates.h
+            this.rectsToBeDrawn.right.x,
+            this.rectsToBeDrawn.right.y,
+            this.rectsToBeDrawn.right.targetWidth,
+            this.rectsToBeDrawn.right.targetHeight
         );
     }
 
     private drawTopSideRect(): void {
         this.ctx.fillRect(
-            0,
-            0,
-            this.canvas.width,
-            this.currentElementCoordinates.y
+            this.rectsToBeDrawn.top.x,
+            this.rectsToBeDrawn.top.y,
+            this.rectsToBeDrawn.top.targetWidth,
+            this.rectsToBeDrawn.top.targetHeight
         );
     }
 
     private drawBottomSideRect(): void {
         this.ctx.fillRect(
-            0,
-            (this.currentElementCoordinates.y + this.currentElementCoordinates.h),
-            this.canvas.width,
-            this.canvas.height - (this.currentElementCoordinates.y + this.currentElementCoordinates.h)
+            this.rectsToBeDrawn.bottom.x,
+            this.rectsToBeDrawn.bottom.y,
+            this.rectsToBeDrawn.bottom.targetWidth,
+            this.rectsToBeDrawn.bottom.targetHeight
         );
     }
 
+}
+
+export interface DrawableRects {
+    top: DrawableRect;
+    left: DrawableRect;
+    right: DrawableRect;
+    bottom: DrawableRect;
+}
+
+export interface DrawableRect {
+    x: number;
+    y: number;
+    targetWidth: number;
+    currentWidth: number;
+    targetHeight: number;
+    currentHeight: number;
 }

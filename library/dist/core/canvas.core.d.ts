@@ -9,6 +9,7 @@ export declare class HazelineCanvas {
     private canvasID;
     private defaultFillStyle;
     private currentElementCoordinates;
+    private rectsToBeDrawn;
     private currentElementOriginalZIndex;
     private currentElementOriginalDisplay;
     private currentElementOriginalTransform;
@@ -17,7 +18,7 @@ export declare class HazelineCanvas {
     enableScalingAnimation: boolean;
     init(): void;
     setCanvasBGColor(color: string): void;
-    wrapElement(element: HTMLElement | string): void;
+    wrapElement(element: HTMLElement | string, skipScalingAnimation?: boolean): void;
     destroy(): void;
     private initializeCanvas;
     private styleCanvas;
@@ -27,9 +28,24 @@ export declare class HazelineCanvas {
     private assignBasicStyleProperties;
     private backupElementStyleProperties;
     private restoreCurrentElementStyleProperties;
+    private calculateRectsCoordinates;
     private drawRectsAround;
     private drawLeftSideRect;
     private drawRightSideRect;
     private drawTopSideRect;
     private drawBottomSideRect;
+}
+export interface DrawableRects {
+    top: DrawableRect;
+    left: DrawableRect;
+    right: DrawableRect;
+    bottom: DrawableRect;
+}
+export interface DrawableRect {
+    x: number;
+    y: number;
+    targetWidth: number;
+    currentWidth: number;
+    targetHeight: number;
+    currentHeight: number;
 }

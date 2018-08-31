@@ -72,10 +72,10 @@ export class HazelineTutorialRunner {
         this.lightbox = new HazelineLightbox();
 
         this.currentStepIndex--;
-        this.loadStep();
+        this.loadStep(false, true);
     }
 
-    private loadStep(backwards?: boolean): void {
+    private loadStep(backwards?: boolean, skipScalingAnimation?: boolean): void {
         if (backwards) {
             this.currentStepIndex--;
             this.currentStepIndex = this.currentStepIndex === -1 ? 0 : this.currentStepIndex;
@@ -122,7 +122,7 @@ export class HazelineTutorialRunner {
             this.currentStep.getValue().onStart(this.currentStep.getValue());
         }
 
-        this.canvas.wrapElement(this.currentStep.getValue().elementSelector);
+        this.canvas.wrapElement(this.currentStep.getValue().elementSelector, skipScalingAnimation);
         this.lightbox.init({
             text: this.currentStep.getValue().text,
             elementSelector: this.currentStep.getValue().elementSelector,

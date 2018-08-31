@@ -55,9 +55,9 @@ var HazelineTutorialRunner = /** @class */ (function () {
         });
         this.lightbox = new lightbox_core_1.HazelineLightbox();
         this.currentStepIndex--;
-        this.loadStep();
+        this.loadStep(false, true);
     };
-    HazelineTutorialRunner.prototype.loadStep = function (backwards) {
+    HazelineTutorialRunner.prototype.loadStep = function (backwards, skipScalingAnimation) {
         var _this = this;
         if (backwards) {
             this.currentStepIndex--;
@@ -98,7 +98,7 @@ var HazelineTutorialRunner = /** @class */ (function () {
         if (this.currentStep.getValue().onStart) {
             this.currentStep.getValue().onStart(this.currentStep.getValue());
         }
-        this.canvas.wrapElement(this.currentStep.getValue().elementSelector);
+        this.canvas.wrapElement(this.currentStep.getValue().elementSelector, skipScalingAnimation);
         this.lightbox.init({
             text: this.currentStep.getValue().text,
             elementSelector: this.currentStep.getValue().elementSelector,

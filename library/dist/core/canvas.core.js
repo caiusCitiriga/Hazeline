@@ -16,6 +16,40 @@ var HazelineCanvas = /** @class */ (function () {
             w: null,
             h: null,
         };
+        this.rectsToBeDrawn = {
+            top: {
+                x: undefined,
+                y: undefined,
+                targetWidth: undefined,
+                currentWidth: undefined,
+                targetHeight: undefined,
+                currentHeight: undefined,
+            },
+            left: {
+                x: undefined,
+                y: undefined,
+                targetWidth: undefined,
+                currentWidth: undefined,
+                targetHeight: undefined,
+                currentHeight: undefined,
+            },
+            right: {
+                x: undefined,
+                y: undefined,
+                targetWidth: undefined,
+                currentWidth: undefined,
+                targetHeight: undefined,
+                currentHeight: undefined,
+            },
+            bottom: {
+                x: undefined,
+                y: undefined,
+                targetWidth: undefined,
+                currentWidth: undefined,
+                targetHeight: undefined,
+                currentHeight: undefined,
+            }
+        };
         //  Current element style backup properties
         this.currentElementOriginalZIndex = undefined;
         this.currentElementOriginalDisplay = undefined;
@@ -41,7 +75,7 @@ var HazelineCanvas = /** @class */ (function () {
     HazelineCanvas.prototype.setCanvasBGColor = function (color) {
         this.overlayBackground = color;
     };
-    HazelineCanvas.prototype.wrapElement = function (element) {
+    HazelineCanvas.prototype.wrapElement = function (element, skipScalingAnimation) {
         if (!!this.currentElement) {
             this.restoreCurrentElementStyleProperties();
         }
@@ -53,7 +87,8 @@ var HazelineCanvas = /** @class */ (function () {
             throw new Error("HAZELINE-CANVAS: Cannot find the wanted element: [" + element + "]");
         }
         this.currentElementCoordinates = element_utils_1.ElementUtils.getCoordinates(this.currentElement);
-        this.bringElementToFront();
+        this.bringElementToFront(skipScalingAnimation);
+        this.calculateRectsCoordinates();
         this.drawRectsAround();
     };
     HazelineCanvas.prototype.destroy = function () {
@@ -78,10 +113,10 @@ var HazelineCanvas = /** @class */ (function () {
     HazelineCanvas.prototype.appendCanvasToBody = function () {
         document.querySelector('body').appendChild(this.canvas);
     };
-    HazelineCanvas.prototype.bringElementToFront = function () {
+    HazelineCanvas.prototype.bringElementToFront = function (forceSkipScalingAnimation) {
         this.backupElementStyleProperties();
         this.assignBasicStyleProperties();
-        if (this.useScalingAnimation) {
+        if (this.useScalingAnimation && !forceSkipScalingAnimation) {
             this.assignScalingStyleProperties();
         }
     };
@@ -113,6 +148,24 @@ var HazelineCanvas = /** @class */ (function () {
         this.currentElement.style.position = this.currentElementOriginalCSSPosition;
         this.currentElement.style.transition = this.currentElementOriginalTransition;
     };
+    HazelineCanvas.prototype.calculateRectsCoordinates = function () {
+        this.rectsToBeDrawn.top.x = 0;
+        this.rectsToBeDrawn.top.y = 0;
+        this.rectsToBeDrawn.top.targetWidth = this.canvas.width;
+        this.rectsToBeDrawn.top.targetHeight = this.currentElementCoordinates.y;
+        this.rectsToBeDrawn.bottom.x = 0;
+        this.rectsToBeDrawn.bottom.y = this.currentElementCoordinates.y + this.currentElementCoordinates.h;
+        this.rectsToBeDrawn.bottom.targetWidth = this.canvas.width;
+        this.rectsToBeDrawn.bottom.targetHeight = this.canvas.height - (this.currentElementCoordinates.y + this.currentElementCoordinates.h);
+        this.rectsToBeDrawn.left.x = 0;
+        this.rectsToBeDrawn.left.y = this.currentElementCoordinates.y;
+        this.rectsToBeDrawn.left.targetWidth = this.currentElementCoordinates.x;
+        this.rectsToBeDrawn.left.targetHeight = this.currentElementCoordinates.h;
+        this.rectsToBeDrawn.right.x = this.currentElementCoordinates.x + this.currentElementCoordinates.w;
+        this.rectsToBeDrawn.right.y = this.currentElementCoordinates.y;
+        this.rectsToBeDrawn.right.targetWidth = this.canvas.width - (this.currentElementCoordinates.x + this.currentElementCoordinates.w);
+        this.rectsToBeDrawn.right.targetHeight = this.currentElementCoordinates.h;
+    };
     HazelineCanvas.prototype.drawRectsAround = function () {
         this.ctx.fillStyle = this.overlayBackground ? this.overlayBackground : 'rgba(0,0,0,.8)';
         this.drawTopSideRect();
@@ -121,17 +174,16 @@ var HazelineCanvas = /** @class */ (function () {
         this.drawBottomSideRect();
     };
     HazelineCanvas.prototype.drawLeftSideRect = function () {
-        this.ctx.fillRect(0, this.currentElementCoordinates.y, this.currentElementCoordinates.x, this.currentElementCoordinates.h);
+        this.ctx.fillRect(this.rectsToBeDrawn.left.x, this.rectsToBeDrawn.left.y, this.rectsToBeDrawn.left.targetWidth, this.rectsToBeDrawn.left.targetHeight);
     };
     HazelineCanvas.prototype.drawRightSideRect = function () {
-        var width = this.canvas.width - (this.currentElementCoordinates.x + this.currentElementCoordinates.w);
-        this.ctx.fillRect((this.currentElementCoordinates.x + this.currentElementCoordinates.w), (this.currentElementCoordinates.y), width, this.currentElementCoordinates.h);
+        this.ctx.fillRect(this.rectsToBeDrawn.right.x, this.rectsToBeDrawn.right.y, this.rectsToBeDrawn.right.targetWidth, this.rectsToBeDrawn.right.targetHeight);
     };
     HazelineCanvas.prototype.drawTopSideRect = function () {
-        this.ctx.fillRect(0, 0, this.canvas.width, this.currentElementCoordinates.y);
+        this.ctx.fillRect(this.rectsToBeDrawn.top.x, this.rectsToBeDrawn.top.y, this.rectsToBeDrawn.top.targetWidth, this.rectsToBeDrawn.top.targetHeight);
     };
     HazelineCanvas.prototype.drawBottomSideRect = function () {
-        this.ctx.fillRect(0, (this.currentElementCoordinates.y + this.currentElementCoordinates.h), this.canvas.width, this.canvas.height - (this.currentElementCoordinates.y + this.currentElementCoordinates.h));
+        this.ctx.fillRect(this.rectsToBeDrawn.bottom.x, this.rectsToBeDrawn.bottom.y, this.rectsToBeDrawn.bottom.targetWidth, this.rectsToBeDrawn.bottom.targetHeight);
     };
     return HazelineCanvas;
 }());
