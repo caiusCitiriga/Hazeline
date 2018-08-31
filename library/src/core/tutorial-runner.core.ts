@@ -52,13 +52,13 @@ export class HazelineTutorialRunner {
         this.canvas.init();
         this.currentStepIndex = -1;
 
-        window.addEventListener('resize', () => this.pauseAndResume(sectionId));
-        window.addEventListener('scroll', () => this.pauseAndResume(sectionId));
+        window.addEventListener('resize', () => this.pauseAndResume());
+        window.addEventListener('scroll', () => this.pauseAndResume());
 
         this.loadStep();
     }
 
-    private pauseAndResume(sectionId: string): void {
+    private pauseAndResume(): void {
         this.canvas.destroy();
         this.lightbox.destroy();
         this.canvas.init();
@@ -69,7 +69,6 @@ export class HazelineTutorialRunner {
             disablePrev: this.currentStepIndex === 0 ? true : false,
             disableNext: this.currentStepIndex === this.currentSection.getValue().steps.length - 1 ? true : false,
         });
-        this.lightbox = new HazelineLightbox();
 
         this.currentStepIndex--;
         this.loadStep(false, true);

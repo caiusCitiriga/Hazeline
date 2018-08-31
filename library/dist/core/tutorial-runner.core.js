@@ -39,11 +39,11 @@ var HazelineTutorialRunner = /** @class */ (function () {
         }
         this.canvas.init();
         this.currentStepIndex = -1;
-        window.addEventListener('resize', function () { return _this.pauseAndResume(sectionId); });
-        window.addEventListener('scroll', function () { return _this.pauseAndResume(sectionId); });
+        window.addEventListener('resize', function () { return _this.pauseAndResume(); });
+        window.addEventListener('scroll', function () { return _this.pauseAndResume(); });
         this.loadStep();
     };
-    HazelineTutorialRunner.prototype.pauseAndResume = function (sectionId) {
+    HazelineTutorialRunner.prototype.pauseAndResume = function () {
         this.canvas.destroy();
         this.lightbox.destroy();
         this.canvas.init();
@@ -53,7 +53,6 @@ var HazelineTutorialRunner = /** @class */ (function () {
             disablePrev: this.currentStepIndex === 0 ? true : false,
             disableNext: this.currentStepIndex === this.currentSection.getValue().steps.length - 1 ? true : false,
         });
-        this.lightbox = new lightbox_core_1.HazelineLightbox();
         this.currentStepIndex--;
         this.loadStep(false, true);
     };

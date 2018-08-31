@@ -15,17 +15,21 @@
     "url": "git+https://github.com/caiuscitiriga/hazeline.git"
   },
   "keywords": [
+    "js",
+    "web",
+    "into",
+    "node",
+    "guide",
     "tutorial",
+    "javascript",
     "walkthrough",
+    "web-tutorial",
+    "step-tutorial",
     "application-tutorial",
     "interactive-tutorial",
+    "feature introduction",
     "step-by-step-tutorial",
-    "step-tutorial",
-    "node",
-    "js",
-    "javascript",
-    "web",
-    "web-tutorial"
+    "application introduction"
   ],
   "author": "Caius Citiriga",
   "license": "MIT",
@@ -34,7 +38,7 @@
   },
   "homepage": "https://github.com/caiuscitiriga/hazeline#readme",
   "dependencies": {
-    "rxjs": "^6.3.0"
+    "rxjs": "6.3.0"
   },
   "devDependencies": {
     "rimraf": "2.6.2",
