@@ -6654,7 +6654,12 @@ window.onload = function () {
             },
             {
                 elementSelector: '#input-6',
-                text: 'You can also hightlight entire elements'
+                text: 'You can also hightlight entire elements',
+                onStart: function () {
+                    console.log('Step 2 started');
+                    runner.disableScalingAnimation();
+                    runner.setOverlayBackground('#ff0000ba');
+                }
             },
             {
                 elementSelector: '#first-paragraph',

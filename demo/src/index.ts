@@ -34,7 +34,12 @@ window.onload = () => {
             },
             {
                 elementSelector: '#input-6',
-                text: 'You can also hightlight entire elements'
+                text: 'You can also hightlight entire elements',
+                onStart: () => {
+                    console.log('Step 2 started');
+                    runner.disableScalingAnimation();
+                    runner.setOverlayBackground('#ff0000ba');
+                }
             },
             {
                 elementSelector: '#first-paragraph',
