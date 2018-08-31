@@ -1,5 +1,6 @@
 export declare class HazelineCanvas {
     private canvasZIndex;
+    private useScalingAnimation;
     private currentElementZIndex;
     private currentElement;
     private canvasID;
@@ -10,6 +11,7 @@ export declare class HazelineCanvas {
     private overlayBackground;
     private canvas;
     private ctx;
+    enableScalingAnimation: boolean;
     init(): void;
     setCanvasBGColor(color: string): void;
     wrapElement(element: HTMLElement | string): void;

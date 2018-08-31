@@ -30,6 +30,14 @@ export class HazelineTutorialRunner {
         this.canvas.setCanvasBGColor(color);
     }
 
+    public disableScalingAnimation(): void {
+        this.canvas.enableScalingAnimation = false;
+    }
+
+    public enableScalingAnimation(): void {
+        this.canvas.enableScalingAnimation = true;
+    }
+
     public runSection(sectionId: string): void {
         this.currentSection.next(this.tutorialSections.find(s => s.id === sectionId));
 
@@ -90,6 +98,10 @@ export class HazelineTutorialRunner {
                 disablePrev: this.currentStepIndex === 0 ? true : false,
                 disableNext: this.currentStepIndex === this.currentSection.getValue().steps.length - 1 ? true : false,
             });
+
+            if (this.currentStep.getValue().onEnd) {
+                this.currentStep.getValue().onEnd(this.currentStep.getValue());
+            }
         };
 
         this.lightbox.onPrevBtnClick = () => {
@@ -100,10 +112,17 @@ export class HazelineTutorialRunner {
                 disablePrev: this.currentStepIndex === 0 ? true : false,
                 disableNext: this.currentStepIndex === this.currentSection.getValue().steps.length - 1 ? true : false,
             });
+
+            if (this.currentStep.getValue().onEnd) {
+                this.currentStep.getValue().onEnd(this.currentStep.getValue());
+            }
         };
 
-        this.canvas.wrapElement(this.currentStep.getValue().elementSelector);
+        if (this.currentStep.getValue().onStart) {
+            this.currentStep.getValue().onStart(this.currentStep.getValue());
+        }
 
+        this.canvas.wrapElement(this.currentStep.getValue().elementSelector);
         this.lightbox.init({
             text: this.currentStep.getValue().text,
             elementSelector: this.currentStep.getValue().elementSelector,

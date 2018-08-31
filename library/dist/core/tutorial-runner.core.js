@@ -22,6 +22,12 @@ var HazelineTutorialRunner = /** @class */ (function () {
     HazelineTutorialRunner.prototype.setOverlayBackground = function (color) {
         this.canvas.setCanvasBGColor(color);
     };
+    HazelineTutorialRunner.prototype.disableScalingAnimation = function () {
+        this.canvas.enableScalingAnimation = false;
+    };
+    HazelineTutorialRunner.prototype.enableScalingAnimation = function () {
+        this.canvas.enableScalingAnimation = true;
+    };
     HazelineTutorialRunner.prototype.runSection = function (sectionId) {
         var _this = this;
         this.currentSection.next(this.tutorialSections.find(function (s) { return s.id === sectionId; }));
@@ -73,6 +79,9 @@ var HazelineTutorialRunner = /** @class */ (function () {
                 disablePrev: _this.currentStepIndex === 0 ? true : false,
                 disableNext: _this.currentStepIndex === _this.currentSection.getValue().steps.length - 1 ? true : false,
             });
+            if (_this.currentStep.getValue().onEnd) {
+                _this.currentStep.getValue().onEnd(_this.currentStep.getValue());
+            }
         };
         this.lightbox.onPrevBtnClick = function () {
             _this.loadStep(true);
@@ -82,7 +91,13 @@ var HazelineTutorialRunner = /** @class */ (function () {
                 disablePrev: _this.currentStepIndex === 0 ? true : false,
                 disableNext: _this.currentStepIndex === _this.currentSection.getValue().steps.length - 1 ? true : false,
             });
+            if (_this.currentStep.getValue().onEnd) {
+                _this.currentStep.getValue().onEnd(_this.currentStep.getValue());
+            }
         };
+        if (this.currentStep.getValue().onStart) {
+            this.currentStep.getValue().onStart(this.currentStep.getValue());
+        }
         this.canvas.wrapElement(this.currentStep.getValue().elementSelector);
         this.lightbox.init({
             text: this.currentStep.getValue().text,

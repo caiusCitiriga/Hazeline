@@ -4,6 +4,7 @@ import { ElementUtils } from '../utilities/element.utils';
 export class HazelineCanvas {
 
     private canvasZIndex = 2000;
+    private useScalingAnimation = false;
     private currentElementZIndex = 2001;
     private currentElement: HTMLElement;
     private canvasID = 'hazeline-canvas';
@@ -20,6 +21,14 @@ export class HazelineCanvas {
     private overlayBackground;
     private canvas: HTMLCanvasElement;
     private ctx: CanvasRenderingContext2D;
+
+    public set enableScalingAnimation(value: boolean) {
+        this.useScalingAnimation = value;
+    }
+
+    public get enableScalingAnimation(): boolean {
+        return this.useScalingAnimation;
+    }
 
     public init(): void {
         this.initializeCanvas();
@@ -85,14 +94,17 @@ export class HazelineCanvas {
 
         this.currentElement.style.borderRadius = '0';
         this.currentElement.style.position = 'relative';
-        this.currentElement.style.transform = 'scale(1.8)';
-        this.currentElement.style.transition = 'all 120ms ease-in-out';
-
-        setTimeout(() => {
-            this.currentElement.style.transform = 'scale(1)';
-        }, 120);
-
         this.currentElement.style.zIndex = this.currentElementZIndex.toString();
+
+        if (this.useScalingAnimation) {
+            this.currentElement.style.transform = 'scale(1.8)';
+            this.currentElement.style.display = 'inline-block';
+            this.currentElement.style.transition = 'all 120ms ease-in-out';
+            setTimeout(() => {
+                this.currentElement.style.transform = 'scale(1)';
+            }, 120);
+        }
+
     }
 
     private disposeCurrentElement(): void {

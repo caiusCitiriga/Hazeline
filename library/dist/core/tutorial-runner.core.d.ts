@@ -10,6 +10,8 @@ export declare class HazelineTutorialRunner {
     addSection(section: TutorialSection): void;
     addSections(sections: TutorialSection[]): void;
     setOverlayBackground(color: string): void;
+    disableScalingAnimation(): void;
+    enableScalingAnimation(): void;
     runSection(sectionId: string): void;
     private pauseAndResume;
     private loadStep;

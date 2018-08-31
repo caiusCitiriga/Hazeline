@@ -4,6 +4,7 @@ var element_utils_1 = require("../utilities/element.utils");
 var HazelineCanvas = /** @class */ (function () {
     function HazelineCanvas() {
         this.canvasZIndex = 2000;
+        this.useScalingAnimation = false;
         this.currentElementZIndex = 2001;
         this.canvasID = 'hazeline-canvas';
         this.defaultFillStyle = 'rgba(0,0,0,.8)';
@@ -16,6 +17,16 @@ var HazelineCanvas = /** @class */ (function () {
             h: null,
         };
     }
+    Object.defineProperty(HazelineCanvas.prototype, "enableScalingAnimation", {
+        get: function () {
+            return this.useScalingAnimation;
+        },
+        set: function (value) {
+            this.useScalingAnimation = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
     HazelineCanvas.prototype.init = function () {
         this.initializeCanvas();
         this.styleCanvas();
@@ -67,12 +78,15 @@ var HazelineCanvas = /** @class */ (function () {
         this.currentElementOriginalCSSPosition = this.currentElement.style.position;
         this.currentElement.style.borderRadius = '0';
         this.currentElement.style.position = 'relative';
-        this.currentElement.style.transform = 'scale(1.8)';
-        this.currentElement.style.transition = 'all 120ms ease-in-out';
-        setTimeout(function () {
-            _this.currentElement.style.transform = 'scale(1)';
-        }, 120);
         this.currentElement.style.zIndex = this.currentElementZIndex.toString();
+        if (this.useScalingAnimation) {
+            this.currentElement.style.transform = 'scale(1.8)';
+            this.currentElement.style.display = 'inline-block';
+            this.currentElement.style.transition = 'all 120ms ease-in-out';
+            setTimeout(function () {
+                _this.currentElement.style.transform = 'scale(1)';
+            }, 120);
+        }
     };
     HazelineCanvas.prototype.disposeCurrentElement = function () {
         this.currentElement.style.zIndex = this.currentElementOriginalZIndex;
