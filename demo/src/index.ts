@@ -1,27 +1,27 @@
-import { HazelineCanvas } from 'hazeline';
+import { HazelineTutorialRunner } from 'hazeline';
 
 window.onload = () => {
-    const canvas = new HazelineCanvas();
-    // canvas.setCanvasBGColor('rgba(58,79,255,.9)');
-    canvas.setCanvasBGColor('rgba(0,0,0,.8)');
+    const runner = new HazelineTutorialRunner();
 
-    const elements: HTMLElement[] = [];
+    runner.addSection({
+        id: 'section-one',
+        steps: [
+            {
+                elementSelector: '#test-1',
+                text: 'Some text for the step one'
+            },
+            {
+                elementSelector: '#test-2',
+                text: 'Some text for the step two'
+            },
+            {
+                elementSelector: '#test-3',
+                text: 'Some long text for this step, that should force an overflow. Therefore a scrollbar should appear in the ligthbox paragraph section'
+            }
+        ]
+    });
 
-    elements.push(document.getElementById('test-1') as HTMLDivElement);
-    elements.push(document.getElementById('test-2') as HTMLDivElement);
-    elements.push(document.getElementById('test-3') as HTMLDivElement);
-
-    canvas.surroundElement(elements[0]);
-
-    setTimeout(() => {
-        canvas.surroundElement(elements[1]);
-    }, 2000);
-
-    setTimeout(() => {
-        canvas.surroundElement(elements[2]);
-    }, 4000);
-
-    setTimeout(() => {
-        canvas.destroy();
-    }, 6000);
+    (document.getElementById('start') as HTMLButtonElement).addEventListener('click', () => {
+        runner.runSection('section-one');
+    });
 }
