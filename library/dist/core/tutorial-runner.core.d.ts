@@ -1,7 +1,9 @@
+import { LightboxPlacement } from './lightbox.core';
 export declare class HazelineTutorialRunner {
     private canvas;
     private lightbox;
     private currentStepIndex;
+    private lightboxOptions;
     private tutorialSections;
     private currentStep;
     private currentSection;
@@ -15,6 +17,7 @@ export declare class HazelineTutorialRunner {
     runSection(sectionId: string): void;
     private pauseAndResume;
     private loadStep;
+    private renderStep;
 }
 export interface TutorialSection {
     id: string;
@@ -26,6 +29,8 @@ export interface TutorialStep {
     id?: string;
     text: string;
     elementSelector: string;
+    delayBeforeStart?: number;
+    lightboxPlacement?: LightboxPlacement | string;
     onEnd?: (step: TutorialStep) => void;
     onStart?: (step: TutorialStep) => void;
 }
@@ -33,3 +38,4 @@ export declare enum TutorialStatus {
     RUNNING = 0,
     STOPPED = 1
 }
+//# sourceMappingURL=tutorial-runner.core.d.ts.map

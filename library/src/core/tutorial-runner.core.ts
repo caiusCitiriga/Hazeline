@@ -1,6 +1,6 @@
 import { BehaviorSubject } from 'rxjs';
 import { HazelineCanvas } from './canvas.core';
-import { HazelineLightbox } from './lightbox.core';
+import { HazelineLightbox, LightboxPlacement, LightboxOptions } from './lightbox.core';
 
 export class HazelineTutorialRunner {
 
@@ -8,6 +8,7 @@ export class HazelineTutorialRunner {
     private lightbox: HazelineLightbox;
 
     private currentStepIndex: number;
+    private lightboxOptions: LightboxOptions;
     private tutorialSections: TutorialSection[] = [];
     private currentStep: BehaviorSubject<TutorialStep> = new BehaviorSubject(null);
     private currentSection: BehaviorSubject<TutorialSection> = new BehaviorSubject(null);
@@ -60,15 +61,10 @@ export class HazelineTutorialRunner {
 
     private pauseAndResume(): void {
         this.canvas.destroy();
-        this.lightbox.destroy();
         this.canvas.init();
 
-        this.lightbox.init({
-            text: this.currentStep.getValue().text,
-            elementSelector: this.currentStep.getValue().elementSelector,
-            disablePrev: this.currentStepIndex === 0 ? true : false,
-            disableNext: this.currentStepIndex === this.currentSection.getValue().steps.length - 1 ? true : false,
-        });
+        //  no need to destroy lightbox, init updates props if lightbox exists
+        this.lightbox.init(this.lightboxOptions);
 
         this.currentStepIndex--;
         this.loadStep(false, true);
@@ -91,12 +87,7 @@ export class HazelineTutorialRunner {
 
         this.lightbox.onNextBtnClick = () => {
             this.loadStep();
-            this.lightbox.init({
-                text: this.currentStep.getValue().text,
-                elementSelector: this.currentStep.getValue().elementSelector,
-                disablePrev: this.currentStepIndex === 0 ? true : false,
-                disableNext: this.currentStepIndex === this.currentSection.getValue().steps.length - 1 ? true : false,
-            });
+            this.lightbox.init(this.lightboxOptions);
 
             if (this.currentStep.getValue().onEnd) {
                 this.currentStep.getValue().onEnd(this.currentStep.getValue());
@@ -105,12 +96,7 @@ export class HazelineTutorialRunner {
 
         this.lightbox.onPrevBtnClick = () => {
             this.loadStep(true);
-            this.lightbox.init({
-                text: this.currentStep.getValue().text,
-                elementSelector: this.currentStep.getValue().elementSelector,
-                disablePrev: this.currentStepIndex === 0 ? true : false,
-                disableNext: this.currentStepIndex === this.currentSection.getValue().steps.length - 1 ? true : false,
-            });
+            this.lightbox.init(this.lightboxOptions);
 
             if (this.currentStep.getValue().onEnd) {
                 this.currentStep.getValue().onEnd(this.currentStep.getValue());
@@ -121,13 +107,31 @@ export class HazelineTutorialRunner {
             this.currentStep.getValue().onStart(this.currentStep.getValue());
         }
 
-        this.canvas.wrapElement(this.currentStep.getValue().elementSelector, skipScalingAnimation);
-        this.lightbox.init({
+        if (this.currentStep.getValue().delayBeforeStart) {
+            this.lightbox.fadeOut();
+            this.canvas.writeMessage('Please wait...');
+
+            setTimeout(() => {
+                this.lightbox.fadeIn();
+                this.renderStep(skipScalingAnimation);
+            }, this.currentStep.getValue().delayBeforeStart);
+            return;
+        }
+
+        this.renderStep(skipScalingAnimation);
+    }
+
+    private renderStep(skipScalingAnimation?: boolean): void {
+        this.lightboxOptions = {
             text: this.currentStep.getValue().text,
+            placement: this.currentStep.getValue().lightboxPlacement,
             elementSelector: this.currentStep.getValue().elementSelector,
-            disablePrev: this.currentStepIndex === 0 ? true : false,
-            disableNext: this.currentStepIndex === this.currentSection.getValue().steps.length - 1 ? true : false,
-        });
+            disablePrev: this.currentStepIndex <= 0 ? true : false,
+            disableNext: this.currentStepIndex >= this.currentSection.getValue().steps.length - 1 ? true : false,
+        };
+
+        this.canvas.wrapElement(this.currentStep.getValue().elementSelector, skipScalingAnimation);
+        this.lightbox.init(this.lightboxOptions);
 
         this.lightbox.showLightbox();
     }
@@ -144,6 +148,8 @@ export interface TutorialStep {
     id?: string;
     text: string;
     elementSelector: string;
+    delayBeforeStart?: number;
+    lightboxPlacement?: LightboxPlacement | string;
 
     onEnd?: (step: TutorialStep) => void;
     onStart?: (step: TutorialStep) => void;

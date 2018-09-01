@@ -15,8 +15,10 @@ export class HazelineCanvas {
     private canvasZIndex = 2000;
     private overlayBackground: string;
     private currentElementZIndex = 2001;
+    private pleaseWaitIsVisible = false;
     private canvasID = 'hazeline-canvas';
     private defaultFillStyle = 'rgba(0,0,0,.8)';
+    private pleaseWaitLayerID = 'hazeline-please-wait-layer';
     private currentElementCoordinates: ElementCoordinates = {
         x: null,
         y: null,
@@ -28,39 +30,30 @@ export class HazelineCanvas {
             x: undefined,
             y: undefined,
             targetWidth: undefined,
-            currentWidth: undefined,
             targetHeight: undefined,
-            currentHeight: undefined,
         },
         left: {
             x: undefined,
             y: undefined,
             targetWidth: undefined,
-            currentWidth: undefined,
             targetHeight: undefined,
-            currentHeight: undefined,
         },
         right: {
             x: undefined,
             y: undefined,
             targetWidth: undefined,
-            currentWidth: undefined,
             targetHeight: undefined,
-            currentHeight: undefined,
         },
         bottom: {
             x: undefined,
             y: undefined,
             targetWidth: undefined,
-            currentWidth: undefined,
             targetHeight: undefined,
-            currentHeight: undefined,
         }
     }
 
     //  Current element style backup properties
     private currentElementOriginalZIndex = undefined;
-    private currentElementOriginalDisplay = undefined;
     private currentElementOriginalTransform = undefined;
     private currentElementOriginalTransition = undefined;
     private currentElementOriginalCSSPosition = undefined;
@@ -80,13 +73,33 @@ export class HazelineCanvas {
         this.appendCanvasToBody();
     }
 
+    public fill(color?: string): void {
+        color = color ? color : this.defaultFillStyle;
+        if (!this.ctx) {
+            console.error(`HAZELINE-CANVAS: Cannot fill canvas with [${color}] because lack of _ctx`);
+            return;
+        }
+
+        this.ctx.fillStyle = color;
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.currentElement.style.zIndex = this.currentElementOriginalZIndex;
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+        //  restore original fill style
+        this.ctx.fillStyle = this.defaultFillStyle;
+    }
+
     public setCanvasBGColor(color: string): void {
         this.overlayBackground = color;
     }
 
     public wrapElement(element: HTMLElement | string, skipScalingAnimation?: boolean): void {
+        if (this.pleaseWaitIsVisible) {
+            document.querySelector('body').removeChild(document.querySelector(`#${this.pleaseWaitLayerID}`));
+            this.pleaseWaitIsVisible = false;
+        }
 
-        if (!!this.currentElement) {
+        if (this.currentElement) {
             this.restoreCurrentElementStyleProperties();
         }
 
@@ -102,7 +115,7 @@ export class HazelineCanvas {
         this.currentElementCoordinates = ElementUtils.getCoordinates(this.currentElement);
 
         this.bringElementToFront(skipScalingAnimation);
-        this.calculateRectsCoordinates();
+        this.computeRectsCoordinates();
         this.drawRectsAround();
     }
 
@@ -110,6 +123,30 @@ export class HazelineCanvas {
         this.ctx = null;
         this.canvas = null;
         document.querySelector('body').removeChild(document.getElementById(this.canvasID));
+    }
+
+    public writeMessage(message: string, opts?: { color: string, size: number, fontFamily: string }): void {
+        this.pleaseWaitIsVisible = true;
+        const fontSize = opts && opts.size ? opts.size : 40;
+        const fontColor = opts && opts.color ? opts.color : '#fff';
+        const fontFamily = opts && opts.fontFamily ? opts.fontFamily : 'Arial';
+
+        const paragraph = document.createElement('p');
+        paragraph.setAttribute('id', this.pleaseWaitLayerID);
+
+        paragraph.style.left = '0';
+        paragraph.style.top = '45%';
+        paragraph.innerText = message;
+        paragraph.style.width = '100%';
+        paragraph.style.color = fontColor;
+        paragraph.style.position = 'fixed';
+        paragraph.style.textAlign = 'center';
+        paragraph.style.fontFamily = fontFamily;
+        paragraph.style.fontSize = `${fontSize}px`;
+        paragraph.style.zIndex = (this.canvasZIndex + 1).toString();
+
+        this.fill('rgba(0,0,0,.9)');
+        document.querySelector('body').appendChild(paragraph);
     }
 
     private initializeCanvas(): void {
@@ -144,11 +181,10 @@ export class HazelineCanvas {
 
     private assignScalingStyleProperties(): void {
         this.currentElement.style.transform = 'scale(1.8)';
-        this.currentElement.style.display = 'inline-block';
         this.currentElement.style.transition = 'all 120ms ease-in-out';
         setTimeout(() => {
             this.currentElement.style.transform = 'scale(1)';
-        }, 120);
+        }, 200);
     }
 
     private assignBasicStyleProperties(): void {
@@ -159,7 +195,6 @@ export class HazelineCanvas {
 
     private backupElementStyleProperties(): void {
         this.currentElementOriginalZIndex = this.currentElement.style.zIndex;
-        this.currentElementOriginalDisplay = this.currentElement.style.display;
         this.currentElementOriginalTransform = this.currentElement.style.transform;
         this.currentElementOriginalCSSPosition = this.currentElement.style.position;
         this.currentElementOriginalTransition = this.currentElement.style.transition;
@@ -167,13 +202,12 @@ export class HazelineCanvas {
 
     private restoreCurrentElementStyleProperties(): void {
         this.currentElement.style.zIndex = this.currentElementOriginalZIndex;
-        this.currentElement.style.display = this.currentElementOriginalDisplay;
         this.currentElement.style.transform = this.currentElementOriginalTransform;
         this.currentElement.style.position = this.currentElementOriginalCSSPosition;
         this.currentElement.style.transition = this.currentElementOriginalTransition;
     }
 
-    private calculateRectsCoordinates(): void {
+    private computeRectsCoordinates(): void {
         this.rectsToBeDrawn.top.x = 0;
         this.rectsToBeDrawn.top.y = 0;
         this.rectsToBeDrawn.top.targetWidth = this.canvas.width;
@@ -253,7 +287,5 @@ export interface DrawableRect {
     x: number;
     y: number;
     targetWidth: number;
-    currentWidth: number;
     targetHeight: number;
-    currentHeight: number;
 }

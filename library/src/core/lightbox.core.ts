@@ -82,12 +82,10 @@ export class HazelineLightbox {
         h: null,
     };
 
-    //////////////////////////////////////
-    //  Public methods
-    //////////////////////////////////////
     public init(opts: LightboxOptions): void {
         if (!!this.lightbox) {
             this.update(opts);
+            return;
         }
 
         this.setOptions(opts);
@@ -95,17 +93,14 @@ export class HazelineLightbox {
 
         this.currentElementCoordinates = ElementUtils.getCoordinates(ElementUtils.getHTMLElementBySelector(opts.elementSelector));
 
-        this.buildLightbox();
+        this.buildLightbox(opts);
     }
 
     public showLightbox(): Observable<boolean> {
         const lightboxShown = new BehaviorSubject(false);
 
-        if (!document.querySelector('body').querySelector(`#${this.ligthboxID}`)) {
-            document.querySelector('body').appendChild(this.lightbox);
-        }
+        this.lightbox.style.display = 'block';
 
-        this.updateLightboxPosition();
         lightboxShown.next(true);
         lightboxShown.complete();
 
@@ -126,9 +121,16 @@ export class HazelineLightbox {
         console.warn('HAZELINE: Warning, cannot find the lightbox to destroy');
     }
 
-    //////////////////////////////////////
-    //  Private methods
-    //////////////////////////////////////
+    public fadeOut(): void {
+        console.log('Fading lightbox out');
+        this.lightbox.style.opacity = '0';
+    }
+
+    public fadeIn(): void {
+        console.log('Fading lightbox in');
+        this.lightbox.style.opacity = '1';
+    }
+
     private setStylesIfAny(opts: LightboxOptions): void {
         if (opts.lightboxCSS) {
             this.lightboxCSS = opts.lightboxCSS;
@@ -147,9 +149,9 @@ export class HazelineLightbox {
         }
     }
 
-    private update(opts): void {
+    private update(opts: LightboxOptions): void {
         this.setOptions(opts);
-        this.updateLightboxPosition();
+        this.updateLightboxPosition(opts.placement);
         this.lightboxParagraph.innerText = this.paragraphText;
         (this.lightboxControls.next as HTMLButtonElement).disabled = this.disableNextBtn;
         (this.lightboxControls.prev as HTMLButtonElement).disabled = this.disablePrevBtn;
@@ -161,23 +163,53 @@ export class HazelineLightbox {
         this.disablePrevBtn = opts.disablePrev;
     }
 
-    private buildLightbox(): void {
-        if (!!this.lightbox) {
-            return;
-        }
-
+    private buildLightbox(opts: LightboxOptions): void {
         this.lightbox = document.createElement('div');
         this.lightbox.setAttribute('id', this.ligthboxID);
         this.lightbox = this.applyStyles(this.lightbox, this.lightboxCSS);
+        this.lightbox.style.display = 'none';   // keep it hidden until show is called
 
         this.attachParagraph();
         this.attachControlButtons();
-        this.updateLightboxPosition();
+
+        if (!document.querySelector('body').querySelector(`#${this.ligthboxID}`)) {
+            document.querySelector('body').appendChild(this.lightbox);
+        }
+
+        this.updateLightboxPosition(opts.placement);
     }
 
-    private updateLightboxPosition(): void {
-        const y = this.currentElementCoordinates.y + this.currentElementCoordinates.h + 10;
-        const x = (this.currentElementCoordinates.x + (this.currentElementCoordinates.w / 2)) - (+this.lightboxCSS.width.replace('px', '') / 2);
+    private updateLightboxPosition(placement: LightboxPlacement | string): void {
+        let y = undefined;
+        let x = undefined;
+
+        switch (placement) {
+            case 'above':
+            case 'ABOVE':
+            case LightboxPlacement.ABOVE:
+                y = this.currentElementCoordinates.y - this.lightbox.getBoundingClientRect().height - 10;
+                x = (this.currentElementCoordinates.x + (this.currentElementCoordinates.w / 2)) - (+this.lightboxCSS.width.replace('px', '') / 2);
+                break;
+            case 'right':
+            case 'RIGHT':
+            case LightboxPlacement.RIGHT:
+                y = (this.currentElementCoordinates.y + (this.currentElementCoordinates.h / 2)) - ((this.lightbox.getBoundingClientRect().height / 2));
+                x = (this.currentElementCoordinates.x + this.currentElementCoordinates.w) + 10;
+                break;
+            case 'left':
+            case 'LEFT':
+            case LightboxPlacement.LEFT:
+                y = (this.currentElementCoordinates.y + (this.currentElementCoordinates.h / 2)) - ((this.lightbox.getBoundingClientRect().height / 2));
+                x = this.currentElementCoordinates.x - this.lightbox.getBoundingClientRect().width - 10;
+                break;
+            case 'below':
+            case 'BELOW':
+            case LightboxPlacement.BELOW:
+            default:
+                y = this.currentElementCoordinates.y + this.currentElementCoordinates.h + 10;
+                x = (this.currentElementCoordinates.x + (this.currentElementCoordinates.w / 2)) - (+this.lightboxCSS.width.replace('px', '') / 2);
+                break;
+        }
 
         this.lightbox.style.top = `${y}px`;
         this.lightbox.style.left = `${x}px`;
@@ -246,21 +278,25 @@ export class HazelineLightbox {
 }
 
 export interface LightboxOptions {
-    lightboxCSS?: CSSRules;
-    paragraphCSS?: CSSRules;
-    elementSelector: string;
-    controlButtonsCSS?: {
-        next?: CSSRules,
-        prev?: CSSRules
-    };
-    controlButtonsWrapperCSS?: CSSRules;
-
     text: string;
     disableNext?: boolean;
     disablePrev?: boolean;
+    lightboxCSS?: CSSRules;
+    paragraphCSS?: CSSRules;
+    elementSelector: string;
+    controlButtonsWrapperCSS?: CSSRules;
+    placement?: LightboxPlacement | string;
+    controlButtonsCSS?: { next?: CSSRules, prev?: CSSRules };
 }
 
 export interface LigthboxControls {
     next: HTMLElement,
     prev: HTMLElement,
+}
+
+export enum LightboxPlacement {
+    LEFT,
+    RIGHT,
+    ABOVE,
+    BELOW,
 }

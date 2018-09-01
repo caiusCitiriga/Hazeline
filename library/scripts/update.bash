@@ -7,4 +7,4 @@ sudo npm link
 cd /Users/caiuscitiriga/Code/hazeline/demo
 rm -rf dist
 npm link hazeline
-node_modules/.bin/webpack --mode production
+npm start

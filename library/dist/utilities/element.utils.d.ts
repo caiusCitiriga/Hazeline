@@ -4,3 +4,4 @@ export declare class ElementUtils {
     static getHTMLElementBySelector(selector: string): HTMLElement;
     static getCoordinates(element: HTMLElement): ElementCoordinates;
 }
+//# sourceMappingURL=element.utils.d.ts.map

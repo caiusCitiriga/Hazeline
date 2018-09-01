@@ -45,14 +45,9 @@ var HazelineTutorialRunner = /** @class */ (function () {
     };
     HazelineTutorialRunner.prototype.pauseAndResume = function () {
         this.canvas.destroy();
-        this.lightbox.destroy();
         this.canvas.init();
-        this.lightbox.init({
-            text: this.currentStep.getValue().text,
-            elementSelector: this.currentStep.getValue().elementSelector,
-            disablePrev: this.currentStepIndex === 0 ? true : false,
-            disableNext: this.currentStepIndex === this.currentSection.getValue().steps.length - 1 ? true : false,
-        });
+        //  no need to destroy lightbox, init updates props if lightbox exists
+        this.lightbox.init(this.lightboxOptions);
         this.currentStepIndex--;
         this.loadStep(false, true);
     };
@@ -72,24 +67,14 @@ var HazelineTutorialRunner = /** @class */ (function () {
         this.currentStep.next(this.currentSection.getValue().steps[this.currentStepIndex]);
         this.lightbox.onNextBtnClick = function () {
             _this.loadStep();
-            _this.lightbox.init({
-                text: _this.currentStep.getValue().text,
-                elementSelector: _this.currentStep.getValue().elementSelector,
-                disablePrev: _this.currentStepIndex === 0 ? true : false,
-                disableNext: _this.currentStepIndex === _this.currentSection.getValue().steps.length - 1 ? true : false,
-            });
+            _this.lightbox.init(_this.lightboxOptions);
             if (_this.currentStep.getValue().onEnd) {
                 _this.currentStep.getValue().onEnd(_this.currentStep.getValue());
             }
         };
         this.lightbox.onPrevBtnClick = function () {
             _this.loadStep(true);
-            _this.lightbox.init({
-                text: _this.currentStep.getValue().text,
-                elementSelector: _this.currentStep.getValue().elementSelector,
-                disablePrev: _this.currentStepIndex === 0 ? true : false,
-                disableNext: _this.currentStepIndex === _this.currentSection.getValue().steps.length - 1 ? true : false,
-            });
+            _this.lightbox.init(_this.lightboxOptions);
             if (_this.currentStep.getValue().onEnd) {
                 _this.currentStep.getValue().onEnd(_this.currentStep.getValue());
             }
@@ -97,13 +82,27 @@ var HazelineTutorialRunner = /** @class */ (function () {
         if (this.currentStep.getValue().onStart) {
             this.currentStep.getValue().onStart(this.currentStep.getValue());
         }
-        this.canvas.wrapElement(this.currentStep.getValue().elementSelector, skipScalingAnimation);
-        this.lightbox.init({
+        if (this.currentStep.getValue().delayBeforeStart) {
+            this.lightbox.fadeOut();
+            this.canvas.writeMessage('Please wait...');
+            setTimeout(function () {
+                _this.lightbox.fadeIn();
+                _this.renderStep(skipScalingAnimation);
+            }, this.currentStep.getValue().delayBeforeStart);
+            return;
+        }
+        this.renderStep(skipScalingAnimation);
+    };
+    HazelineTutorialRunner.prototype.renderStep = function (skipScalingAnimation) {
+        this.lightboxOptions = {
             text: this.currentStep.getValue().text,
+            placement: this.currentStep.getValue().lightboxPlacement,
             elementSelector: this.currentStep.getValue().elementSelector,
-            disablePrev: this.currentStepIndex === 0 ? true : false,
-            disableNext: this.currentStepIndex === this.currentSection.getValue().steps.length - 1 ? true : false,
-        });
+            disablePrev: this.currentStepIndex <= 0 ? true : false,
+            disableNext: this.currentStepIndex >= this.currentSection.getValue().steps.length - 1 ? true : false,
+        };
+        this.canvas.wrapElement(this.currentStep.getValue().elementSelector, skipScalingAnimation);
+        this.lightbox.init(this.lightboxOptions);
         this.lightbox.showLightbox();
     };
     return HazelineTutorialRunner;
@@ -114,3 +113,4 @@ var TutorialStatus;
     TutorialStatus[TutorialStatus["RUNNING"] = 0] = "RUNNING";
     TutorialStatus[TutorialStatus["STOPPED"] = 1] = "STOPPED";
 })(TutorialStatus = exports.TutorialStatus || (exports.TutorialStatus = {}));
+//# sourceMappingURL=tutorial-runner.core.js.map

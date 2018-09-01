@@ -66,24 +66,19 @@ var HazelineLightbox = /** @class */ (function () {
             h: null,
         };
     }
-    //////////////////////////////////////
-    //  Public methods
-    //////////////////////////////////////
     HazelineLightbox.prototype.init = function (opts) {
         if (!!this.lightbox) {
             this.update(opts);
+            return;
         }
         this.setOptions(opts);
         this.setStylesIfAny(opts);
         this.currentElementCoordinates = element_utils_1.ElementUtils.getCoordinates(element_utils_1.ElementUtils.getHTMLElementBySelector(opts.elementSelector));
-        this.buildLightbox();
+        this.buildLightbox(opts);
     };
     HazelineLightbox.prototype.showLightbox = function () {
         var lightboxShown = new rxjs_1.BehaviorSubject(false);
-        if (!document.querySelector('body').querySelector("#" + this.ligthboxID)) {
-            document.querySelector('body').appendChild(this.lightbox);
-        }
-        this.updateLightboxPosition();
+        this.lightbox.style.display = 'block';
         lightboxShown.next(true);
         lightboxShown.complete();
         return lightboxShown;
@@ -99,9 +94,14 @@ var HazelineLightbox = /** @class */ (function () {
         }
         console.warn('HAZELINE: Warning, cannot find the lightbox to destroy');
     };
-    //////////////////////////////////////
-    //  Private methods
-    //////////////////////////////////////
+    HazelineLightbox.prototype.fadeOut = function () {
+        console.log('Fading lightbox out');
+        this.lightbox.style.opacity = '0';
+    };
+    HazelineLightbox.prototype.fadeIn = function () {
+        console.log('Fading lightbox in');
+        this.lightbox.style.opacity = '1';
+    };
     HazelineLightbox.prototype.setStylesIfAny = function (opts) {
         if (opts.lightboxCSS) {
             this.lightboxCSS = opts.lightboxCSS;
@@ -121,7 +121,7 @@ var HazelineLightbox = /** @class */ (function () {
     };
     HazelineLightbox.prototype.update = function (opts) {
         this.setOptions(opts);
-        this.updateLightboxPosition();
+        this.updateLightboxPosition(opts.placement);
         this.lightboxParagraph.innerText = this.paragraphText;
         this.lightboxControls.next.disabled = this.disableNextBtn;
         this.lightboxControls.prev.disabled = this.disablePrevBtn;
@@ -131,20 +131,48 @@ var HazelineLightbox = /** @class */ (function () {
         this.disableNextBtn = opts.disableNext;
         this.disablePrevBtn = opts.disablePrev;
     };
-    HazelineLightbox.prototype.buildLightbox = function () {
-        if (!!this.lightbox) {
-            return;
-        }
+    HazelineLightbox.prototype.buildLightbox = function (opts) {
         this.lightbox = document.createElement('div');
         this.lightbox.setAttribute('id', this.ligthboxID);
         this.lightbox = this.applyStyles(this.lightbox, this.lightboxCSS);
+        this.lightbox.style.display = 'none'; // keep it hidden until show is called
         this.attachParagraph();
         this.attachControlButtons();
-        this.updateLightboxPosition();
+        if (!document.querySelector('body').querySelector("#" + this.ligthboxID)) {
+            document.querySelector('body').appendChild(this.lightbox);
+        }
+        this.updateLightboxPosition(opts.placement);
     };
-    HazelineLightbox.prototype.updateLightboxPosition = function () {
-        var y = this.currentElementCoordinates.y + this.currentElementCoordinates.h + 10;
-        var x = (this.currentElementCoordinates.x + (this.currentElementCoordinates.w / 2)) - (+this.lightboxCSS.width.replace('px', '') / 2);
+    HazelineLightbox.prototype.updateLightboxPosition = function (placement) {
+        var y = undefined;
+        var x = undefined;
+        switch (placement) {
+            case 'above':
+            case 'ABOVE':
+            case LightboxPlacement.ABOVE:
+                y = this.currentElementCoordinates.y - this.lightbox.getBoundingClientRect().height - 10;
+                x = (this.currentElementCoordinates.x + (this.currentElementCoordinates.w / 2)) - (+this.lightboxCSS.width.replace('px', '') / 2);
+                break;
+            case 'right':
+            case 'RIGHT':
+            case LightboxPlacement.RIGHT:
+                y = (this.currentElementCoordinates.y + (this.currentElementCoordinates.h / 2)) - ((this.lightbox.getBoundingClientRect().height / 2));
+                x = (this.currentElementCoordinates.x + this.currentElementCoordinates.w) + 10;
+                break;
+            case 'left':
+            case 'LEFT':
+            case LightboxPlacement.LEFT:
+                y = (this.currentElementCoordinates.y + (this.currentElementCoordinates.h / 2)) - ((this.lightbox.getBoundingClientRect().height / 2));
+                x = this.currentElementCoordinates.x - this.lightbox.getBoundingClientRect().width - 10;
+                break;
+            case 'below':
+            case 'BELOW':
+            case LightboxPlacement.BELOW:
+            default:
+                y = this.currentElementCoordinates.y + this.currentElementCoordinates.h + 10;
+                x = (this.currentElementCoordinates.x + (this.currentElementCoordinates.w / 2)) - (+this.lightboxCSS.width.replace('px', '') / 2);
+                break;
+        }
         this.lightbox.style.top = y + "px";
         this.lightbox.style.left = x + "px";
         this.lightbox.style.position = 'fixed';
@@ -201,3 +229,11 @@ var HazelineLightbox = /** @class */ (function () {
     return HazelineLightbox;
 }());
 exports.HazelineLightbox = HazelineLightbox;
+var LightboxPlacement;
+(function (LightboxPlacement) {
+    LightboxPlacement[LightboxPlacement["LEFT"] = 0] = "LEFT";
+    LightboxPlacement[LightboxPlacement["RIGHT"] = 1] = "RIGHT";
+    LightboxPlacement[LightboxPlacement["ABOVE"] = 2] = "ABOVE";
+    LightboxPlacement[LightboxPlacement["BELOW"] = 3] = "BELOW";
+})(LightboxPlacement = exports.LightboxPlacement || (exports.LightboxPlacement = {}));
+//# sourceMappingURL=lightbox.core.js.map

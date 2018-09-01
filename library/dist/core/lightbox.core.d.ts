@@ -25,6 +25,8 @@ export declare class HazelineLightbox {
     init(opts: LightboxOptions): void;
     showLightbox(): Observable<boolean>;
     destroy(): void;
+    fadeOut(): void;
+    fadeIn(): void;
     private setStylesIfAny;
     private update;
     private setOptions;
@@ -38,19 +40,27 @@ export declare class HazelineLightbox {
     private applyStyles;
 }
 export interface LightboxOptions {
+    text: string;
+    disableNext?: boolean;
+    disablePrev?: boolean;
     lightboxCSS?: CSSRules;
     paragraphCSS?: CSSRules;
     elementSelector: string;
+    controlButtonsWrapperCSS?: CSSRules;
+    placement?: LightboxPlacement | string;
     controlButtonsCSS?: {
         next?: CSSRules;
         prev?: CSSRules;
     };
-    controlButtonsWrapperCSS?: CSSRules;
-    text: string;
-    disableNext?: boolean;
-    disablePrev?: boolean;
 }
 export interface LigthboxControls {
     next: HTMLElement;
     prev: HTMLElement;
 }
+export declare enum LightboxPlacement {
+    LEFT = 0,
+    RIGHT = 1,
+    ABOVE = 2,
+    BELOW = 3
+}
+//# sourceMappingURL=lightbox.core.d.ts.map
