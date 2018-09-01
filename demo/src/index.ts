@@ -1,9 +1,9 @@
-import { HazelineTutorialRunner } from 'hazeline';
+import { HazelineTutorialRunner, LightboxPlacement } from 'hazeline';
 
 window.onload = () => {
     const runner = new HazelineTutorialRunner();
 
-    runner.enableScalingAnimation();
+    // runner.enableScalingAnimation();
     // runner.setOverlayBackground('#007bffe6');
 
     runner.addSection({
@@ -16,25 +16,27 @@ window.onload = () => {
             {
                 elementSelector: '#input-2',
                 text: 'Then your password',
-                onEnd: () => {
-                    console.log('Step 2 started');
-                }
+                lightboxPlacement: 'left',
+                delayBeforeStart: 2000
             },
             {
                 elementSelector: '#input-3',
-                text: 'Your current address'
+                text: 'Your current address',
+                lightboxPlacement: LightboxPlacement.ABOVE
             },
             {
                 elementSelector: '#input-4',
-                text: 'Check this checkbox out!'
+                text: 'Check this checkbox out!',
             },
             {
                 elementSelector: '#input-5',
-                text: 'Click this button!'
+                text: 'Click this button!',
+                lightboxPlacement: 'right'
             },
             {
                 elementSelector: '#input-6',
                 text: 'You can also hightlight entire elements',
+                lightboxPlacement: 'ABOVE'
             },
             {
                 elementSelector: '#first-paragraph',
@@ -43,6 +45,7 @@ window.onload = () => {
             {
                 elementSelector: '#second-paragraph',
                 text: 'You can higlight portions of text inside paragraphs',
+                lightboxPlacement: 'ABOVE'
             }
         ]
     });
