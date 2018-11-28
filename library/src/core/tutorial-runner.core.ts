@@ -4,11 +4,12 @@ import { HazelineLightbox, LightboxPlacement, LightboxOptions } from './lightbox
 
 export class HazelineTutorialRunner {
 
+    public lightboxOptions: LightboxOptions;
+
     private canvas: HazelineCanvas;
     private lightbox: HazelineLightbox;
 
     private currentStepIndex: number;
-    private lightboxOptions: LightboxOptions;
     private tutorialSections: TutorialSection[] = [];
     private currentStep: BehaviorSubject<TutorialStep> = new BehaviorSubject(null);
     private currentSection: BehaviorSubject<TutorialSection> = new BehaviorSubject(null);
