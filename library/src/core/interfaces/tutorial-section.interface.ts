@@ -11,9 +11,9 @@ export interface HazelineTutorialSection {
 }
 
 export interface HazelineGlobalStyles {
+    overlay?: HazelineCSSRules;
     lightbox?: HazelineLightboxOptions;
     endTutorialBtnCSS?: HazelineCSSRules;
-    overlay?: HazelineOverlayCommonOptions;
     endTutorialBtnHoverCSS?: HazelineCSSRules;
 }
 
@@ -36,8 +36,4 @@ export interface HazelineLightboxOptions {
         constraints?: ITetherConstraint[];
         classes?: { [className: string]: boolean | string };
     };
-}
-
-export interface HazelineOverlayCommonOptions {
-    background?: string;
 }

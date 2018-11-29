@@ -84,7 +84,7 @@ var HazelineOverlayRenderer = /** @class */ (function () {
         Object.keys(elements).forEach(function (el) {
             styles_manager_core_1.HazelineStylesManager.styleElement(elements[el], elements_default_styles_const_1.HazelineElementsDefaultStyles.overlayBoxesInternalCommonData);
             if (_this.overlayOptions) {
-                styles_manager_core_1.HazelineStylesManager.styleElement(el, _this.overlayOptions);
+                styles_manager_core_1.HazelineStylesManager.styleElement(elements[el], _this.overlayOptions);
             }
         });
         this.endTutorialBtn.innerHTML = 'End tutorial';

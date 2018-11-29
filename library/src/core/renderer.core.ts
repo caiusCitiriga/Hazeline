@@ -1,11 +1,11 @@
 import { Subject, Observable } from 'rxjs';
 
 import { HazelineElementsIds } from './enums/elements-ids.enum';
-import { HazelineOverlayCommonOptions } from './interfaces/tutorial-section.interface';
 import { HazelineElementsDefaultStyles } from './consts/elements-default-styles.const';
 import { HazelineWrappingElementsDimensions } from './interfaces/wrapping-elements-dimensions.interface';
 
 import { HazelineStylesManager } from './styles-manager.core';
+import { HazelineCSSRules } from './interfaces/css-rules.interface';
 
 export class HazelineOverlayRenderer {
 
@@ -15,14 +15,14 @@ export class HazelineOverlayRenderer {
     private bottomBox: HTMLDivElement;
     private endTutorialBtn: HTMLButtonElement;
 
-    private overlayOptions: HazelineOverlayCommonOptions;
+    private overlayOptions: HazelineCSSRules;
     private _$prematureEndRequired = new Subject<boolean>();
 
     public $premartureEndRequired(): Observable<boolean> {
         return this._$prematureEndRequired;
     }
 
-    public applyStyles(overlayOpts: HazelineOverlayCommonOptions): void {
+    public applyStyles(overlayOpts: HazelineCSSRules): void {
         this.overlayOptions = overlayOpts;
     }
 
@@ -107,7 +107,7 @@ export class HazelineOverlayRenderer {
         Object.keys(elements).forEach(el => {
             HazelineStylesManager.styleElement(elements[el], (HazelineElementsDefaultStyles as any).overlayBoxesInternalCommonData);
             if (this.overlayOptions) {
-                HazelineStylesManager.styleElement(el, this.overlayOptions);
+                HazelineStylesManager.styleElement(elements[el], this.overlayOptions);
             }
         });
 

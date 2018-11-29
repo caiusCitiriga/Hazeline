@@ -7,9 +7,9 @@ export interface HazelineTutorialSection {
     globalStyling?: HazelineGlobalStyles;
 }
 export interface HazelineGlobalStyles {
+    overlay?: HazelineCSSRules;
     lightbox?: HazelineLightboxOptions;
     endTutorialBtnCSS?: HazelineCSSRules;
-    overlay?: HazelineOverlayCommonOptions;
     endTutorialBtnHoverCSS?: HazelineCSSRules;
 }
 export interface HazelineLightboxOptions {
@@ -31,8 +31,5 @@ export interface HazelineLightboxOptions {
             [className: string]: boolean | string;
         };
     };
-}
-export interface HazelineOverlayCommonOptions {
-    background?: string;
 }
 //# sourceMappingURL=tutorial-section.interface.d.ts.map
