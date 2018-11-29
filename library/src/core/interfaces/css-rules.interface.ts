@@ -1,4 +1,4 @@
-export interface CSSRules {
+export interface HazelineCSSRules {
     alignContent?: string;
     alignItems?: string;
     alignSelf?: string;

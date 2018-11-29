@@ -1,10 +1,12 @@
-import { CSSRules } from './interfaces/css-rules.interface';
 import { HazelineWrappingElementsDimensions } from './interfaces/wrapping-elements-dimensions.interface';
+import { HazelineLightboxOptions } from './interfaces/tutorial-section.interface';
 export declare class HazelineLightbox {
+    private tether;
     private lightbox;
-    applyStyles(cssRules: CSSRules): void;
-    placeLightbox(dimensions: HazelineWrappingElementsDimensions): void;
-    updateLightboxPlacement(dimensions: HazelineWrappingElementsDimensions): void;
+    private ligthboxOptions;
+    applyStyles(lightboxOpts: HazelineLightboxOptions): void;
+    placeLightbox(dimensions: HazelineWrappingElementsDimensions, target: HTMLElement): void;
+    updateLightboxPlacement(dimensions: HazelineWrappingElementsDimensions, target: HTMLElement): void;
     private createLightbox;
 }
 //# sourceMappingURL=lightbox.core.d.ts.map

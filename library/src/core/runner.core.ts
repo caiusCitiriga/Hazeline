@@ -48,20 +48,20 @@ export class HazelineRunner {
         window.addEventListener('resize', () => {
             const wrapElementsDimensions = this.elementManager.getWrappingElementsDimensions(section.steps[this.currentSectionStep].elementSelector);
             this.renderer.updateElementsDimensions(wrapElementsDimensions);
-            this.lightbox.updateLightboxPlacement(wrapElementsDimensions);
+            this.lightbox.updateLightboxPlacement(wrapElementsDimensions, HazelineElementManager.getElementBySelector(section.steps[this.currentSectionStep].elementSelector));
         });
 
         window.addEventListener('scroll', () => {
             const wrapElementsDimensions = this.elementManager.getWrappingElementsDimensions(section.steps[this.currentSectionStep].elementSelector);
             this.renderer.updateElementsDimensions(wrapElementsDimensions);
-            this.lightbox.updateLightboxPlacement(wrapElementsDimensions);
+            this.lightbox.updateLightboxPlacement(wrapElementsDimensions, HazelineElementManager.getElementBySelector(section.steps[this.currentSectionStep].elementSelector));
         });
 
         const wrapElementsDimensions = this.elementManager.getWrappingElementsDimensions(section.steps[this.currentSectionStep].elementSelector);
 
         this.renderer.wrapElement(wrapElementsDimensions);
-        this.lightbox.placeLightbox(wrapElementsDimensions);
         this.applyCustomStylesIfAny(section.globalStyling);
+        this.lightbox.placeLightbox(wrapElementsDimensions, HazelineElementManager.getElementBySelector(section.steps[this.currentSectionStep].elementSelector));
 
         return status;
     }

@@ -13,6 +13,10 @@ export class HazelineElementManager {
         return wrappingElementsDimensions;
     }
 
+    public static getElementBySelector<T>(selector: string): T {
+        return document.querySelector(selector) as any;
+    }
+
     private computeWrappingElements(elementToWrap: HTMLElement): HazelineWrappingElementsDimensions {
         const dimensions: HazelineWrappingElementsDimensions = {
             element: {

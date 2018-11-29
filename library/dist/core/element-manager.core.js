@@ -11,6 +11,9 @@ var HazelineElementManager = /** @class */ (function () {
         var wrappingElementsDimensions = this.computeWrappingElements(element);
         return wrappingElementsDimensions;
     };
+    HazelineElementManager.getElementBySelector = function (selector) {
+        return document.querySelector(selector);
+    };
     HazelineElementManager.prototype.computeWrappingElements = function (elementToWrap) {
         var dimensions = {
             element: {

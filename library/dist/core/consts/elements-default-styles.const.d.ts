@@ -1,5 +1,16 @@
-import { CSSRules } from '../interfaces/css-rules.interface';
+import { HazelineCSSRules } from '../interfaces/css-rules.interface';
 export declare const HazelineElementsDefaultStyles: {
-    lightbox: CSSRules;
+    lightbox: {
+        positioning: {
+            attachment: string;
+            targetAttachment: string;
+            constraints: {
+                to: string;
+                attachment: string;
+            }[];
+            offset: string;
+        };
+        ligthboxWrapperCSS: HazelineCSSRules;
+    };
 };
 //# sourceMappingURL=elements-default-styles.const.d.ts.map
