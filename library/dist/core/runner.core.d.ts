@@ -12,6 +12,7 @@ export declare class HazelineRunner {
     private currentSectionStep;
     private currentSection;
     constructor(lightbox: HazelineLightbox, renderer: HazelineOverlayRenderer, elementManager: HazelineElementManager);
+    endTutorial(): void;
     runSection(section: HazelineTutorialSection): Observable<HazelineTutorialSectionStatus>;
     private applyCustomStylesIfAny;
     private startNextPrevButtonClicks;

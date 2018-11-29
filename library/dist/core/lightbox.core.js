@@ -4,10 +4,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var tether_1 = __importDefault(require("tether"));
+var rxjs_1 = require("rxjs");
 var elements_ids_enum_1 = require("./enums/elements-ids.enum");
 var elements_default_styles_const_1 = require("./consts/elements-default-styles.const");
 var styles_manager_core_1 = require("./styles-manager.core");
-var rxjs_1 = require("rxjs");
 var HazelineLightbox = /** @class */ (function () {
     function HazelineLightbox() {
         this._$nextStepRequired = new rxjs_1.Subject();
@@ -27,13 +27,19 @@ var HazelineLightbox = /** @class */ (function () {
     HazelineLightbox.prototype.applyStyles = function (lightboxOpts) {
         this.ligthboxOptions = lightboxOpts;
     };
-    HazelineLightbox.prototype.placeLightbox = function (target, sectionStep) {
+    HazelineLightbox.prototype.dispose = function () {
+        if (document.getElementById(elements_ids_enum_1.HazelineElementsIds.lightbox)) {
+            document.body.removeChild(this.lightboxWrp);
+        }
+    };
+    HazelineLightbox.prototype.placeLightbox = function (target, sectionStep, isLastStep) {
+        if (isLastStep === void 0) { isLastStep = false; }
         this.lightboxWrp = document.getElementById(elements_ids_enum_1.HazelineElementsIds.lightbox);
         if (!this.lightboxWrp) {
             this.createLightbox();
             document.body.prepend(this.lightboxWrp); // not fully supported. See browser tables
         }
-        this.applyTexts(sectionStep);
+        this.applyTexts(sectionStep, isLastStep);
         this.styleWholeLigthboxElement();
         this.updateLightboxPlacement(target);
     };
@@ -72,11 +78,12 @@ var HazelineLightbox = /** @class */ (function () {
         }
         this.tether.position();
     };
-    HazelineLightbox.prototype.applyTexts = function (sectionStep) {
+    HazelineLightbox.prototype.applyTexts = function (sectionStep, isLastStep) {
+        if (isLastStep === void 0) { isLastStep = false; }
         this.lightboxText = sectionStep.text;
-        this.lightboxPrevBtn.innerHTML = this.prevBtnText || '<';
-        this.lightboxNextBtn.innerHTML = this.nextBtnText || '>';
         this.lightboxTextWrp.innerHTML = this.lightboxText;
+        this.lightboxPrevBtn.innerHTML = this.prevBtnText || 'Previous';
+        this.lightboxNextBtn.innerHTML = isLastStep ? 'End' : this.nextBtnText || 'Next';
     };
     HazelineLightbox.prototype.attachNextPrevClickListeners = function () {
         var _this = this;
@@ -95,7 +102,6 @@ var HazelineLightbox = /** @class */ (function () {
         this.lightboxWrp.id = elements_ids_enum_1.HazelineElementsIds.lightbox;
         this.lightboxTextWrp.id = elements_ids_enum_1.HazelineElementsIds.lightboxText;
         this.lightboxNextBtn.id = elements_ids_enum_1.HazelineElementsIds.lightboxNextButton;
-        this.lightboxPrevBtn.id = elements_ids_enum_1.HazelineElementsIds.lightboxPrevButton;
         this.lightboxControlsWrp.id = elements_ids_enum_1.HazelineElementsIds.lightboxControls;
         //  Append the children 
         this.lightboxControlsWrp.appendChild(this.lightboxPrevBtn);

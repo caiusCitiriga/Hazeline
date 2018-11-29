@@ -1,12 +1,13 @@
 import Tether from 'tether';
 
+import { Observable, Subject } from 'rxjs';
+
 import { HazelineElementsIds } from './enums/elements-ids.enum';
 import { HazelineTutorialStep } from './interfaces/tutorial-step.interface';
 import { HazelineLightboxOptions } from './interfaces/tutorial-section.interface';
 import { HazelineElementsDefaultStyles } from './consts/elements-default-styles.const';
 
 import { HazelineStylesManager } from './styles-manager.core';
-import { Observable, Subject } from 'rxjs';
 
 export class HazelineLightbox {
 
@@ -43,7 +44,13 @@ export class HazelineLightbox {
         this.ligthboxOptions = lightboxOpts;
     }
 
-    public placeLightbox(target: HTMLElement, sectionStep: HazelineTutorialStep): void {
+    public dispose(): void {
+        if (document.getElementById(HazelineElementsIds.lightbox)) {
+            document.body.removeChild(this.lightboxWrp);
+        }
+    }
+
+    public placeLightbox(target: HTMLElement, sectionStep: HazelineTutorialStep, isLastStep = false): void {
         this.lightboxWrp = document.getElementById(HazelineElementsIds.lightbox) as HTMLDivElement;
 
         if (!this.lightboxWrp) {
@@ -51,7 +58,7 @@ export class HazelineLightbox {
             (document.body as any).prepend(this.lightboxWrp); // not fully supported. See browser tables
         }
 
-        this.applyTexts(sectionStep);
+        this.applyTexts(sectionStep, isLastStep);
         this.styleWholeLigthboxElement();
         this.updateLightboxPlacement(target);
     }
@@ -96,12 +103,12 @@ export class HazelineLightbox {
         this.tether.position();
     }
 
-    private applyTexts(sectionStep: HazelineTutorialStep): void {
+    private applyTexts(sectionStep: HazelineTutorialStep, isLastStep = false): void {
         this.lightboxText = sectionStep.text;
 
-        this.lightboxPrevBtn.innerHTML = this.prevBtnText || '<';
-        this.lightboxNextBtn.innerHTML = this.nextBtnText || '>';
         this.lightboxTextWrp.innerHTML = this.lightboxText;
+        this.lightboxPrevBtn.innerHTML = this.prevBtnText || 'Previous';
+        this.lightboxNextBtn.innerHTML = isLastStep ? 'End' : this.nextBtnText || 'Next';
     }
 
     private attachNextPrevClickListeners(): void {
@@ -123,7 +130,6 @@ export class HazelineLightbox {
         this.lightboxWrp.id = HazelineElementsIds.lightbox;
         this.lightboxTextWrp.id = HazelineElementsIds.lightboxText;
         this.lightboxNextBtn.id = HazelineElementsIds.lightboxNextButton;
-        this.lightboxPrevBtn.id = HazelineElementsIds.lightboxPrevButton;
         this.lightboxControlsWrp.id = HazelineElementsIds.lightboxControls;
 
         //  Append the children 

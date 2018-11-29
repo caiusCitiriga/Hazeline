@@ -45,6 +45,7 @@ var Hazeline = /** @class */ (function () {
                     runningSection: status.runningSection,
                     runningStepInSection: status.runningStepInSection
                 });
+                _this.runner.endTutorial();
             }
             if (status.status === tutorial_section_statuses_enum_1.HazelineTutorialSectionStatuses.started) {
                 _this._$tutorialStatus.next({
@@ -59,6 +60,7 @@ var Hazeline = /** @class */ (function () {
                     runningSection: status.runningSection,
                     runningStepInSection: status.runningStepInSection
                 });
+                _this.runner.endTutorial();
             }
         })).subscribe();
         return this._$tutorialStatus;

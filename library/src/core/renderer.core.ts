@@ -1,8 +1,11 @@
-import { HazelineWrappingElementsDimensions } from './interfaces/wrapping-elements-dimensions.interface';
+import { Subject, Observable } from 'rxjs';
+
 import { HazelineElementsIds } from './enums/elements-ids.enum';
 import { HazelineOverlayCommonOptions } from './interfaces/tutorial-section.interface';
-import { HazelineStylesManager } from './styles-manager.core';
 import { HazelineElementsDefaultStyles } from './consts/elements-default-styles.const';
+import { HazelineWrappingElementsDimensions } from './interfaces/wrapping-elements-dimensions.interface';
+
+import { HazelineStylesManager } from './styles-manager.core';
 
 export class HazelineOverlayRenderer {
 
@@ -10,25 +13,21 @@ export class HazelineOverlayRenderer {
     private leftBox: HTMLDivElement;
     private rightBox: HTMLDivElement;
     private bottomBox: HTMLDivElement;
+    private endTutorialBtn: HTMLButtonElement;
+
     private overlayOptions: HazelineOverlayCommonOptions;
+    private _$prematureEndRequired = new Subject<boolean>();
+
+    public $premartureEndRequired(): Observable<boolean> {
+        return this._$prematureEndRequired;
+    }
 
     public applyStyles(overlayOpts: HazelineOverlayCommonOptions): void {
         this.overlayOptions = overlayOpts;
     }
 
-    public destroyPreviousElementsIfAny(): void {
-        if (!!document.getElementById(HazelineElementsIds.topBox)) {
-            document.body.removeChild(document.getElementById(HazelineElementsIds.topBox));
-        }
-        if (!!document.getElementById(HazelineElementsIds.leftBox)) {
-            document.body.removeChild(document.getElementById(HazelineElementsIds.leftBox));
-        }
-        if (!!document.getElementById(HazelineElementsIds.rightBox)) {
-            document.body.removeChild(document.getElementById(HazelineElementsIds.rightBox));
-        }
-        if (!!document.getElementById(HazelineElementsIds.bottomBox)) {
-            document.body.removeChild(document.getElementById(HazelineElementsIds.bottomBox));
-        }
+    public dispose(): void {
+        this.destroyPreviousElementsIfAny();
     }
 
     public updateElementsDimensions(dimensions: HazelineWrappingElementsDimensions): void {
@@ -41,13 +40,14 @@ export class HazelineOverlayRenderer {
             topBox: this.topBox,
             leftBox: this.leftBox,
             rightBox: this.rightBox,
-            bottomBox: this.bottomBox
+            bottomBox: this.bottomBox,
         }, dimensions);
     }
 
     public wrapElement(dimensions: HazelineWrappingElementsDimensions): void {
         this.destroyPreviousElementsIfAny();
         const wrappingElements = this.createWrappingElements(dimensions);
+
         this.attachElementsToBody(wrappingElements);
     }
 
@@ -58,6 +58,7 @@ export class HazelineOverlayRenderer {
         (body as any).prepend(elements.leftBox); // not fully supported. See browser tables
         (body as any).prepend(elements.rightBox); // not fully supported. See browser tables
         (body as any).prepend(elements.bottomBox); // not fully supported. See browser tables
+        (body as any).prepend(this.endTutorialBtn); // not fully supported. See browser tables
     }
 
     private createWrappingElements(dimensions: HazelineWrappingElementsDimensions): ElementsToAttachOnBody {
@@ -65,15 +66,34 @@ export class HazelineOverlayRenderer {
         this.leftBox = document.createElement('div');
         this.rightBox = document.createElement('div');
         this.bottomBox = document.createElement('div');
+        this.endTutorialBtn = document.createElement('button');
 
         const elements = this.setElementsProperties({
             topBox: this.topBox,
             leftBox: this.leftBox,
             rightBox: this.rightBox,
-            bottomBox: this.bottomBox
+            bottomBox: this.bottomBox,
         }, dimensions);
 
         return elements;
+    }
+
+    private destroyPreviousElementsIfAny(): void {
+        if (!!document.getElementById(HazelineElementsIds.topBox)) {
+            document.body.removeChild(document.getElementById(HazelineElementsIds.topBox));
+        }
+        if (!!document.getElementById(HazelineElementsIds.leftBox)) {
+            document.body.removeChild(document.getElementById(HazelineElementsIds.leftBox));
+        }
+        if (!!document.getElementById(HazelineElementsIds.rightBox)) {
+            document.body.removeChild(document.getElementById(HazelineElementsIds.rightBox));
+        }
+        if (!!document.getElementById(HazelineElementsIds.bottomBox)) {
+            document.body.removeChild(document.getElementById(HazelineElementsIds.bottomBox));
+        }
+        if (!!document.getElementById(HazelineElementsIds.endTutorialButton)) {
+            document.body.removeChild(document.getElementById(HazelineElementsIds.endTutorialButton));
+        }
     }
 
     private setElementsProperties(elements: ElementsToAttachOnBody, dimensions: HazelineWrappingElementsDimensions): ElementsToAttachOnBody {
@@ -81,13 +101,21 @@ export class HazelineOverlayRenderer {
         elements.leftBox.id = HazelineElementsIds.leftBox;
         elements.rightBox.id = HazelineElementsIds.rightBox;
         elements.bottomBox.id = HazelineElementsIds.bottomBox;
+        elements.bottomBox.id = HazelineElementsIds.bottomBox;
+        this.endTutorialBtn.id = HazelineElementsIds.endTutorialButton;
 
         Object.keys(elements).forEach(el => {
-            HazelineStylesManager.styleElement(elements[el], HazelineElementsDefaultStyles.overlayBoxesInternalCommonData);
+            HazelineStylesManager.styleElement(elements[el], (HazelineElementsDefaultStyles as any).overlayBoxesInternalCommonData);
             if (this.overlayOptions) {
                 HazelineStylesManager.styleElement(el, this.overlayOptions);
             }
         });
+
+        this.endTutorialBtn.innerHTML = 'End tutorial';
+        this.endTutorialBtn.addEventListener('click', () => this._$prematureEndRequired.next(true));
+        this.endTutorialBtn.addEventListener('mouseleave', () => HazelineStylesManager.styleElement(this.endTutorialBtn, HazelineElementsDefaultStyles.endTutorialBtnCSS));
+        this.endTutorialBtn.addEventListener('mouseenter', () => HazelineStylesManager.styleElement(this.endTutorialBtn, HazelineElementsDefaultStyles.endTutorialBtnHoverCSS));
+        HazelineStylesManager.styleElement(this.endTutorialBtn, HazelineElementsDefaultStyles.endTutorialBtnCSS);
 
         elements.topBox.style.width = `${dimensions.topBox.width}px`;
         elements.topBox.style.height = `${dimensions.topBox.height}px`;

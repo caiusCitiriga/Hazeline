@@ -6,6 +6,7 @@ var HazelineElementsIds;
     HazelineElementsIds["leftBox"] = "hazeline-left-box";
     HazelineElementsIds["rightBox"] = "hazeline-right-box";
     HazelineElementsIds["bottomBox"] = "hazeline-bottom-box";
+    HazelineElementsIds["endTutorialButton"] = "hazeline-end-tutorial-btn";
     HazelineElementsIds["lightbox"] = "hazeline-lightbox";
     HazelineElementsIds["lightboxText"] = "hazeline-lightbox-text";
     HazelineElementsIds["lightboxControls"] = "hazeline-lightbox-ctrls";

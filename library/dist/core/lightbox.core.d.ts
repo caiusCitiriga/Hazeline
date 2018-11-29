@@ -1,6 +1,6 @@
+import { Observable } from 'rxjs';
 import { HazelineTutorialStep } from './interfaces/tutorial-step.interface';
 import { HazelineLightboxOptions } from './interfaces/tutorial-section.interface';
-import { Observable } from 'rxjs';
 export declare class HazelineLightbox {
     private _$nextStepRequired;
     private _$prevStepRequired;
@@ -17,7 +17,8 @@ export declare class HazelineLightbox {
     $nextStepRequired(): Observable<boolean>;
     $prevStepRequired(): Observable<boolean>;
     applyStyles(lightboxOpts: HazelineLightboxOptions): void;
-    placeLightbox(target: HTMLElement, sectionStep: HazelineTutorialStep): void;
+    dispose(): void;
+    placeLightbox(target: HTMLElement, sectionStep: HazelineTutorialStep, isLastStep?: boolean): void;
     updateLightboxPlacement(target: HTMLElement): void;
     private applyTexts;
     private attachNextPrevClickListeners;

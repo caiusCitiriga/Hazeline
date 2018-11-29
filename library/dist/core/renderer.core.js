@@ -1,13 +1,60 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+var rxjs_1 = require("rxjs");
 var elements_ids_enum_1 = require("./enums/elements-ids.enum");
-var styles_manager_core_1 = require("./styles-manager.core");
 var elements_default_styles_const_1 = require("./consts/elements-default-styles.const");
+var styles_manager_core_1 = require("./styles-manager.core");
 var HazelineOverlayRenderer = /** @class */ (function () {
     function HazelineOverlayRenderer() {
+        this._$prematureEndRequired = new rxjs_1.Subject();
     }
+    HazelineOverlayRenderer.prototype.$premartureEndRequired = function () {
+        return this._$prematureEndRequired;
+    };
     HazelineOverlayRenderer.prototype.applyStyles = function (overlayOpts) {
         this.overlayOptions = overlayOpts;
+    };
+    HazelineOverlayRenderer.prototype.dispose = function () {
+        this.destroyPreviousElementsIfAny();
+    };
+    HazelineOverlayRenderer.prototype.updateElementsDimensions = function (dimensions) {
+        this.topBox = document.getElementById(elements_ids_enum_1.HazelineElementsIds.topBox);
+        this.leftBox = document.getElementById(elements_ids_enum_1.HazelineElementsIds.leftBox);
+        this.rightBox = document.getElementById(elements_ids_enum_1.HazelineElementsIds.rightBox);
+        this.bottomBox = document.getElementById(elements_ids_enum_1.HazelineElementsIds.bottomBox);
+        this.setElementsProperties({
+            topBox: this.topBox,
+            leftBox: this.leftBox,
+            rightBox: this.rightBox,
+            bottomBox: this.bottomBox,
+        }, dimensions);
+    };
+    HazelineOverlayRenderer.prototype.wrapElement = function (dimensions) {
+        this.destroyPreviousElementsIfAny();
+        var wrappingElements = this.createWrappingElements(dimensions);
+        this.attachElementsToBody(wrappingElements);
+    };
+    HazelineOverlayRenderer.prototype.attachElementsToBody = function (elements) {
+        var body = document.querySelector('body');
+        body.prepend(elements.topBox); // not fully supported. See browser tables
+        body.prepend(elements.leftBox); // not fully supported. See browser tables
+        body.prepend(elements.rightBox); // not fully supported. See browser tables
+        body.prepend(elements.bottomBox); // not fully supported. See browser tables
+        body.prepend(this.endTutorialBtn); // not fully supported. See browser tables
+    };
+    HazelineOverlayRenderer.prototype.createWrappingElements = function (dimensions) {
+        this.topBox = document.createElement('div');
+        this.leftBox = document.createElement('div');
+        this.rightBox = document.createElement('div');
+        this.bottomBox = document.createElement('div');
+        this.endTutorialBtn = document.createElement('button');
+        var elements = this.setElementsProperties({
+            topBox: this.topBox,
+            leftBox: this.leftBox,
+            rightBox: this.rightBox,
+            bottomBox: this.bottomBox,
+        }, dimensions);
+        return elements;
     };
     HazelineOverlayRenderer.prototype.destroyPreviousElementsIfAny = function () {
         if (!!document.getElementById(elements_ids_enum_1.HazelineElementsIds.topBox)) {
@@ -22,43 +69,9 @@ var HazelineOverlayRenderer = /** @class */ (function () {
         if (!!document.getElementById(elements_ids_enum_1.HazelineElementsIds.bottomBox)) {
             document.body.removeChild(document.getElementById(elements_ids_enum_1.HazelineElementsIds.bottomBox));
         }
-    };
-    HazelineOverlayRenderer.prototype.updateElementsDimensions = function (dimensions) {
-        this.topBox = document.getElementById(elements_ids_enum_1.HazelineElementsIds.topBox);
-        this.leftBox = document.getElementById(elements_ids_enum_1.HazelineElementsIds.leftBox);
-        this.rightBox = document.getElementById(elements_ids_enum_1.HazelineElementsIds.rightBox);
-        this.bottomBox = document.getElementById(elements_ids_enum_1.HazelineElementsIds.bottomBox);
-        this.setElementsProperties({
-            topBox: this.topBox,
-            leftBox: this.leftBox,
-            rightBox: this.rightBox,
-            bottomBox: this.bottomBox
-        }, dimensions);
-    };
-    HazelineOverlayRenderer.prototype.wrapElement = function (dimensions) {
-        this.destroyPreviousElementsIfAny();
-        var wrappingElements = this.createWrappingElements(dimensions);
-        this.attachElementsToBody(wrappingElements);
-    };
-    HazelineOverlayRenderer.prototype.attachElementsToBody = function (elements) {
-        var body = document.querySelector('body');
-        body.prepend(elements.topBox); // not fully supported. See browser tables
-        body.prepend(elements.leftBox); // not fully supported. See browser tables
-        body.prepend(elements.rightBox); // not fully supported. See browser tables
-        body.prepend(elements.bottomBox); // not fully supported. See browser tables
-    };
-    HazelineOverlayRenderer.prototype.createWrappingElements = function (dimensions) {
-        this.topBox = document.createElement('div');
-        this.leftBox = document.createElement('div');
-        this.rightBox = document.createElement('div');
-        this.bottomBox = document.createElement('div');
-        var elements = this.setElementsProperties({
-            topBox: this.topBox,
-            leftBox: this.leftBox,
-            rightBox: this.rightBox,
-            bottomBox: this.bottomBox
-        }, dimensions);
-        return elements;
+        if (!!document.getElementById(elements_ids_enum_1.HazelineElementsIds.endTutorialButton)) {
+            document.body.removeChild(document.getElementById(elements_ids_enum_1.HazelineElementsIds.endTutorialButton));
+        }
     };
     HazelineOverlayRenderer.prototype.setElementsProperties = function (elements, dimensions) {
         var _this = this;
@@ -66,12 +79,19 @@ var HazelineOverlayRenderer = /** @class */ (function () {
         elements.leftBox.id = elements_ids_enum_1.HazelineElementsIds.leftBox;
         elements.rightBox.id = elements_ids_enum_1.HazelineElementsIds.rightBox;
         elements.bottomBox.id = elements_ids_enum_1.HazelineElementsIds.bottomBox;
+        elements.bottomBox.id = elements_ids_enum_1.HazelineElementsIds.bottomBox;
+        this.endTutorialBtn.id = elements_ids_enum_1.HazelineElementsIds.endTutorialButton;
         Object.keys(elements).forEach(function (el) {
             styles_manager_core_1.HazelineStylesManager.styleElement(elements[el], elements_default_styles_const_1.HazelineElementsDefaultStyles.overlayBoxesInternalCommonData);
             if (_this.overlayOptions) {
                 styles_manager_core_1.HazelineStylesManager.styleElement(el, _this.overlayOptions);
             }
         });
+        this.endTutorialBtn.innerHTML = 'End tutorial';
+        this.endTutorialBtn.addEventListener('click', function () { return _this._$prematureEndRequired.next(true); });
+        this.endTutorialBtn.addEventListener('mouseleave', function () { return styles_manager_core_1.HazelineStylesManager.styleElement(_this.endTutorialBtn, elements_default_styles_const_1.HazelineElementsDefaultStyles.endTutorialBtnCSS); });
+        this.endTutorialBtn.addEventListener('mouseenter', function () { return styles_manager_core_1.HazelineStylesManager.styleElement(_this.endTutorialBtn, elements_default_styles_const_1.HazelineElementsDefaultStyles.endTutorialBtnHoverCSS); });
+        styles_manager_core_1.HazelineStylesManager.styleElement(this.endTutorialBtn, elements_default_styles_const_1.HazelineElementsDefaultStyles.endTutorialBtnCSS);
         elements.topBox.style.width = dimensions.topBox.width + "px";
         elements.topBox.style.height = dimensions.topBox.height + "px";
         elements.topBox.style.left = dimensions.topBox.offsetLeft + "px";

@@ -1,13 +1,13 @@
+import { filter, tap } from 'rxjs/operators';
 import { Observable, BehaviorSubject } from 'rxjs';
 
-import { HazelineTutorialSection, GlobalStyles } from './interfaces/tutorial-section.interface';
+import { HazelineTutorialSection, HazelineGlobalStyles } from './interfaces/tutorial-section.interface';
 import { HazelineTutorialSectionStatuses } from './enums/tutorial-section-statuses.enum';
 import { HazelineTutorialSectionStatus } from './interfaces/tutorial-section-status.interface';
 
 import { HazelineLightbox } from './lightbox.core';
 import { HazelineOverlayRenderer } from './renderer.core';
 import { HazelineElementManager } from './element-manager.core';
-import { filter, tap } from 'rxjs/operators';
 
 export class HazelineRunner {
 
@@ -30,6 +30,11 @@ export class HazelineRunner {
         this.startNextPrevButtonClicks();
     }
 
+    public endTutorial(): void {
+        this.lightbox.dispose();
+        this.overlayRenderer.dispose();
+    }
+
     public runSection(section: HazelineTutorialSection): Observable<HazelineTutorialSectionStatus> {
         if (!section) {
             this._$sectionStatus.next({
@@ -37,6 +42,7 @@ export class HazelineRunner {
                 runningSection: section,
                 runningStepInSection: null
             });
+
             return this._$sectionStatus;
         }
 
@@ -44,23 +50,29 @@ export class HazelineRunner {
         this.applyCustomStylesIfAny(section.globalStyling);
 
         const wrapElementsDimensions = this.elementManager.getWrappingElementsDimensions(section.steps[this.currentSectionStep].elementSelector);
-        this.overlayRenderer.wrapElement(wrapElementsDimensions);
+        if (this.currentSectionStep > 0) {
+            this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
+        } else {
+            this.overlayRenderer.wrapElement(wrapElementsDimensions);
+            this._$sectionStatus.next({
+                runningSection: section,
+                status: HazelineTutorialSectionStatuses.started,
+                runningStepInSection: section.steps[this.currentSectionStep]
+            });
+        }
+
         this.lightbox.placeLightbox(
             HazelineElementManager.getElementBySelector(section.steps[this.currentSectionStep].elementSelector),
-            section.steps[this.currentSectionStep]
+            section.steps[this.currentSectionStep],
+            (section.steps.length - 1) === this.currentSectionStep
         );
 
-        this._$sectionStatus.next({
-            runningSection: section,
-            status: HazelineTutorialSectionStatuses.started,
-            runningStepInSection: section.steps[this.currentSectionStep]
-        });
 
         this.startResponsiveListeners();
         return this._$sectionStatus;
     }
 
-    private applyCustomStylesIfAny(styles: GlobalStyles): void {
+    private applyCustomStylesIfAny(styles: HazelineGlobalStyles): void {
         if (!styles) {
             return;
         }
@@ -77,7 +89,18 @@ export class HazelineRunner {
         this.lightbox.$nextStepRequired()
             .pipe(
                 filter(res => !!res),
-                filter(() => this.currentSectionStep === (this.currentSection.steps.length - 1) ? false : true),
+                filter(() => {
+                    if (this.currentSectionStep === (this.currentSection.steps.length - 1)) {
+                        this._$sectionStatus.next({
+                            runningSection: null,
+                            runningStepInSection: null,
+                            status: HazelineTutorialSectionStatuses.ended
+                        });
+                        return false;
+                    }
+
+                    return true;
+                }),
                 tap(() => this.currentSectionStep++),
                 tap(() => this.runSection(this.currentSection)),
                 tap(() => console.log('Loading next step'))
@@ -91,6 +114,20 @@ export class HazelineRunner {
                 tap(() => this.runSection(this.currentSection)),
                 tap(() => console.log('Loading previous step'))
             ).subscribe();
+
+        this.overlayRenderer.$premartureEndRequired()
+            .pipe(
+                filter(res => !!res),
+                tap(() => {
+                    this._$sectionStatus.next({
+                        runningSection: null,
+                        runningStepInSection: null,
+                        status: HazelineTutorialSectionStatuses.ended
+                    });
+                    this._$sectionStatus.complete();
+                })
+            )
+            .subscribe();
     }
 
     private startResponsiveListeners(): void {

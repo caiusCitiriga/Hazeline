@@ -4,11 +4,13 @@ import { HazelineTutorialStep } from './tutorial-step.interface';
 export interface HazelineTutorialSection {
     id: string;
     steps: HazelineTutorialStep[];
-    globalStyling?: GlobalStyles;
+    globalStyling?: HazelineGlobalStyles;
 }
-export interface GlobalStyles {
+export interface HazelineGlobalStyles {
     lightbox?: HazelineLightboxOptions;
+    endTutorialBtnCSS?: HazelineCSSRules;
     overlay?: HazelineOverlayCommonOptions;
+    endTutorialBtnHoverCSS?: HazelineCSSRules;
 }
 export interface HazelineLightboxOptions {
     lightboxWrapperCSS?: HazelineCSSRules;

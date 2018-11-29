@@ -66,6 +66,7 @@ export class Hazeline {
                             runningSection: status.runningSection,
                             runningStepInSection: status.runningStepInSection
                         });
+                        this.runner.endTutorial();
                     }
                     if (status.status === HazelineTutorialSectionStatuses.started) {
                         this._$tutorialStatus.next({
@@ -80,6 +81,8 @@ export class Hazeline {
                             runningSection: status.runningSection,
                             runningStepInSection: status.runningStepInSection
                         });
+                        this.runner.endTutorial();
+
                     }
                 })
             ).subscribe();

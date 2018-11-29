@@ -4,6 +4,8 @@ export enum HazelineElementsIds {
     rightBox = 'hazeline-right-box',
     bottomBox = 'hazeline-bottom-box',
 
+    endTutorialButton = 'hazeline-end-tutorial-btn',
+
     lightbox = 'hazeline-lightbox',
     lightboxText = 'hazeline-lightbox-text',
     lightboxControls = 'hazeline-lightbox-ctrls',
