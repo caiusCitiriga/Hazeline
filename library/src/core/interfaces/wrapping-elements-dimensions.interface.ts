@@ -21,6 +21,7 @@ export interface HazelineWrappingElementsDimensions {
     };
 
     bottomBox: {
+        width: number;
         height: number;
         offsetTop: number;
         offsetLeft: number;

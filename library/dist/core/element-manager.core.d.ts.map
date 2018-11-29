@@ -1,1 +1,1 @@
-{"version":3,"file":"element-manager.core.d.ts","sourceRoot":"","sources":["../../src/core/element-manager.core.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kCAAkC,EAAE,MAAM,qDAAqD,CAAC;AAEzG;IAEW,6BAA6B,CAAC,eAAe,EAAE,MAAM,GAAG,kCAAkC;IAWjG,OAAO,CAAC,uBAAuB;CA6DlC"}
+{"version":3,"file":"element-manager.core.d.ts","sourceRoot":"","sources":["../../src/core/element-manager.core.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kCAAkC,EAAE,MAAM,qDAAqD,CAAC;AAEzG;IAEW,6BAA6B,CAAC,eAAe,EAAE,MAAM,GAAG,kCAAkC;IAWjG,OAAO,CAAC,uBAAuB;CA+DlC"}

@@ -31,6 +31,7 @@ var HazelineElementManager = /** @class */ (function () {
                 offsetLeft: null,
             },
             bottomBox: {
+                width: null,
                 height: null,
                 offsetTop: null,
                 offsetLeft: null,
@@ -56,6 +57,7 @@ var HazelineElementManager = /** @class */ (function () {
         dimensions.topBox.height = dimensions.element.offsetTop;
         dimensions.topBox.offsetLeft = dimensions.element.offsetLeft;
         //  Bottom box
+        dimensions.bottomBox.width = dimensions.element.width;
         dimensions.bottomBox.offsetLeft = dimensions.element.offsetLeft;
         dimensions.bottomBox.offsetTop = dimensions.element.offsetTop + dimensions.element.height;
         dimensions.bottomBox.height = window.innerHeight - (dimensions.element.offsetTop + dimensions.element.height);

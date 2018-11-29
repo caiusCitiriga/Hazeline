@@ -49,9 +49,20 @@ export class HazelineRunner {
             runningStepInSection: section.steps[this.currentSectionStep]
         });
 
+        window.addEventListener('resize', () => {
+            const wrappingElementsDimensions = this.elementManager
+                .getWrappingElementsDimensions(section.steps[this.currentSectionStep].elementSelector);
+            this.renderer.updateElementsDimensions(wrappingElementsDimensions);
+        });
+
+        window.addEventListener('scroll', () => {
+            const wrappingElementsDimensions = this.elementManager
+                .getWrappingElementsDimensions(section.steps[this.currentSectionStep].elementSelector);
+            this.renderer.updateElementsDimensions(wrappingElementsDimensions);
+        });
+
         const wrappingElementsDimensions = this.elementManager
             .getWrappingElementsDimensions(section.steps[this.currentSectionStep].elementSelector);
-
         this.renderer.wrapElement(wrappingElementsDimensions);
 
         return status;

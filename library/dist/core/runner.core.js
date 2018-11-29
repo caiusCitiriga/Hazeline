@@ -11,6 +11,7 @@ var HazelineRunner = /** @class */ (function () {
         this.elementManager = elementManager;
     }
     HazelineRunner.prototype.runSection = function (section) {
+        var _this = this;
         var status = new rxjs_1.BehaviorSubject(null);
         if (!section) {
             status.next({
@@ -25,6 +26,16 @@ var HazelineRunner = /** @class */ (function () {
             runningSection: section,
             status: tutorial_section_statuses_enum_1.HazelineTutorialSectionStatuses.started,
             runningStepInSection: section.steps[this.currentSectionStep]
+        });
+        window.addEventListener('resize', function () {
+            var wrappingElementsDimensions = _this.elementManager
+                .getWrappingElementsDimensions(section.steps[_this.currentSectionStep].elementSelector);
+            _this.renderer.updateElementsDimensions(wrappingElementsDimensions);
+        });
+        window.addEventListener('scroll', function () {
+            var wrappingElementsDimensions = _this.elementManager
+                .getWrappingElementsDimensions(section.steps[_this.currentSectionStep].elementSelector);
+            _this.renderer.updateElementsDimensions(wrappingElementsDimensions);
         });
         var wrappingElementsDimensions = this.elementManager
             .getWrappingElementsDimensions(section.steps[this.currentSectionStep].elementSelector);
