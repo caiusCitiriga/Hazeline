@@ -4,7 +4,8 @@
     "description": "An interactive walkthrough tutorial library for the web, done right.",
     "main": "dist/index.js",
     "scripts": {
-        "build-dev": "rm -rf ./dist && node_modules/.bin/tsc && npm pack"
+        "build-dev": "rimraf ./dist && tsc && npm pack",
+        "update": "sh ./scripts/update.sh"
     },
     "repository": {
         "type": "git",

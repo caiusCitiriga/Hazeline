@@ -9,10 +9,10 @@ var HazelineRenderer = /** @class */ (function () {
     };
     HazelineRenderer.prototype.attachElementsToBody = function (elements) {
         var body = document.querySelector('body');
-        body.appendChild(elements.topBox);
-        body.appendChild(elements.leftBox);
-        body.appendChild(elements.rightBox);
-        body.appendChild(elements.bottomBox);
+        body.prepend(elements.topBox);
+        body.prepend(elements.leftBox);
+        body.prepend(elements.rightBox);
+        body.prepend(elements.bottomBox);
     };
     HazelineRenderer.prototype.createWrappingElements = function (wrappingElementsDimensions) {
         var topBox = document.createElement('div');
