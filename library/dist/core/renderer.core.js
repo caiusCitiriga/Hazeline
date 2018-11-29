@@ -1,66 +1,77 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var elements_ids_enum_1 = require("./enums/elements-ids.enum");
-var HazelineRenderer = /** @class */ (function () {
-    function HazelineRenderer() {
+var styles_manager_core_1 = require("./styles-manager.core");
+var elements_default_styles_const_1 = require("./consts/elements-default-styles.const");
+var HazelineOverlayRenderer = /** @class */ (function () {
+    function HazelineOverlayRenderer() {
     }
-    HazelineRenderer.prototype.updateElementsDimensions = function (dimensions) {
-        var topBox = document.getElementById(elements_ids_enum_1.HazelineElementsIds.topBox);
-        var leftBox = document.getElementById(elements_ids_enum_1.HazelineElementsIds.leftBox);
-        var rightBox = document.getElementById(elements_ids_enum_1.HazelineElementsIds.rightBox);
-        var bottomBox = document.getElementById(elements_ids_enum_1.HazelineElementsIds.bottomBox);
+    HazelineOverlayRenderer.prototype.applyStyles = function (overlayOpts) {
+        this.overlayOptions = overlayOpts;
+    };
+    HazelineOverlayRenderer.prototype.destroyPreviousElementsIfAny = function () {
+        if (!!document.getElementById(elements_ids_enum_1.HazelineElementsIds.topBox)) {
+            document.body.removeChild(document.getElementById(elements_ids_enum_1.HazelineElementsIds.topBox));
+        }
+        if (!!document.getElementById(elements_ids_enum_1.HazelineElementsIds.leftBox)) {
+            document.body.removeChild(document.getElementById(elements_ids_enum_1.HazelineElementsIds.leftBox));
+        }
+        if (!!document.getElementById(elements_ids_enum_1.HazelineElementsIds.rightBox)) {
+            document.body.removeChild(document.getElementById(elements_ids_enum_1.HazelineElementsIds.rightBox));
+        }
+        if (!!document.getElementById(elements_ids_enum_1.HazelineElementsIds.bottomBox)) {
+            document.body.removeChild(document.getElementById(elements_ids_enum_1.HazelineElementsIds.bottomBox));
+        }
+    };
+    HazelineOverlayRenderer.prototype.updateElementsDimensions = function (dimensions) {
+        this.topBox = document.getElementById(elements_ids_enum_1.HazelineElementsIds.topBox);
+        this.leftBox = document.getElementById(elements_ids_enum_1.HazelineElementsIds.leftBox);
+        this.rightBox = document.getElementById(elements_ids_enum_1.HazelineElementsIds.rightBox);
+        this.bottomBox = document.getElementById(elements_ids_enum_1.HazelineElementsIds.bottomBox);
         this.setElementsProperties({
-            topBox: topBox,
-            leftBox: leftBox,
-            rightBox: rightBox,
-            bottomBox: bottomBox
+            topBox: this.topBox,
+            leftBox: this.leftBox,
+            rightBox: this.rightBox,
+            bottomBox: this.bottomBox
         }, dimensions);
     };
-    HazelineRenderer.prototype.wrapElement = function (dimensions) {
+    HazelineOverlayRenderer.prototype.wrapElement = function (dimensions) {
+        this.destroyPreviousElementsIfAny();
         var wrappingElements = this.createWrappingElements(dimensions);
         this.attachElementsToBody(wrappingElements);
     };
-    HazelineRenderer.prototype.attachElementsToBody = function (elements) {
+    HazelineOverlayRenderer.prototype.attachElementsToBody = function (elements) {
         var body = document.querySelector('body');
         body.prepend(elements.topBox); // not fully supported. See browser tables
         body.prepend(elements.leftBox); // not fully supported. See browser tables
         body.prepend(elements.rightBox); // not fully supported. See browser tables
         body.prepend(elements.bottomBox); // not fully supported. See browser tables
     };
-    HazelineRenderer.prototype.createWrappingElements = function (dimensions) {
-        var topBox = document.createElement('div');
-        var leftBox = document.createElement('div');
-        var rightBox = document.createElement('div');
-        var bottomBox = document.createElement('div');
+    HazelineOverlayRenderer.prototype.createWrappingElements = function (dimensions) {
+        this.topBox = document.createElement('div');
+        this.leftBox = document.createElement('div');
+        this.rightBox = document.createElement('div');
+        this.bottomBox = document.createElement('div');
         var elements = this.setElementsProperties({
-            topBox: topBox,
-            leftBox: leftBox,
-            rightBox: rightBox,
-            bottomBox: bottomBox
+            topBox: this.topBox,
+            leftBox: this.leftBox,
+            rightBox: this.rightBox,
+            bottomBox: this.bottomBox
         }, dimensions);
         return elements;
     };
-    HazelineRenderer.prototype.setElementsProperties = function (elements, dimensions) {
+    HazelineOverlayRenderer.prototype.setElementsProperties = function (elements, dimensions) {
+        var _this = this;
         elements.topBox.id = elements_ids_enum_1.HazelineElementsIds.topBox;
         elements.leftBox.id = elements_ids_enum_1.HazelineElementsIds.leftBox;
         elements.rightBox.id = elements_ids_enum_1.HazelineElementsIds.rightBox;
         elements.bottomBox.id = elements_ids_enum_1.HazelineElementsIds.bottomBox;
-        elements.topBox.style.border = '1px solid red';
-        elements.leftBox.style.border = '1px solid red';
-        elements.rightBox.style.border = '1px solid red';
-        elements.bottomBox.style.border = '1px solid red';
-        elements.topBox.style.position = 'fixed';
-        elements.leftBox.style.position = 'fixed';
-        elements.rightBox.style.position = 'fixed';
-        elements.bottomBox.style.position = 'fixed';
-        elements.topBox.style.background = 'rgba(0,0,0,.8)';
-        elements.leftBox.style.background = 'rgba(0,0,0,.8)';
-        elements.rightBox.style.background = 'rgba(0,0,0,.8)';
-        elements.bottomBox.style.background = 'rgba(0,0,0,.8)';
-        elements.topBox.style.zIndex = '99999';
-        elements.leftBox.style.zIndex = '99999';
-        elements.rightBox.style.zIndex = '99999';
-        elements.bottomBox.style.zIndex = '99999';
+        Object.keys(elements).forEach(function (el) {
+            styles_manager_core_1.HazelineStylesManager.styleElement(elements[el], elements_default_styles_const_1.HazelineElementsDefaultStyles.overlayBoxesInternalCommonData);
+            if (_this.overlayOptions) {
+                styles_manager_core_1.HazelineStylesManager.styleElement(el, _this.overlayOptions);
+            }
+        });
         elements.topBox.style.width = dimensions.topBox.width + "px";
         elements.topBox.style.height = dimensions.topBox.height + "px";
         elements.topBox.style.left = dimensions.topBox.offsetLeft + "px";
@@ -75,7 +86,7 @@ var HazelineRenderer = /** @class */ (function () {
         elements.bottomBox.style.left = dimensions.bottomBox.offsetLeft + "px";
         return elements;
     };
-    return HazelineRenderer;
+    return HazelineOverlayRenderer;
 }());
-exports.HazelineRenderer = HazelineRenderer;
+exports.HazelineOverlayRenderer = HazelineOverlayRenderer;
 //# sourceMappingURL=renderer.core.js.map

@@ -12,13 +12,19 @@ export interface HazelineTutorialSection {
 
 export interface GlobalStyles {
     lightbox?: HazelineLightboxOptions;
-    overlay: {
-        background: string;
-    }
+    overlay?: HazelineOverlayCommonOptions;
 }
 
 export interface HazelineLightboxOptions {
-    ligthboxWrapperCSS?: HazelineCSSRules;
+    lightboxWrapperCSS?: HazelineCSSRules;
+    lightboxNextBtnCSS?: HazelineCSSRules;
+    lightboxPrevBtnCSS?: HazelineCSSRules;
+    lightboxTextWrapperCSS?: HazelineCSSRules;
+    lightboxControlsWrapperCSS?: HazelineCSSRules;
+
+    lightboxPrevBtnHoverCSS?: HazelineCSSRules;
+    lightboxNextBtnHoverCSS?: HazelineCSSRules;
+
     positioning?: {
         offset?: string;
         attachment?: string;
@@ -28,4 +34,8 @@ export interface HazelineLightboxOptions {
         constraints?: ITetherConstraint[];
         classes?: { [className: string]: boolean | string };
     };
+}
+
+export interface HazelineOverlayCommonOptions {
+    background?: string;
 }

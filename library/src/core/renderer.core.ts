@@ -1,23 +1,52 @@
 import { HazelineWrappingElementsDimensions } from './interfaces/wrapping-elements-dimensions.interface';
 import { HazelineElementsIds } from './enums/elements-ids.enum';
+import { HazelineOverlayCommonOptions } from './interfaces/tutorial-section.interface';
+import { HazelineStylesManager } from './styles-manager.core';
+import { HazelineElementsDefaultStyles } from './consts/elements-default-styles.const';
 
-export class HazelineRenderer {
+export class HazelineOverlayRenderer {
+
+    private topBox: HTMLDivElement;
+    private leftBox: HTMLDivElement;
+    private rightBox: HTMLDivElement;
+    private bottomBox: HTMLDivElement;
+    private overlayOptions: HazelineOverlayCommonOptions;
+
+    public applyStyles(overlayOpts: HazelineOverlayCommonOptions): void {
+        this.overlayOptions = overlayOpts;
+    }
+
+    public destroyPreviousElementsIfAny(): void {
+        if (!!document.getElementById(HazelineElementsIds.topBox)) {
+            document.body.removeChild(document.getElementById(HazelineElementsIds.topBox));
+        }
+        if (!!document.getElementById(HazelineElementsIds.leftBox)) {
+            document.body.removeChild(document.getElementById(HazelineElementsIds.leftBox));
+        }
+        if (!!document.getElementById(HazelineElementsIds.rightBox)) {
+            document.body.removeChild(document.getElementById(HazelineElementsIds.rightBox));
+        }
+        if (!!document.getElementById(HazelineElementsIds.bottomBox)) {
+            document.body.removeChild(document.getElementById(HazelineElementsIds.bottomBox));
+        }
+    }
 
     public updateElementsDimensions(dimensions: HazelineWrappingElementsDimensions): void {
-        const topBox = document.getElementById(HazelineElementsIds.topBox) as HTMLDivElement;
-        const leftBox = document.getElementById(HazelineElementsIds.leftBox) as HTMLDivElement;
-        const rightBox = document.getElementById(HazelineElementsIds.rightBox) as HTMLDivElement;
-        const bottomBox = document.getElementById(HazelineElementsIds.bottomBox) as HTMLDivElement;
+        this.topBox = document.getElementById(HazelineElementsIds.topBox) as HTMLDivElement;
+        this.leftBox = document.getElementById(HazelineElementsIds.leftBox) as HTMLDivElement;
+        this.rightBox = document.getElementById(HazelineElementsIds.rightBox) as HTMLDivElement;
+        this.bottomBox = document.getElementById(HazelineElementsIds.bottomBox) as HTMLDivElement;
 
         this.setElementsProperties({
-            topBox: topBox,
-            leftBox: leftBox,
-            rightBox: rightBox,
-            bottomBox: bottomBox
+            topBox: this.topBox,
+            leftBox: this.leftBox,
+            rightBox: this.rightBox,
+            bottomBox: this.bottomBox
         }, dimensions);
     }
 
     public wrapElement(dimensions: HazelineWrappingElementsDimensions): void {
+        this.destroyPreviousElementsIfAny();
         const wrappingElements = this.createWrappingElements(dimensions);
         this.attachElementsToBody(wrappingElements);
     }
@@ -32,16 +61,16 @@ export class HazelineRenderer {
     }
 
     private createWrappingElements(dimensions: HazelineWrappingElementsDimensions): ElementsToAttachOnBody {
-        const topBox = document.createElement('div');
-        const leftBox = document.createElement('div');
-        const rightBox = document.createElement('div');
-        const bottomBox = document.createElement('div');
+        this.topBox = document.createElement('div');
+        this.leftBox = document.createElement('div');
+        this.rightBox = document.createElement('div');
+        this.bottomBox = document.createElement('div');
 
         const elements = this.setElementsProperties({
-            topBox: topBox,
-            leftBox: leftBox,
-            rightBox: rightBox,
-            bottomBox: bottomBox
+            topBox: this.topBox,
+            leftBox: this.leftBox,
+            rightBox: this.rightBox,
+            bottomBox: this.bottomBox
         }, dimensions);
 
         return elements;
@@ -53,25 +82,12 @@ export class HazelineRenderer {
         elements.rightBox.id = HazelineElementsIds.rightBox;
         elements.bottomBox.id = HazelineElementsIds.bottomBox;
 
-        elements.topBox.style.border = '1px solid red';
-        elements.leftBox.style.border = '1px solid red';
-        elements.rightBox.style.border = '1px solid red';
-        elements.bottomBox.style.border = '1px solid red';
-
-        elements.topBox.style.position = 'fixed';
-        elements.leftBox.style.position = 'fixed';
-        elements.rightBox.style.position = 'fixed';
-        elements.bottomBox.style.position = 'fixed';
-
-        elements.topBox.style.background = 'rgba(0,0,0,.8)';
-        elements.leftBox.style.background = 'rgba(0,0,0,.8)';
-        elements.rightBox.style.background = 'rgba(0,0,0,.8)';
-        elements.bottomBox.style.background = 'rgba(0,0,0,.8)';
-
-        elements.topBox.style.zIndex = '99999';
-        elements.leftBox.style.zIndex = '99999';
-        elements.rightBox.style.zIndex = '99999';
-        elements.bottomBox.style.zIndex = '99999';
+        Object.keys(elements).forEach(el => {
+            HazelineStylesManager.styleElement(elements[el], HazelineElementsDefaultStyles.overlayBoxesInternalCommonData);
+            if (this.overlayOptions) {
+                HazelineStylesManager.styleElement(el, this.overlayOptions);
+            }
+        });
 
         elements.topBox.style.width = `${dimensions.topBox.width}px`;
         elements.topBox.style.height = `${dimensions.topBox.height}px`;
@@ -91,6 +107,7 @@ export class HazelineRenderer {
 
         return elements;
     }
+
 
 }
 

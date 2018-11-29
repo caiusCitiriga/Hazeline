@@ -13,7 +13,7 @@ var Hazeline = /** @class */ (function () {
         this._$tutorialStatus = new rxjs_1.BehaviorSubject(null);
         this.tutorialSections = [];
         this.lightbox = new lightbox_core_1.HazelineLightbox();
-        this.renderer = new renderer_core_1.HazelineRenderer();
+        this.renderer = new renderer_core_1.HazelineOverlayRenderer();
         this.elementManager = new element_manager_core_1.HazelineElementManager();
         this.runner = new runner_core_1.HazelineRunner(this.lightbox, this.renderer, this.elementManager);
     }

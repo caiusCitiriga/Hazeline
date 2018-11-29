@@ -5,4 +5,8 @@ export enum HazelineElementsIds {
     bottomBox = 'hazeline-bottom-box',
 
     lightbox = 'hazeline-lightbox',
+    lightboxText = 'hazeline-lightbox-text',
+    lightboxControls = 'hazeline-lightbox-ctrls',
+    lightboxNextButton = 'hazeline-lightbox-next-btn',
+    lightboxPrevButton = 'hazeline-lightbox-prev-btn',
 }
