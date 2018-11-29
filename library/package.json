@@ -1,46 +1,46 @@
 {
-  "name": "hazeline",
-  "version": "1.0.0",
-  "description": "An interactive walkthrough tutorial library for the web, done right.",
-  "main": "dist/index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build-dev": "rm -rf ./dist && tsc",
-    "build-prod": "rm -rf ./dist && tsc --p tsconfig.json",
-    "update": ". scripts/update.bash"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/caiuscitiriga/hazeline.git"
-  },
-  "keywords": [
-    "js",
-    "web",
-    "into",
-    "node",
-    "guide",
-    "tutorial",
-    "javascript",
-    "walkthrough",
-    "web-tutorial",
-    "step-tutorial",
-    "application-tutorial",
-    "interactive-tutorial",
-    "feature introduction",
-    "step-by-step-tutorial",
-    "application introduction"
-  ],
-  "author": "Caius Citiriga",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/caiuscitiriga/hazeline/issues"
-  },
-  "homepage": "https://github.com/caiuscitiriga/hazeline#readme",
-  "dependencies": {
-    "rxjs": "6.3.0"
-  },
-  "devDependencies": {
-    "rimraf": "2.6.2",
-    "typescript": "2.9.1"
-  }
+    "name": "hazeline",
+    "version": "1.0.0",
+    "description": "An interactive walkthrough tutorial library for the web, done right.",
+    "main": "dist/index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "build-dev": "rm -rf ./dist && tsc",
+        "build-prod": "rm -rf ./dist && tsc --p tsconfig.json",
+        "update": ". scripts/update.bash"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/caiuscitiriga/hazeline.git"
+    },
+    "keywords": [
+        "js",
+        "web",
+        "into",
+        "node",
+        "guide",
+        "tutorial",
+        "javascript",
+        "walkthrough",
+        "web-tutorial",
+        "step-tutorial",
+        "application-tutorial",
+        "interactive-tutorial",
+        "feature introduction",
+        "step-by-step-tutorial",
+        "application introduction"
+    ],
+    "author": "Caius Citiriga",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/caiuscitiriga/hazeline/issues"
+    },
+    "homepage": "https://github.com/caiuscitiriga/hazeline#readme",
+    "dependencies": {
+        "rxjs": "^6.3.3"
+    },
+    "devDependencies": {
+        "rimraf": "2.6.2",
+        "typescript": "2.9.1"
+    }
 }
