@@ -52,7 +52,7 @@ export class HazelineRunner {
         const wrappingElementsDimensions = this.elementManager
             .getWrappingElementsDimensions(section.steps[this.currentSectionStep].elementSelector);
 
-        console.log(wrappingElementsDimensions);
+        this.renderer.wrapElement(wrappingElementsDimensions);
 
         return status;
     }
