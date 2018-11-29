@@ -1,19 +1,17 @@
 import { Observable, BehaviorSubject } from 'rxjs';
 
-import { HazelineTutorialSection } from './interfaces/tutorial-section.interface';
+import { HazelineTutorialSection, GlobalStyles } from './interfaces/tutorial-section.interface';
 import { HazelineTutorialSectionStatuses } from './enums/tutorial-section-statuses.enum';
 import { HazelineTutorialSectionStatus } from './interfaces/tutorial-section-status.interface';
 
 import { HazelineLightbox } from './lightbox.core';
 import { HazelineRenderer } from './renderer.core';
-import { HazelineStylesManager } from './styles-manager.core';
 import { HazelineElementManager } from './element-manager.core';
 
 export class HazelineRunner {
 
     private lightbox: HazelineLightbox;
     private renderer: HazelineRenderer;
-    private stylesManager: HazelineStylesManager;
     private elementManager: HazelineElementManager;
 
     private currentSectionStep = -1;
@@ -21,12 +19,10 @@ export class HazelineRunner {
     public constructor(
         lightbox: HazelineLightbox,
         renderer: HazelineRenderer,
-        stylesManager: HazelineStylesManager,
         elementManager: HazelineElementManager
     ) {
         this.lightbox = lightbox;
         this.renderer = renderer;
-        this.stylesManager = stylesManager;
         this.elementManager = elementManager;
     }
 
@@ -50,22 +46,34 @@ export class HazelineRunner {
         });
 
         window.addEventListener('resize', () => {
-            const wrappingElementsDimensions = this.elementManager
-                .getWrappingElementsDimensions(section.steps[this.currentSectionStep].elementSelector);
-            this.renderer.updateElementsDimensions(wrappingElementsDimensions);
+            const wrapElementsDimensions = this.elementManager.getWrappingElementsDimensions(section.steps[this.currentSectionStep].elementSelector);
+            this.renderer.updateElementsDimensions(wrapElementsDimensions);
+            this.lightbox.updateLightboxPlacement(wrapElementsDimensions);
         });
 
         window.addEventListener('scroll', () => {
-            const wrappingElementsDimensions = this.elementManager
-                .getWrappingElementsDimensions(section.steps[this.currentSectionStep].elementSelector);
-            this.renderer.updateElementsDimensions(wrappingElementsDimensions);
+            const wrapElementsDimensions = this.elementManager.getWrappingElementsDimensions(section.steps[this.currentSectionStep].elementSelector);
+            this.renderer.updateElementsDimensions(wrapElementsDimensions);
+            this.lightbox.updateLightboxPlacement(wrapElementsDimensions);
         });
 
-        const wrappingElementsDimensions = this.elementManager
-            .getWrappingElementsDimensions(section.steps[this.currentSectionStep].elementSelector);
-        this.renderer.wrapElement(wrappingElementsDimensions);
+        const wrapElementsDimensions = this.elementManager.getWrappingElementsDimensions(section.steps[this.currentSectionStep].elementSelector);
+
+        this.renderer.wrapElement(wrapElementsDimensions);
+        this.lightbox.placeLightbox(wrapElementsDimensions);
+        this.applyCustomStylesIfAny(section.globalStyling);
 
         return status;
+    }
+
+    private applyCustomStylesIfAny(styles: GlobalStyles): void {
+        if (!styles) {
+            return;
+        }
+
+        if (styles.lightbox) {
+            this.lightbox.applyStyles(styles.lightbox);
+        }
     }
 
 }

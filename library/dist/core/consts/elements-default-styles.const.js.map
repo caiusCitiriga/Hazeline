@@ -1,0 +1,1 @@
+{"version":3,"file":"elements-default-styles.const.js","sourceRoot":"","sources":["../../../src/core/consts/elements-default-styles.const.ts"],"names":[],"mappings":";;AAEa,QAAA,6BAA6B,GAAG;IACzC,QAAQ,EAAY;QAChB,KAAK,EAAE,OAAO;QACd,MAAM,EAAE,OAAO;QACf,MAAM,EAAE,QAAQ;QAChB,QAAQ,EAAE,OAAO;QACjB,UAAU,EAAE,MAAM;KACrB;CACJ,CAAA"}

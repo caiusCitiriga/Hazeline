@@ -5,7 +5,6 @@ export declare class Hazeline {
     private runner;
     private lightbox;
     private renderer;
-    private stylesManager;
     private elementManager;
     private _$tutorialStatus;
     private tutorialSections;

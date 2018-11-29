@@ -7,7 +7,6 @@ import { HazelineTutorialSection } from './core/interfaces/tutorial-section.inte
 import { HazelineRunner } from './core/runner.core';
 import { HazelineLightbox } from './core/lightbox.core';
 import { HazelineRenderer } from './core/renderer.core';
-import { HazelineStylesManager } from './core/styles-manager.core';
 import { HazelineElementManager } from './core/element-manager.core';
 import { HazelineTutorialStatuses } from './core/enums/tutorial-statuses.enum';
 import { HazelineTutorialSectionStatuses } from './core/enums/tutorial-section-statuses.enum';
@@ -17,7 +16,6 @@ export class Hazeline {
     private runner: HazelineRunner;
     private lightbox: HazelineLightbox;
     private renderer: HazelineRenderer;
-    private stylesManager: HazelineStylesManager;
     private elementManager: HazelineElementManager;
 
     private _$tutorialStatus = new BehaviorSubject<HazelineTutorialStatus>(null);
@@ -27,13 +25,11 @@ export class Hazeline {
     public constructor() {
         this.lightbox = new HazelineLightbox();
         this.renderer = new HazelineRenderer();
-        this.stylesManager = new HazelineStylesManager();
         this.elementManager = new HazelineElementManager();
 
         this.runner = new HazelineRunner(
             this.lightbox,
             this.renderer,
-            this.stylesManager,
             this.elementManager
         );
     }

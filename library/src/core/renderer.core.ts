@@ -1,13 +1,13 @@
 import { HazelineWrappingElementsDimensions } from './interfaces/wrapping-elements-dimensions.interface';
-import { HazelineWrappingElementsIds } from './enums/wrapping-elements-ids.enum';
+import { HazelineElementsIds } from './enums/elements-ids.enum';
 
 export class HazelineRenderer {
 
     public updateElementsDimensions(dimensions: HazelineWrappingElementsDimensions): void {
-        const topBox = document.getElementById(HazelineWrappingElementsIds.topBox) as HTMLDivElement;
-        const leftBox = document.getElementById(HazelineWrappingElementsIds.leftBox) as HTMLDivElement;
-        const rightBox = document.getElementById(HazelineWrappingElementsIds.rightBox) as HTMLDivElement;
-        const bottomBox = document.getElementById(HazelineWrappingElementsIds.bottomBox) as HTMLDivElement;
+        const topBox = document.getElementById(HazelineElementsIds.topBox) as HTMLDivElement;
+        const leftBox = document.getElementById(HazelineElementsIds.leftBox) as HTMLDivElement;
+        const rightBox = document.getElementById(HazelineElementsIds.rightBox) as HTMLDivElement;
+        const bottomBox = document.getElementById(HazelineElementsIds.bottomBox) as HTMLDivElement;
 
         this.setElementsProperties({
             topBox: topBox,
@@ -48,10 +48,10 @@ export class HazelineRenderer {
     }
 
     private setElementsProperties(elements: ElementsToAttachOnBody, dimensions: HazelineWrappingElementsDimensions): ElementsToAttachOnBody {
-        elements.topBox.id = HazelineWrappingElementsIds.topBox;
-        elements.leftBox.id = HazelineWrappingElementsIds.leftBox;
-        elements.rightBox.id = HazelineWrappingElementsIds.rightBox;
-        elements.bottomBox.id = HazelineWrappingElementsIds.bottomBox;
+        elements.topBox.id = HazelineElementsIds.topBox;
+        elements.leftBox.id = HazelineElementsIds.leftBox;
+        elements.rightBox.id = HazelineElementsIds.rightBox;
+        elements.bottomBox.id = HazelineElementsIds.bottomBox;
 
         elements.topBox.style.border = '1px solid red';
         elements.leftBox.style.border = '1px solid red';

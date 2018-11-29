@@ -1,14 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var wrapping_elements_ids_enum_1 = require("./enums/wrapping-elements-ids.enum");
+var elements_ids_enum_1 = require("./enums/elements-ids.enum");
 var HazelineRenderer = /** @class */ (function () {
     function HazelineRenderer() {
     }
     HazelineRenderer.prototype.updateElementsDimensions = function (dimensions) {
-        var topBox = document.getElementById(wrapping_elements_ids_enum_1.HazelineWrappingElementsIds.topBox);
-        var leftBox = document.getElementById(wrapping_elements_ids_enum_1.HazelineWrappingElementsIds.leftBox);
-        var rightBox = document.getElementById(wrapping_elements_ids_enum_1.HazelineWrappingElementsIds.rightBox);
-        var bottomBox = document.getElementById(wrapping_elements_ids_enum_1.HazelineWrappingElementsIds.bottomBox);
+        var topBox = document.getElementById(elements_ids_enum_1.HazelineElementsIds.topBox);
+        var leftBox = document.getElementById(elements_ids_enum_1.HazelineElementsIds.leftBox);
+        var rightBox = document.getElementById(elements_ids_enum_1.HazelineElementsIds.rightBox);
+        var bottomBox = document.getElementById(elements_ids_enum_1.HazelineElementsIds.bottomBox);
         this.setElementsProperties({
             topBox: topBox,
             leftBox: leftBox,
@@ -41,10 +41,10 @@ var HazelineRenderer = /** @class */ (function () {
         return elements;
     };
     HazelineRenderer.prototype.setElementsProperties = function (elements, dimensions) {
-        elements.topBox.id = wrapping_elements_ids_enum_1.HazelineWrappingElementsIds.topBox;
-        elements.leftBox.id = wrapping_elements_ids_enum_1.HazelineWrappingElementsIds.leftBox;
-        elements.rightBox.id = wrapping_elements_ids_enum_1.HazelineWrappingElementsIds.rightBox;
-        elements.bottomBox.id = wrapping_elements_ids_enum_1.HazelineWrappingElementsIds.bottomBox;
+        elements.topBox.id = elements_ids_enum_1.HazelineElementsIds.topBox;
+        elements.leftBox.id = elements_ids_enum_1.HazelineElementsIds.leftBox;
+        elements.rightBox.id = elements_ids_enum_1.HazelineElementsIds.rightBox;
+        elements.bottomBox.id = elements_ids_enum_1.HazelineElementsIds.bottomBox;
         elements.topBox.style.border = '1px solid red';
         elements.leftBox.style.border = '1px solid red';
         elements.rightBox.style.border = '1px solid red';
