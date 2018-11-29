@@ -10,10 +10,10 @@ export class HazelineRenderer {
     private attachElementsToBody(elements: ElementsToAttachOnBody): void {
         const body = document.querySelector('body');
 
-        (body as any).prepend(elements.topBox);
-        (body as any).prepend(elements.leftBox);
-        (body as any).prepend(elements.rightBox);
-        (body as any).prepend(elements.bottomBox);
+        body.insertBefore(elements.topBox, null);
+        body.insertBefore(elements.leftBox, null);
+        body.insertBefore(elements.rightBox, null);
+        body.insertBefore(elements.bottomBox, null);
     }
 
     private createWrappingElements(wrappingElementsDimensions: HazelineWrappingElementsDimensions): ElementsToAttachOnBody {
