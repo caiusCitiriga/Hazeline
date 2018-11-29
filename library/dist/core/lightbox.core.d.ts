@@ -10,18 +10,22 @@ export declare class HazelineLightbox {
     private lightboxNextBtn;
     private lightboxPrevBtn;
     private lightboxControlsWrp;
-    private ligthboxOptions;
-    private nextBtnText;
-    private prevBtnText;
     private lightboxText;
+    private ligthboxOptions;
+    private prevBtnClickEvtListener;
+    private nextBtnClickEvtListener;
+    private prevBtnMouseLeaveEvtListener;
+    private prevBtnMouseEnterEvtListener;
+    private nextBtnMouseLeaveEvtListener;
+    private nextBtnMouseEnterEvtListener;
     $nextStepRequired(): Observable<boolean>;
     $prevStepRequired(): Observable<boolean>;
-    applyStyles(lightboxOpts: HazelineLightboxOptions): void;
     dispose(): void;
     placeLightbox(target: HTMLElement, sectionStep: HazelineTutorialStep, isLastStep?: boolean): void;
+    setOptions(lightboxOpts: HazelineLightboxOptions): void;
     updateLightboxPlacement(target: HTMLElement): void;
     private applyTexts;
-    private attachNextPrevClickListeners;
+    private attachNextEventListeneres;
     private createLightbox;
     private styleWholeLigthboxElement;
 }

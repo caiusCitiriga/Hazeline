@@ -2,20 +2,21 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var rxjs_1 = require("rxjs");
 var elements_ids_enum_1 = require("./enums/elements-ids.enum");
-var elements_default_styles_const_1 = require("./consts/elements-default-styles.const");
+var elements_defaults_const_1 = require("./consts/elements-defaults.const");
 var styles_manager_core_1 = require("./styles-manager.core");
 var HazelineOverlayRenderer = /** @class */ (function () {
     function HazelineOverlayRenderer() {
         this._$prematureEndRequired = new rxjs_1.Subject();
+        this.overlayOptions = elements_defaults_const_1.HazelineElementsDefaults.overlay;
     }
     HazelineOverlayRenderer.prototype.$premartureEndRequired = function () {
         return this._$prematureEndRequired;
     };
-    HazelineOverlayRenderer.prototype.applyStyles = function (overlayOpts) {
-        this.overlayOptions = overlayOpts;
-    };
     HazelineOverlayRenderer.prototype.dispose = function () {
         this.destroyPreviousElementsIfAny();
+    };
+    HazelineOverlayRenderer.prototype.setOptions = function (overlayOpts) {
+        this.overlayOptions = overlayOpts;
     };
     HazelineOverlayRenderer.prototype.updateElementsDimensions = function (dimensions) {
         this.topBox = document.getElementById(elements_ids_enum_1.HazelineElementsIds.topBox);
@@ -82,16 +83,13 @@ var HazelineOverlayRenderer = /** @class */ (function () {
         elements.bottomBox.id = elements_ids_enum_1.HazelineElementsIds.bottomBox;
         this.endTutorialBtn.id = elements_ids_enum_1.HazelineElementsIds.endTutorialButton;
         Object.keys(elements).forEach(function (el) {
-            styles_manager_core_1.HazelineStylesManager.styleElement(elements[el], elements_default_styles_const_1.HazelineElementsDefaultStyles.overlayBoxesInternalCommonData);
-            if (_this.overlayOptions) {
-                styles_manager_core_1.HazelineStylesManager.styleElement(elements[el], _this.overlayOptions);
-            }
+            styles_manager_core_1.HazelineStylesManager.styleElement(elements[el], _this.overlayOptions.overlayCSS || elements_defaults_const_1.HazelineElementsDefaults.overlay.overlayCSS);
         });
-        this.endTutorialBtn.innerHTML = 'End tutorial';
+        this.endTutorialBtn.innerHTML = this.overlayOptions.closeBtnText || elements_defaults_const_1.HazelineElementsDefaults.overlay.closeBtnText;
         this.endTutorialBtn.addEventListener('click', function () { return _this._$prematureEndRequired.next(true); });
-        this.endTutorialBtn.addEventListener('mouseleave', function () { return styles_manager_core_1.HazelineStylesManager.styleElement(_this.endTutorialBtn, elements_default_styles_const_1.HazelineElementsDefaultStyles.endTutorialBtnCSS); });
-        this.endTutorialBtn.addEventListener('mouseenter', function () { return styles_manager_core_1.HazelineStylesManager.styleElement(_this.endTutorialBtn, elements_default_styles_const_1.HazelineElementsDefaultStyles.endTutorialBtnHoverCSS); });
-        styles_manager_core_1.HazelineStylesManager.styleElement(this.endTutorialBtn, elements_default_styles_const_1.HazelineElementsDefaultStyles.endTutorialBtnCSS);
+        this.endTutorialBtn.addEventListener('mouseleave', function () { return styles_manager_core_1.HazelineStylesManager.styleElement(_this.endTutorialBtn, _this.overlayOptions.endTutorialBtnCSS || elements_defaults_const_1.HazelineElementsDefaults.overlay.endTutorialBtnCSS); });
+        this.endTutorialBtn.addEventListener('mouseenter', function () { return styles_manager_core_1.HazelineStylesManager.styleElement(_this.endTutorialBtn, _this.overlayOptions.endTutorialBtnHoverCSS || elements_defaults_const_1.HazelineElementsDefaults.overlay.endTutorialBtnHoverCSS); });
+        styles_manager_core_1.HazelineStylesManager.styleElement(this.endTutorialBtn, this.overlayOptions.endTutorialBtnCSS || elements_defaults_const_1.HazelineElementsDefaults.overlay.endTutorialBtnCSS);
         elements.topBox.style.width = dimensions.topBox.width + "px";
         elements.topBox.style.height = dimensions.topBox.height + "px";
         elements.topBox.style.left = dimensions.topBox.offsetLeft + "px";

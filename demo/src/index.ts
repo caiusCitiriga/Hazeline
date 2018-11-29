@@ -1,54 +1,103 @@
-import { HazelineTutorialRunner, LightboxPlacement } from 'hazeline';
+import { Hazeline } from 'hazeline';
 
 window.onload = () => {
-    const runner = new HazelineTutorialRunner();
-
-    // runner.enableScalingAnimation();
-    // runner.setOverlayBackground('#007bffe6');
-
-    runner.addSection({
-        id: 'section-one',
+    const haze = new Hazeline();
+    haze.addSection({
+        id: 'test',
         steps: [
             {
                 elementSelector: '#input-1',
-                text: 'Type in your email address'
-            },
-            {
-                elementSelector: '#input-2',
-                text: 'Then your password',
-                lightboxPlacement: 'left',
-                delayBeforeStart: 2000
-            },
-            {
-                elementSelector: '#input-3',
-                text: 'Your current address',
-                lightboxPlacement: LightboxPlacement.ABOVE
+                text: 'This is some gibberish test text for STEP 1',
             },
             {
                 elementSelector: '#input-4',
-                text: 'Check this checkbox out!',
+                text: 'This is some gibberish test text for STEP 2',
             },
             {
-                elementSelector: '#input-5',
-                text: 'Click this button!',
-                lightboxPlacement: 'right'
+                elementSelector: '#input-2',
+                text: 'This is some gibberish test text for STEP 3',
             },
             {
-                elementSelector: '#input-6',
-                text: 'You can also hightlight entire elements',
-                lightboxPlacement: 'ABOVE'
-            },
-            {
-                elementSelector: '#first-paragraph',
-                text: 'You can higlight portions of text inside paragraphs'
-            },
-            {
-                elementSelector: '#second-paragraph',
-                text: 'You can higlight portions of text inside paragraphs',
-                lightboxPlacement: 'ABOVE'
+                elementSelector: '#input-3',
+                text: 'This is some gibberish test text for STEP 4',
             }
-        ]
+        ],
+        globalStyling: {
+            overlay: {
+                closeBtnText: 'Chiudi',
+                overlayCSS: {
+                    // be aware that when setting CSS an override will be made, so the interface may result broken.
+                    // these are the minimum properties to set in order to make it work
+                    zIndex: '99999',
+                    position: 'fixed',
+                    background: 'rgba(0,0,0,.8)'
+                },
+                endTutorialBtnCSS: {
+                    top: '12px',
+                    right: '12px',
+                    width: '120px',
+                    height: '32px',
+                    outline: 'none',
+                    zIndex: '999999',
+                    color: '#E53935',
+                    position: 'fixed',
+                    fontWeight: 'bold',
+                    background: 'transparent',
+                    border: '2px solid #E53935',
+                },
+                endTutorialBtnHoverCSS: {
+                    color: '#fff',
+                    background: '#E53935',
+                }
+            },
+            lightbox: {
+                lastStepNextBtnText: 'Chiudi',
+                nextBtnText: 'Sucessivo',
+                prevBtnText: 'Precedente',
+                lightboxNextBtnCSS: {
+                    width: '150px',
+                    height: '38px',
+                    outline: 'none',
+                    color: '#ff7a00',
+                    fontSize: '18px',
+                    cursor: 'default',
+                    background: '#fff',
+                    fontWeight: 'bold',
+                    textAlign: 'center',
+                    border: '3px solid #ff7a00',
+                    transition: 'all 120ms ease-in-out',
+                },
+                lightboxPrevBtnCSS: {
+                    width: '150px',
+                    height: '38px',
+                    outline: 'none',
+                    color: '#ff7a00',
+                    fontSize: '18px',
+                    cursor: 'default',
+                    background: '#fff',
+                    fontWeight: 'bold',
+                    textAlign: 'center',
+                    border: '3px solid #ff7a00',
+                    transition: 'all 120ms ease-in-out',
+                },
+                lightboxPrevBtnHoverCSS: {
+                    color: '#fff',
+                    width: '150px',
+                    cursor: 'pointer',
+                    background: '#ff7a00',
+                },
+                lightboxNextBtnHoverCSS: {
+                    color: '#fff',
+                    width: '150px',
+                    cursor: 'pointer',
+                    background: '#ff7a00',
+                },
+            }
+        }
     });
 
-    runner.runSection('section-one');
+    haze.runTutorial('test')
+        .subscribe(res => {
+            console.log(res);
+        });
 }

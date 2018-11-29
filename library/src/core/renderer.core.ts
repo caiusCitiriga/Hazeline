@@ -1,11 +1,11 @@
 import { Subject, Observable } from 'rxjs';
 
 import { HazelineElementsIds } from './enums/elements-ids.enum';
-import { HazelineElementsDefaultStyles } from './consts/elements-default-styles.const';
+import { HazelineElementsDefaults } from './consts/elements-defaults.const';
 import { HazelineWrappingElementsDimensions } from './interfaces/wrapping-elements-dimensions.interface';
 
 import { HazelineStylesManager } from './styles-manager.core';
-import { HazelineCSSRules } from './interfaces/css-rules.interface';
+import { HazelineOverlyOptions } from './interfaces/tutorial-section.interface';
 
 export class HazelineOverlayRenderer {
 
@@ -15,19 +15,19 @@ export class HazelineOverlayRenderer {
     private bottomBox: HTMLDivElement;
     private endTutorialBtn: HTMLButtonElement;
 
-    private overlayOptions: HazelineCSSRules;
     private _$prematureEndRequired = new Subject<boolean>();
+    private overlayOptions = HazelineElementsDefaults.overlay;
 
     public $premartureEndRequired(): Observable<boolean> {
         return this._$prematureEndRequired;
     }
 
-    public applyStyles(overlayOpts: HazelineCSSRules): void {
-        this.overlayOptions = overlayOpts;
-    }
-
     public dispose(): void {
         this.destroyPreviousElementsIfAny();
+    }
+
+    public setOptions(overlayOpts: HazelineOverlyOptions): void {
+        this.overlayOptions = overlayOpts;
     }
 
     public updateElementsDimensions(dimensions: HazelineWrappingElementsDimensions): void {
@@ -105,17 +105,14 @@ export class HazelineOverlayRenderer {
         this.endTutorialBtn.id = HazelineElementsIds.endTutorialButton;
 
         Object.keys(elements).forEach(el => {
-            HazelineStylesManager.styleElement(elements[el], (HazelineElementsDefaultStyles as any).overlayBoxesInternalCommonData);
-            if (this.overlayOptions) {
-                HazelineStylesManager.styleElement(elements[el], this.overlayOptions);
-            }
+            HazelineStylesManager.styleElement(elements[el], this.overlayOptions.overlayCSS || HazelineElementsDefaults.overlay.overlayCSS);
         });
 
-        this.endTutorialBtn.innerHTML = 'End tutorial';
+        this.endTutorialBtn.innerHTML = this.overlayOptions.closeBtnText || HazelineElementsDefaults.overlay.closeBtnText;
         this.endTutorialBtn.addEventListener('click', () => this._$prematureEndRequired.next(true));
-        this.endTutorialBtn.addEventListener('mouseleave', () => HazelineStylesManager.styleElement(this.endTutorialBtn, HazelineElementsDefaultStyles.endTutorialBtnCSS));
-        this.endTutorialBtn.addEventListener('mouseenter', () => HazelineStylesManager.styleElement(this.endTutorialBtn, HazelineElementsDefaultStyles.endTutorialBtnHoverCSS));
-        HazelineStylesManager.styleElement(this.endTutorialBtn, HazelineElementsDefaultStyles.endTutorialBtnCSS);
+        this.endTutorialBtn.addEventListener('mouseleave', () => HazelineStylesManager.styleElement(this.endTutorialBtn, this.overlayOptions.endTutorialBtnCSS || HazelineElementsDefaults.overlay.endTutorialBtnCSS));
+        this.endTutorialBtn.addEventListener('mouseenter', () => HazelineStylesManager.styleElement(this.endTutorialBtn, this.overlayOptions.endTutorialBtnHoverCSS || HazelineElementsDefaults.overlay.endTutorialBtnHoverCSS));
+        HazelineStylesManager.styleElement(this.endTutorialBtn, this.overlayOptions.endTutorialBtnCSS || HazelineElementsDefaults.overlay.endTutorialBtnCSS);
 
         elements.topBox.style.width = `${dimensions.topBox.width}px`;
         elements.topBox.style.height = `${dimensions.topBox.height}px`;
@@ -135,8 +132,6 @@ export class HazelineOverlayRenderer {
 
         return elements;
     }
-
-
 }
 
 interface ElementsToAttachOnBody {

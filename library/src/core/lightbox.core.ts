@@ -1,11 +1,10 @@
 import Tether from 'tether';
-
 import { Observable, Subject } from 'rxjs';
 
 import { HazelineElementsIds } from './enums/elements-ids.enum';
 import { HazelineTutorialStep } from './interfaces/tutorial-step.interface';
+import { HazelineElementsDefaults } from './consts/elements-defaults.const';
 import { HazelineLightboxOptions } from './interfaces/tutorial-section.interface';
-import { HazelineElementsDefaultStyles } from './consts/elements-default-styles.const';
 
 import { HazelineStylesManager } from './styles-manager.core';
 
@@ -22,30 +21,38 @@ export class HazelineLightbox {
     private lightboxPrevBtn: HTMLButtonElement;
     private lightboxControlsWrp: HTMLDivElement;
 
-    private ligthboxOptions: HazelineLightboxOptions = {
-        positioning: {},
-        lightboxWrapperCSS: {},
-        lightboxTextWrapperCSS: {},
-    };
-
-    private nextBtnText: string;
-    private prevBtnText: string;
     private lightboxText: string;
+    private ligthboxOptions: HazelineLightboxOptions = HazelineElementsDefaults.lightbox;
 
-    public $nextStepRequired(): Observable<boolean> {
-        return this._$nextStepRequired;
-    }
+    private prevBtnClickEvtListener = () =>
+        this._$prevStepRequired.next(true);
+    private nextBtnClickEvtListener = () =>
+        this._$nextStepRequired.next(true);
 
-    public $prevStepRequired(): Observable<boolean> {
-        return this._$prevStepRequired;
-    }
+    private prevBtnMouseLeaveEvtListener = () =>
+        HazelineStylesManager.styleElement<HTMLButtonElement>(this.lightboxPrevBtn, this.ligthboxOptions.lightboxPrevBtnCSS || HazelineElementsDefaults.lightbox.lightboxPrevBtnCSS);
+    private prevBtnMouseEnterEvtListener = () =>
+        HazelineStylesManager.styleElement<HTMLButtonElement>(this.lightboxPrevBtn, this.ligthboxOptions.lightboxPrevBtnHoverCSS || HazelineElementsDefaults.lightbox.lightboxPrevBtnHoverCSS);
 
-    public applyStyles(lightboxOpts: HazelineLightboxOptions): void {
-        this.ligthboxOptions = lightboxOpts;
-    }
+    private nextBtnMouseLeaveEvtListener = () =>
+        HazelineStylesManager.styleElement<HTMLButtonElement>(this.lightboxNextBtn, this.ligthboxOptions.lightboxNextBtnCSS || HazelineElementsDefaults.lightbox.lightboxNextBtnCSS);
+    private nextBtnMouseEnterEvtListener = () =>
+        HazelineStylesManager.styleElement<HTMLButtonElement>(this.lightboxNextBtn, this.ligthboxOptions.lightboxNextBtnHoverCSS || HazelineElementsDefaults.lightbox.lightboxNextBtnHoverCSS);
+
+    public $nextStepRequired(): Observable<boolean> { return this._$nextStepRequired; }
+    public $prevStepRequired(): Observable<boolean> { return this._$prevStepRequired; }
 
     public dispose(): void {
         if (document.getElementById(HazelineElementsIds.lightbox)) {
+            this.lightboxPrevBtn.removeEventListener('mouseenter', this.prevBtnMouseEnterEvtListener);
+            this.lightboxPrevBtn.removeEventListener('mouseleave', this.prevBtnMouseLeaveEvtListener);
+            this.lightboxNextBtn.removeEventListener('mouseenter', this.nextBtnMouseEnterEvtListener);
+            this.lightboxNextBtn.removeEventListener('mouseleave', this.nextBtnMouseLeaveEvtListener);
+
+            this.tether.disable();
+            this.tether.destroy();
+            this.tether = null;
+
             document.body.removeChild(this.lightboxWrp);
         }
     }
@@ -60,25 +67,45 @@ export class HazelineLightbox {
 
         this.applyTexts(sectionStep, isLastStep);
         this.styleWholeLigthboxElement();
+
         this.updateLightboxPlacement(target);
+    }
+
+    public setOptions(lightboxOpts: HazelineLightboxOptions): void {
+        this.ligthboxOptions = lightboxOpts;
+
+        //  The user might not have set the texts, since a Object.assign might cause strange behaviours due to styles,
+        //  we override the defaults with the user options, but since he could have forgot to set the texts, we check it
+        //  here, and ensure that at least, even if in english, the buttons have texts set.
+        this.ligthboxOptions.lastStepNextBtnText = this.ligthboxOptions.lastStepNextBtnText
+            ? this.ligthboxOptions.lastStepNextBtnText
+            : HazelineElementsDefaults.lightbox.lastStepNextBtnText;
+
+        this.ligthboxOptions.nextBtnText = this.ligthboxOptions.nextBtnText
+            ? this.ligthboxOptions.nextBtnText
+            : HazelineElementsDefaults.lightbox.nextBtnText;
+
+        this.ligthboxOptions.prevBtnText = this.ligthboxOptions.prevBtnText
+            ? this.ligthboxOptions.prevBtnText
+            : HazelineElementsDefaults.lightbox.prevBtnText;
     }
 
     public updateLightboxPlacement(target: HTMLElement): void {
         const offset = this.ligthboxOptions && this.ligthboxOptions.positioning && this.ligthboxOptions.positioning.offset
             ? this.ligthboxOptions.positioning.offset
-            : HazelineElementsDefaultStyles.lightbox.positioning.offset;
+            : HazelineElementsDefaults.lightbox.positioning.offset;
 
         const attachment = this.ligthboxOptions && this.ligthboxOptions.positioning && this.ligthboxOptions.positioning.attachment
             ? this.ligthboxOptions.positioning.attachment
-            : HazelineElementsDefaultStyles.lightbox.positioning.attachment;
+            : HazelineElementsDefaults.lightbox.positioning.attachment;
 
         const targetAttachment = this.ligthboxOptions && this.ligthboxOptions.positioning && this.ligthboxOptions.positioning.targetAttachment
             ? this.ligthboxOptions.positioning.targetAttachment
-            : HazelineElementsDefaultStyles.lightbox.positioning.targetAttachment;
+            : HazelineElementsDefaults.lightbox.positioning.targetAttachment;
 
         const constraints = this.ligthboxOptions && this.ligthboxOptions.positioning && this.ligthboxOptions.positioning.constraints
             ? this.ligthboxOptions.positioning.constraints
-            : HazelineElementsDefaultStyles.lightbox.positioning.constraints;
+            : HazelineElementsDefaults.lightbox.positioning.constraints;
 
         if (!this.tether) {
             this.tether = new Tether({
@@ -107,13 +134,23 @@ export class HazelineLightbox {
         this.lightboxText = sectionStep.text;
 
         this.lightboxTextWrp.innerHTML = this.lightboxText;
-        this.lightboxPrevBtn.innerHTML = this.prevBtnText || 'Previous';
-        this.lightboxNextBtn.innerHTML = isLastStep ? 'End' : this.nextBtnText || 'Next';
+        this.lightboxPrevBtn.innerHTML = this.ligthboxOptions.prevBtnText;
+        this.lightboxNextBtn.innerHTML = isLastStep
+            ? this.ligthboxOptions.lastStepNextBtnText
+            : this.ligthboxOptions.nextBtnText;
     }
 
-    private attachNextPrevClickListeners(): void {
-        this.lightboxPrevBtn.addEventListener('click', () => this._$prevStepRequired.next(true));
-        this.lightboxNextBtn.addEventListener('click', () => this._$nextStepRequired.next(true));
+    private attachNextEventListeneres(): void {
+        this.lightboxPrevBtn.addEventListener('click', this.prevBtnClickEvtListener);
+        this.lightboxNextBtn.addEventListener('click', this.nextBtnClickEvtListener);
+
+        //  Prev btn hover modes
+        this.lightboxPrevBtn.addEventListener('mouseenter', this.prevBtnMouseEnterEvtListener);
+        this.lightboxPrevBtn.addEventListener('mouseleave', this.prevBtnMouseLeaveEvtListener);
+
+        //  Next btn hover modes
+        this.lightboxNextBtn.addEventListener('mouseenter', this.nextBtnMouseEnterEvtListener);
+        this.lightboxNextBtn.addEventListener('mouseleave', this.nextBtnMouseLeaveEvtListener);
     }
 
     private createLightbox(): void {
@@ -141,32 +178,15 @@ export class HazelineLightbox {
         this.lightboxWrp.appendChild(this.lightboxControlsWrp);
 
         //  Finally attach the listeners for next and previous buttons
-        this.attachNextPrevClickListeners();
+        this.attachNextEventListeneres();
     }
 
     private styleWholeLigthboxElement(): void {
         HazelineStylesManager.styleElement<HTMLDivElement>(this.lightboxWrp, this.ligthboxOptions.lightboxWrapperCSS);
-        HazelineStylesManager.styleElement<HTMLDivElement>(this.lightboxWrp, HazelineElementsDefaultStyles.lightbox.lightboxWrapperCSS);
-        HazelineStylesManager.styleElement<HTMLButtonElement>(this.lightboxNextBtn, HazelineElementsDefaultStyles.lightbox.lightboxNextBtnCSS);
-        HazelineStylesManager.styleElement<HTMLButtonElement>(this.lightboxPrevBtn, HazelineElementsDefaultStyles.lightbox.lightboxPrevBtnCSS);
-        HazelineStylesManager.styleElement<HTMLDivElement>(this.lightboxTextWrp, HazelineElementsDefaultStyles.lightbox.lightboxTextWrapperCSS);
-        HazelineStylesManager.styleElement<HTMLDivElement>(this.lightboxControlsWrp, HazelineElementsDefaultStyles.lightbox.lightboxControlsWrapperCSS);
-
-        //  Prev btn hover modes
-        this.lightboxPrevBtn.addEventListener('mouseenter', () => {
-            HazelineStylesManager.styleElement<HTMLButtonElement>(this.lightboxPrevBtn, HazelineElementsDefaultStyles.lightbox.lightboxPrevBtnHoverCSS);
-        });
-        this.lightboxPrevBtn.addEventListener('mouseleave', () => {
-            HazelineStylesManager.styleElement<HTMLButtonElement>(this.lightboxPrevBtn, HazelineElementsDefaultStyles.lightbox.lightboxPrevBtnCSS);
-        });
-
-        //  Next btn hover modes
-        this.lightboxNextBtn.addEventListener('mouseenter', () => {
-            HazelineStylesManager.styleElement<HTMLButtonElement>(this.lightboxNextBtn, HazelineElementsDefaultStyles.lightbox.lightboxNextBtnHoverCSS);
-        });
-        this.lightboxNextBtn.addEventListener('mouseleave', () => {
-            HazelineStylesManager.styleElement<HTMLButtonElement>(this.lightboxNextBtn, HazelineElementsDefaultStyles.lightbox.lightboxNextBtnCSS);
-        });
-
+        HazelineStylesManager.styleElement<HTMLDivElement>(this.lightboxWrp, this.ligthboxOptions.lightboxWrapperCSS || HazelineElementsDefaults.lightbox.lightboxWrapperCSS);
+        HazelineStylesManager.styleElement<HTMLButtonElement>(this.lightboxNextBtn, this.ligthboxOptions.lightboxNextBtnCSS || HazelineElementsDefaults.lightbox.lightboxNextBtnCSS);
+        HazelineStylesManager.styleElement<HTMLButtonElement>(this.lightboxPrevBtn, this.ligthboxOptions.lightboxPrevBtnCSS || HazelineElementsDefaults.lightbox.lightboxPrevBtnCSS);
+        HazelineStylesManager.styleElement<HTMLDivElement>(this.lightboxTextWrp, this.ligthboxOptions.lightboxTextWrapperCSS || HazelineElementsDefaults.lightbox.lightboxTextWrapperCSS);
+        HazelineStylesManager.styleElement<HTMLDivElement>(this.lightboxControlsWrp, this.ligthboxOptions.lightboxControlsWrapperCSS || HazelineElementsDefaults.lightbox.lightboxControlsWrapperCSS);
     }
 }

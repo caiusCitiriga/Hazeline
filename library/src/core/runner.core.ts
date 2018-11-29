@@ -1,7 +1,7 @@
 import { filter, tap } from 'rxjs/operators';
 import { Observable, BehaviorSubject } from 'rxjs';
 
-import { HazelineTutorialSection, HazelineGlobalStyles } from './interfaces/tutorial-section.interface';
+import { HazelineTutorialSection, HazelineGlobalOptions } from './interfaces/tutorial-section.interface';
 import { HazelineTutorialSectionStatuses } from './enums/tutorial-section-statuses.enum';
 import { HazelineTutorialSectionStatus } from './interfaces/tutorial-section-status.interface';
 
@@ -47,7 +47,7 @@ export class HazelineRunner {
         }
 
         this.currentSection = section;
-        this.applyCustomStylesIfAny(section.globalStyling);
+        this.applyCustomOptionsIfAny(section.globalStyling);
 
         const wrapElementsDimensions = this.elementManager.getWrappingElementsDimensions(section.steps[this.currentSectionStep].elementSelector);
         if (this.currentSectionStep > 0) {
@@ -67,21 +67,20 @@ export class HazelineRunner {
             (section.steps.length - 1) === this.currentSectionStep
         );
 
-
         this.startResponsiveListeners();
         return this._$sectionStatus;
     }
 
-    private applyCustomStylesIfAny(styles: HazelineGlobalStyles): void {
-        if (!styles) {
+    private applyCustomOptionsIfAny(options: HazelineGlobalOptions): void {
+        if (!options) {
             return;
         }
 
-        if (styles.lightbox) {
-            this.lightbox.applyStyles(styles.lightbox);
+        if (options.lightbox) {
+            this.lightbox.setOptions(options.lightbox);
         }
-        if (styles.overlay) {
-            this.overlayRenderer.applyStyles(styles.overlay);
+        if (options.overlay) {
+            this.overlayRenderer.setOptions(options.overlay);
         }
     }
 

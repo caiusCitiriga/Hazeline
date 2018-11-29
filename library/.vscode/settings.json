@@ -1,3 +1,6 @@
 {
-    "triggerTaskOnSave.selectedTask": "update"
+    "triggerTaskOnSave.selectedTask": "update",
+    "files.exclude": {
+        "**/dist": true
+    }
 }

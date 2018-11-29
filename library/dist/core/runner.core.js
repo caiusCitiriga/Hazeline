@@ -27,7 +27,7 @@ var HazelineRunner = /** @class */ (function () {
             return this._$sectionStatus;
         }
         this.currentSection = section;
-        this.applyCustomStylesIfAny(section.globalStyling);
+        this.applyCustomOptionsIfAny(section.globalStyling);
         var wrapElementsDimensions = this.elementManager.getWrappingElementsDimensions(section.steps[this.currentSectionStep].elementSelector);
         if (this.currentSectionStep > 0) {
             this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
@@ -44,15 +44,15 @@ var HazelineRunner = /** @class */ (function () {
         this.startResponsiveListeners();
         return this._$sectionStatus;
     };
-    HazelineRunner.prototype.applyCustomStylesIfAny = function (styles) {
-        if (!styles) {
+    HazelineRunner.prototype.applyCustomOptionsIfAny = function (options) {
+        if (!options) {
             return;
         }
-        if (styles.lightbox) {
-            this.lightbox.applyStyles(styles.lightbox);
+        if (options.lightbox) {
+            this.lightbox.setOptions(options.lightbox);
         }
-        if (styles.overlay) {
-            this.overlayRenderer.applyStyles(styles.overlay);
+        if (options.overlay) {
+            this.overlayRenderer.setOptions(options.overlay);
         }
     };
     HazelineRunner.prototype.startNextPrevButtonClicks = function () {

@@ -7,17 +7,25 @@ export interface HazelineTutorialSection {
     id: string;
     steps: HazelineTutorialStep[];
 
-    globalStyling?: HazelineGlobalStyles;
+    globalStyling?: HazelineGlobalOptions;
 }
 
-export interface HazelineGlobalStyles {
-    overlay?: HazelineCSSRules;
+export interface HazelineGlobalOptions {
+    overlay?: HazelineOverlyOptions;
     lightbox?: HazelineLightboxOptions;
+}
+
+export interface HazelineOverlyOptions {
+    closeBtnText?: string;
+    overlayCSS?: HazelineCSSRules;
     endTutorialBtnCSS?: HazelineCSSRules;
     endTutorialBtnHoverCSS?: HazelineCSSRules;
 }
 
 export interface HazelineLightboxOptions {
+    nextBtnText?: string;
+    prevBtnText?: string;
+    lastStepNextBtnText?: string;
     lightboxWrapperCSS?: HazelineCSSRules;
     lightboxNextBtnCSS?: HazelineCSSRules;
     lightboxPrevBtnCSS?: HazelineCSSRules;

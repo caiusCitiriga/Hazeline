@@ -1,7 +1,12 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.HazelineElementsDefaultStyles = {
-    lightbox: {
+import { HazelineCSSRules } from '../interfaces/css-rules.interface';
+import { HazelineLightboxOptions, HazelineGlobalOptions } from '../interfaces/tutorial-section.interface';
+
+export const HazelineElementsDefaults: HazelineGlobalOptions = {
+    lightbox: <HazelineLightboxOptions>{
+        nextBtnText: 'Next',
+        closeBtnText: 'Close',
+        prevBtnText: 'Previous',
+        lastStepNextBtnText: 'Finish',
         positioning: {
             attachment: 'top center',
             targetAttachment: 'bottom center',
@@ -13,7 +18,8 @@ exports.HazelineElementsDefaultStyles = {
             ],
             offset: '-20px 0'
         },
-        lightboxWrapperCSS: {
+
+        lightboxWrapperCSS: <HazelineCSSRules>{
             padding: '8px',
             width: '350px',
             height: '250px',
@@ -23,20 +29,20 @@ exports.HazelineElementsDefaultStyles = {
             background: '#fff',
             flexDirection: 'column'
         },
-        lightboxTextWrapperCSS: {
+        lightboxTextWrapperCSS: <HazelineCSSRules>{
             width: '100%',
             flexGrow: '2',
             overflowY: 'scroll',
             textAlign: 'justify'
         },
-        lightboxControlsWrapperCSS: {
+        lightboxControlsWrapperCSS: <HazelineCSSRules>{
             width: '100%',
             height: '40px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
         },
-        lightboxNextBtnCSS: {
+        lightboxNextBtnCSS: <HazelineCSSRules>{
             width: '100px',
             height: '38px',
             outline: 'none',
@@ -49,7 +55,7 @@ exports.HazelineElementsDefaultStyles = {
             border: '3px solid #ff7a00',
             transition: 'all 120ms ease-in-out',
         },
-        lightboxPrevBtnCSS: {
+        lightboxPrevBtnCSS: <HazelineCSSRules>{
             width: '100px',
             height: '38px',
             outline: 'none',
@@ -62,40 +68,41 @@ exports.HazelineElementsDefaultStyles = {
             border: '3px solid #ff7a00',
             transition: 'all 120ms ease-in-out',
         },
-        lightboxPrevBtnHoverCSS: {
+        lightboxPrevBtnHoverCSS: <HazelineCSSRules>{
             color: '#fff',
             cursor: 'pointer',
             background: '#ff7a00',
         },
-        lightboxNextBtnHoverCSS: {
+        lightboxNextBtnHoverCSS: <HazelineCSSRules>{
             color: '#fff',
             cursor: 'pointer',
             background: '#ff7a00',
         }
     },
-    endTutorialBtnCSS: {
-        top: '12px',
-        right: '12px',
-        width: '120px',
-        height: '32px',
-        outline: 'none',
-        zIndex: '999999',
-        color: '#E53935',
-        position: 'fixed',
-        background: 'transparent',
-        border: '2px solid #E53935',
-    },
-    endTutorialBtnHoverCSS: {
-        color: '#fff',
-        background: '#E53935',
-    },
-    lightboxInternalData: {
-        zIndex: '99999'
-    },
-    overlayBoxesInternalCommonData: {
-        zIndex: '99999',
-        position: 'fixed',
-        background: 'rgba(0,0,0,.8)',
+
+    overlay: {
+        closeBtnText: 'End tutorial',
+        overlayCSS: {
+            zIndex: '99999',
+            position: 'fixed',
+            background: 'rgba(0,0,0,.8)',
+        },
+        endTutorialBtnHoverCSS: {
+            color: '#fff',
+            background: '#E53935',
+        },
+
+        endTutorialBtnCSS: {
+            top: '12px',
+            right: '12px',
+            width: '120px',
+            height: '32px',
+            outline: 'none',
+            zIndex: '999999',
+            color: '#E53935',
+            position: 'fixed',
+            background: 'transparent',
+            border: '2px solid #E53935',
+        },
     }
-};
-//# sourceMappingURL=elements-default-styles.const.js.map
+}
