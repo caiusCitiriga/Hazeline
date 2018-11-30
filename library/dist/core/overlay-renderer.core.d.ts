@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs';
 import { HazelineWrappingElementsDimensions } from './interfaces/wrapping-elements-dimensions.interface';
-import { HazelineOverlyOptions } from './interfaces/tutorial-section.interface';
+import { HazelineOverlayOptions } from './interfaces/hazeline-options.interface';
 export declare class HazelineOverlayRenderer {
     private topBox;
     private leftBox;
@@ -14,7 +14,8 @@ export declare class HazelineOverlayRenderer {
     private endTutorialBtnMouseEnterEvtListener;
     $premartureEndRequired(): Observable<boolean>;
     dispose(): void;
-    setOptions(overlayOpts: HazelineOverlyOptions): void;
+    setDynamicOptions(overlayOpts: HazelineOverlayOptions): void;
+    setGlobalOptions(overlayOpts: HazelineOverlayOptions): void;
     updateElementsDimensions(dimensions: HazelineWrappingElementsDimensions): void;
     wrapElement(dimensions: HazelineWrappingElementsDimensions): void;
     private attachElementsToBody;
@@ -24,4 +25,4 @@ export declare class HazelineOverlayRenderer {
     private destroyPreviousElementsIfAny;
     private applyOptionsOnElements;
 }
-//# sourceMappingURL=renderer.core.d.ts.map
+//# sourceMappingURL=overlay-renderer.core.d.ts.map

@@ -6,7 +6,7 @@ import { HazelineTutorialSection } from './core/interfaces/tutorial-section.inte
 
 import { HazelineRunner } from './core/runner.core';
 import { HazelineLightbox } from './core/lightbox.core';
-import { HazelineOverlayRenderer } from './core/renderer.core';
+import { HazelineOverlayRenderer } from './core/overlay-renderer.core';
 import { HazelineElementManager } from './core/element-manager.core';
 import { HazelineTutorialStatuses } from './core/enums/tutorial-statuses.enum';
 import { HazelineTutorialSectionStatuses } from './core/enums/tutorial-section-statuses.enum';

@@ -20,7 +20,21 @@ var HazelineOverlayRenderer = /** @class */ (function () {
         this.detachEventListeners();
         this.destroyPreviousElementsIfAny();
     };
-    HazelineOverlayRenderer.prototype.setOptions = function (overlayOpts) {
+    HazelineOverlayRenderer.prototype.setDynamicOptions = function (overlayOpts) {
+        var _this = this;
+        if (!overlayOpts) {
+            return;
+        }
+        Object.keys(overlayOpts).forEach(function (optsKey) {
+            if (typeof overlayOpts[optsKey] === 'object') {
+                _this.overlayOptions[optsKey] = Object.assign({}, _this.overlayOptions[optsKey], overlayOpts[optsKey]);
+            }
+            if (!!overlayOpts[optsKey] && typeof overlayOpts[optsKey] !== 'object') {
+                _this.overlayOptions[optsKey] = overlayOpts[optsKey];
+            }
+        });
+    };
+    HazelineOverlayRenderer.prototype.setGlobalOptions = function (overlayOpts) {
         var _this = this;
         if (!overlayOpts) {
             return;
@@ -133,4 +147,4 @@ var HazelineOverlayRenderer = /** @class */ (function () {
     return HazelineOverlayRenderer;
 }());
 exports.HazelineOverlayRenderer = HazelineOverlayRenderer;
-//# sourceMappingURL=renderer.core.js.map
+//# sourceMappingURL=overlay-renderer.core.js.map

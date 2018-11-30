@@ -5,7 +5,7 @@ import { HazelineElementsDefaults } from './consts/elements-defaults.const';
 import { HazelineWrappingElementsDimensions } from './interfaces/wrapping-elements-dimensions.interface';
 
 import { HazelineStylesManager } from './styles-manager.core';
-import { HazelineOverlyOptions } from './interfaces/tutorial-section.interface';
+import { HazelineOverlayOptions } from './interfaces/hazeline-options.interface';
 
 export class HazelineOverlayRenderer {
 
@@ -31,8 +31,23 @@ export class HazelineOverlayRenderer {
         this.destroyPreviousElementsIfAny();
     }
 
+    public setDynamicOptions(overlayOpts: HazelineOverlayOptions): void {
+        if (!overlayOpts) {
+            return;
+        }
 
-    public setOptions(overlayOpts: HazelineOverlyOptions): void {
+        Object.keys(overlayOpts).forEach(optsKey => {
+            if (typeof overlayOpts[optsKey] === 'object') {
+                this.overlayOptions[optsKey] = Object.assign({}, this.overlayOptions[optsKey], overlayOpts[optsKey]);
+            }
+
+            if (!!overlayOpts[optsKey] && typeof overlayOpts[optsKey] !== 'object') {
+                this.overlayOptions[optsKey] = overlayOpts[optsKey];
+            }
+        });
+    }
+
+    public setGlobalOptions(overlayOpts: HazelineOverlayOptions): void {
         if (!overlayOpts) {
             return;
         }

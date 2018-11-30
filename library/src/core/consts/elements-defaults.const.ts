@@ -1,7 +1,7 @@
 import { HazelineCSSRules } from '../interfaces/css-rules.interface';
-import { HazelineLightboxOptions, HazelineGlobalOptions } from '../interfaces/tutorial-section.interface';
+import { HazelineOptions, HazelineLightboxOptions } from '../interfaces/hazeline-options.interface';
 
-export const HazelineElementsDefaults: HazelineGlobalOptions = {
+export const HazelineElementsDefaults: HazelineOptions = {
     lightbox: <HazelineLightboxOptions>{
         nextBtnText: 'Next',
         closeBtnText: 'Close',

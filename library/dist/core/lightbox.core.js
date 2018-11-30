@@ -58,7 +58,19 @@ var HazelineLightbox = /** @class */ (function () {
         this.styleWholeLigthboxElement();
         this.updateLightboxPlacement(target);
     };
-    HazelineLightbox.prototype.setOptions = function (opts) {
+    HazelineLightbox.prototype.setDynamicOptions = function (opts) {
+        var _this = this;
+        Object.keys(opts).forEach(function (optKey) {
+            if (typeof opts[optKey] === 'object') {
+                _this.ligthboxOptions[optKey] = Object.assign({}, _this.ligthboxOptions[optKey], opts[optKey]);
+                return;
+            }
+            if (!!opts[optKey]) {
+                _this.ligthboxOptions[optKey] = opts[optKey];
+            }
+        });
+    };
+    HazelineLightbox.prototype.setGlobalOptions = function (opts) {
         var _this = this;
         Object.keys(opts).forEach(function (optKey) {
             if (typeof opts[optKey] === 'object') {

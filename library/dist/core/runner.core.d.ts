@@ -2,14 +2,14 @@ import { Observable } from 'rxjs';
 import { HazelineTutorialSectionStatus } from './interfaces/tutorial-section-status.interface';
 import { HazelineTutorialSection } from './interfaces/tutorial-section.interface';
 import { HazelineLightbox } from './lightbox.core';
-import { HazelineOverlayRenderer } from './renderer.core';
 import { HazelineElementManager } from './element-manager.core';
+import { HazelineOverlayRenderer } from './overlay-renderer.core';
 export declare class HazelineRunner {
     private lightbox;
     private elementManager;
     private overlayRenderer;
     private _$sectionStatus;
-    private currentSectionStep;
+    private currentSectionStepIdx;
     private currentSection;
     private windowResizeEvtListener;
     private windowScrollEvtListener;

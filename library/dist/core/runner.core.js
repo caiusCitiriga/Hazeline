@@ -8,16 +8,16 @@ var HazelineRunner = /** @class */ (function () {
     function HazelineRunner(lightbox, renderer, elementManager) {
         var _this = this;
         this._$sectionStatus = new rxjs_1.BehaviorSubject(null);
-        this.currentSectionStep = 0;
+        this.currentSectionStepIdx = 0;
         this.windowResizeEvtListener = function () {
-            var wrapElementsDimensions = _this.elementManager.getWrappingElementsDimensions(_this.currentSection.steps[_this.currentSectionStep].elementSelector);
+            var wrapElementsDimensions = _this.elementManager.getWrappingElementsDimensions(_this.currentSection.steps[_this.currentSectionStepIdx].elementSelector);
             _this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
-            _this.lightbox.updateLightboxPlacement(element_manager_core_1.HazelineElementManager.getElementBySelector(_this.currentSection.steps[_this.currentSectionStep].elementSelector));
+            _this.lightbox.updateLightboxPlacement(element_manager_core_1.HazelineElementManager.getElementBySelector(_this.currentSection.steps[_this.currentSectionStepIdx].elementSelector));
         };
         this.windowScrollEvtListener = function () {
-            var wrapElementsDimensions = _this.elementManager.getWrappingElementsDimensions(_this.currentSection.steps[_this.currentSectionStep].elementSelector);
+            var wrapElementsDimensions = _this.elementManager.getWrappingElementsDimensions(_this.currentSection.steps[_this.currentSectionStepIdx].elementSelector);
             _this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
-            _this.lightbox.updateLightboxPlacement(element_manager_core_1.HazelineElementManager.getElementBySelector(_this.currentSection.steps[_this.currentSectionStep].elementSelector));
+            _this.lightbox.updateLightboxPlacement(element_manager_core_1.HazelineElementManager.getElementBySelector(_this.currentSection.steps[_this.currentSectionStepIdx].elementSelector));
         };
         this.lightbox = lightbox;
         this.overlayRenderer = renderer;
@@ -31,7 +31,8 @@ var HazelineRunner = /** @class */ (function () {
         window.removeEventListener('scroll', this.windowScrollEvtListener);
     };
     HazelineRunner.prototype.runSection = function (section) {
-        if (!section) {
+        this.currentSection = section;
+        if (!this.currentSection) {
             this._$sectionStatus.next({
                 status: tutorial_section_statuses_enum_1.HazelineTutorialSectionStatuses.errored,
                 runningSection: section,
@@ -39,40 +40,47 @@ var HazelineRunner = /** @class */ (function () {
             });
             return this._$sectionStatus;
         }
-        this.currentSection = section;
-        this.applyCustomOptionsIfAny(section.globalStyling);
-        var wrapElementsDimensions = this.elementManager.getWrappingElementsDimensions(section.steps[this.currentSectionStep].elementSelector);
-        if (this.currentSectionStep > 0) {
+        var wrapElementsDimensions = this.elementManager.getWrappingElementsDimensions(section.steps[this.currentSectionStepIdx].elementSelector);
+        if (this.currentSectionStepIdx > 0) {
+            this.applyCustomOptionsIfAny(this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions, true);
             this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
         }
         else {
+            this.applyCustomOptionsIfAny(section.globalOptions);
             this.overlayRenderer.wrapElement(wrapElementsDimensions);
             this._$sectionStatus.next({
                 runningSection: section,
                 status: tutorial_section_statuses_enum_1.HazelineTutorialSectionStatuses.started,
-                runningStepInSection: section.steps[this.currentSectionStep]
+                runningStepInSection: section.steps[this.currentSectionStepIdx]
             });
         }
-        this.lightbox.placeLightbox(element_manager_core_1.HazelineElementManager.getElementBySelector(section.steps[this.currentSectionStep].elementSelector), section.steps[this.currentSectionStep], (section.steps.length - 1) === this.currentSectionStep);
+        this.lightbox.placeLightbox(element_manager_core_1.HazelineElementManager.getElementBySelector(section.steps[this.currentSectionStepIdx].elementSelector), section.steps[this.currentSectionStepIdx], (section.steps.length - 1) === this.currentSectionStepIdx);
         this.startResponsiveListeners();
         return this._$sectionStatus;
     };
-    HazelineRunner.prototype.applyCustomOptionsIfAny = function (options) {
+    HazelineRunner.prototype.applyCustomOptionsIfAny = function (options, isDynamicOptions) {
+        if (isDynamicOptions === void 0) { isDynamicOptions = false; }
         if (!options) {
             return;
         }
-        if (options.lightbox) {
-            this.lightbox.setOptions(options.lightbox);
+        if (options.lightbox && isDynamicOptions) {
+            this.lightbox.setDynamicOptions(options.lightbox);
         }
-        if (options.overlay) {
-            this.overlayRenderer.setOptions(options.overlay);
+        if (options.lightbox && !isDynamicOptions) {
+            this.lightbox.setGlobalOptions(options.lightbox);
+        }
+        if (options.overlay && isDynamicOptions) {
+            this.overlayRenderer.setDynamicOptions(options.overlay);
+        }
+        if (options.overlay && !isDynamicOptions) {
+            this.overlayRenderer.setGlobalOptions(options.overlay);
         }
     };
     HazelineRunner.prototype.startNextPrevButtonClicks = function () {
         var _this = this;
         this.lightbox.$nextStepRequired()
             .pipe(operators_1.filter(function (res) { return !!res; }), operators_1.filter(function () {
-            if (_this.currentSectionStep === (_this.currentSection.steps.length - 1)) {
+            if (_this.currentSectionStepIdx === (_this.currentSection.steps.length - 1)) {
                 _this._$sectionStatus.next({
                     runningSection: null,
                     runningStepInSection: null,
@@ -81,9 +89,9 @@ var HazelineRunner = /** @class */ (function () {
                 return false;
             }
             return true;
-        }), operators_1.tap(function () { return _this.currentSectionStep++; }), operators_1.tap(function () { return _this.runSection(_this.currentSection); })).subscribe();
+        }), operators_1.tap(function () { return _this.currentSectionStepIdx++; }), operators_1.tap(function () { return _this.runSection(_this.currentSection); })).subscribe();
         this.lightbox.$prevStepRequired()
-            .pipe(operators_1.filter(function (res) { return !!res; }), operators_1.filter(function () { return _this.currentSectionStep === 0 ? false : true; }), operators_1.tap(function () { return _this.currentSectionStep--; }), operators_1.tap(function () { return _this.runSection(_this.currentSection); })).subscribe();
+            .pipe(operators_1.filter(function (res) { return !!res; }), operators_1.filter(function () { return _this.currentSectionStepIdx === 0 ? false : true; }), operators_1.tap(function () { return _this.currentSectionStepIdx--; }), operators_1.tap(function () { return _this.runSection(_this.currentSection); })).subscribe();
         this.overlayRenderer.$premartureEndRequired()
             .pipe(operators_1.filter(function (res) { return !!res; }), operators_1.tap(function () {
             _this._$sectionStatus.next({

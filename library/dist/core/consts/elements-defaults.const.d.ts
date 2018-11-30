@@ -1,3 +1,3 @@
-import { HazelineGlobalOptions } from '../interfaces/tutorial-section.interface';
-export declare const HazelineElementsDefaults: HazelineGlobalOptions;
+import { HazelineOptions } from '../interfaces/hazeline-options.interface';
+export declare const HazelineElementsDefaults: HazelineOptions;
 //# sourceMappingURL=elements-defaults.const.d.ts.map

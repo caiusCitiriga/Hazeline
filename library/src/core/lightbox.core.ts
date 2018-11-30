@@ -4,9 +4,9 @@ import { Observable, Subject } from 'rxjs';
 import { HazelineElementsIds } from './enums/elements-ids.enum';
 import { HazelineTutorialStep } from './interfaces/tutorial-step.interface';
 import { HazelineElementsDefaults } from './consts/elements-defaults.const';
-import { HazelineLightboxOptions } from './interfaces/tutorial-section.interface';
 
 import { HazelineStylesManager } from './styles-manager.core';
+import { HazelineLightboxOptions } from './interfaces/hazeline-options.interface';
 
 export class HazelineLightbox {
 
@@ -70,7 +70,21 @@ export class HazelineLightbox {
         this.updateLightboxPlacement(target);
     }
 
-    public setOptions(opts: HazelineLightboxOptions): void {
+    public setDynamicOptions(opts: HazelineLightboxOptions): void {
+        Object.keys(opts).forEach(optKey => {
+            if (typeof opts[optKey] === 'object') {
+                this.ligthboxOptions[optKey] = Object.assign({}, this.ligthboxOptions[optKey], opts[optKey]);
+                return;
+            }
+
+            if (!!opts[optKey]) {
+                this.ligthboxOptions[optKey] = opts[optKey];
+            }
+
+        });
+    }
+
+    public setGlobalOptions(opts: HazelineLightboxOptions): void {
         Object.keys(opts).forEach(optKey => {
             if (typeof opts[optKey] === 'object') {
                 this.ligthboxOptions[optKey] = Object.assign({}, HazelineElementsDefaults.lightbox[optKey], opts[optKey]);
