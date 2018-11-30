@@ -3,7 +3,7 @@
 A simple, lightweight, framework agnostic tutorial library for **any** web application.<br>
 Made with love in **TypeScript**, but works like a charm even with vanilla **JS**.
 
-![Hazeline GIF demo](./docs/hazeline-demo.gif)
+![Hazeline GIF demo](https://github.com/caiusCitiriga/Hazeline/raw/dev/docs/hazeline-demo.gif)
 
 ## Install
 ```
@@ -99,7 +99,7 @@ haze.addSection({
 ```
 
 #### Result
-![Hazeline GIF demo](./docs/global-conf-example.png)
+![Hazeline GIF demo](https://github.com/caiusCitiriga/Hazeline/raw/dev/docs/global-conf-example.png)
 
 #### Example of dynamic customization
 The same logic applies for the steps, same options available:
