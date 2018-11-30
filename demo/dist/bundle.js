@@ -748,6 +748,10 @@ var HazelineRunner = /** @class */ (function () {
         }
         else {
             this.applyCustomOptionsIfAny(section.globalOptions);
+            //  if the tutorial has only one step apply the dynamic options too
+            if (this.currentSection.steps.length - 1 === this.currentSectionStepIdx) {
+                this.applyCustomOptionsIfAny(this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions, true);
+            }
             this.overlayRenderer.wrapElement(wrapElementsDimensions);
             this._$sectionStatus.next({
                 runningSection: section,
@@ -15486,47 +15490,32 @@ window.onload = function () {
         steps: [
             {
                 elementSelector: '#input-1',
-                text: 'This is some gibberish test text for STEP 1',
-            },
-            {
-                elementSelector: '#input-4',
-                text: 'This is some gibberish test text for STEP 2',
-            },
-            {
-                elementSelector: '#input-2',
-                text: 'This is some gibberish test text for STEP 3',
-            },
-            {
-                elementSelector: '#input-3',
-                text: 'This is some gibberish test text for STEP 4',
-            },
-            {
-                elementSelector: '#input-6',
-                text: 'This should be placed on center',
+                text: 'This is an awesome input box',
                 dynamicOptions: {
+                    overlay: {
+                        closeBtnText: 'Quit',
+                        overlayCSS: {
+                            background: 'rgba(255, 255, 255, .85)'
+                        }
+                    },
                     lightbox: {
-                        lightboxWrapperCSS: {
-                            color: 'red',
-                            boxShadow: '0 3px 10px -5px #333'
+                        nextBtnText: '>',
+                        prevBtnText: '<',
+                        lightboxNextBtnCSS: {
+                            border: 'none'
                         },
-                        positioning: {
-                            offset: '0 0',
-                            attachment: 'middle center',
-                            targetAttachment: 'middle center'
+                        lightboxPrevBtnCSS: {
+                            border: 'none'
+                        },
+                        lightboxWrapperCSS: {
+                            boxShadow: '0px 3px 12px -5px #333'
                         }
                     }
                 }
-            }
-        ],
-        globalOptions: {
-            overlay: {
-                closeBtnText: 'Chiudi',
             },
-        }
+        ],
     });
-    haze.runTutorial('test')
-        .subscribe(function (res) {
-    });
+    haze.runTutorial('test');
 };
 
 

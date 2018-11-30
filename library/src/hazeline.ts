@@ -5,16 +5,16 @@ import { HazelineTutorialStatus } from './core/interfaces/tutorial-status.interf
 import { HazelineTutorialSection } from './core/interfaces/tutorial-section.interface';
 
 import { HazelineRunner } from './core/runner.core';
-import { HazelineLightbox } from './core/lightbox.core';
-import { HazelineOverlayRenderer } from './core/overlay-renderer.core';
 import { HazelineElementManager } from './core/element-manager.core';
+import { HazelineOverlayRenderer } from './core/overlay-renderer.core';
+import { HazelineLightboxRenderer } from './core/lightbox-renderer.core';
 import { HazelineTutorialStatuses } from './core/enums/tutorial-statuses.enum';
 import { HazelineTutorialSectionStatuses } from './core/enums/tutorial-section-statuses.enum';
 
 export class Hazeline {
 
     private runner: HazelineRunner;
-    private lightbox: HazelineLightbox;
+    private lightbox: HazelineLightboxRenderer;
     private renderer: HazelineOverlayRenderer;
     private elementManager: HazelineElementManager;
 
@@ -23,7 +23,7 @@ export class Hazeline {
     private tutorialSections = <HazelineTutorialSection[]>[];
 
     public constructor() {
-        this.lightbox = new HazelineLightbox();
+        this.lightbox = new HazelineLightboxRenderer();
         this.renderer = new HazelineOverlayRenderer();
         this.elementManager = new HazelineElementManager();
 

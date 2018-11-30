@@ -5,14 +5,14 @@ import { HazelineTutorialSectionStatuses } from './enums/tutorial-section-status
 import { HazelineTutorialSectionStatus } from './interfaces/tutorial-section-status.interface';
 import { HazelineTutorialSection } from './interfaces/tutorial-section.interface';
 
-import { HazelineLightbox } from './lightbox.core';
 import { HazelineElementManager } from './element-manager.core';
 import { HazelineOverlayRenderer } from './overlay-renderer.core';
+import { HazelineLightboxRenderer } from './lightbox-renderer.core';
 import { HazelineOptions } from './interfaces/hazeline-options.interface';
 
 export class HazelineRunner {
 
-    private lightbox: HazelineLightbox;
+    private lightbox: HazelineLightboxRenderer;
     private elementManager: HazelineElementManager;
     private overlayRenderer: HazelineOverlayRenderer;
     private _$sectionStatus = new BehaviorSubject<HazelineTutorialSectionStatus>(null);
@@ -34,7 +34,7 @@ export class HazelineRunner {
     };
 
     public constructor(
-        lightbox: HazelineLightbox,
+        lightbox: HazelineLightboxRenderer,
         renderer: HazelineOverlayRenderer,
         elementManager: HazelineElementManager
     ) {
@@ -69,6 +69,11 @@ export class HazelineRunner {
             this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
         } else {
             this.applyCustomOptionsIfAny(section.globalOptions);
+            //  if the tutorial has only one step apply the dynamic options too
+            if (this.currentSection.steps.length - 1 === this.currentSectionStepIdx) {
+                this.applyCustomOptionsIfAny(this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions, true);
+            }
+
             this.overlayRenderer.wrapElement(wrapElementsDimensions);
             this._$sectionStatus.next({
                 runningSection: section,
