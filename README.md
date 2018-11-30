@@ -3,7 +3,7 @@
 A simple, lightweight, framework agnostic tutorial library for **any** web application.<br>
 Made with love in **TypeScript**, but works like a charm even with vanilla **JS**.
 
-![Hazeline GIF demo](./docs/hazeline-demo.gif)
+![Hazeline GIF demo](https://github.com/caiusCitiriga/Hazeline/raw/dev/docs/hazeline-demo.gif)
 
 ## Install
 ```
@@ -60,6 +60,8 @@ One designed to be more dynamic, it uses the same exact structure as the global 
 
 With the combination of these two kind of customizations, you can define default options for the  whole section, and in case you need more specificity or something different for a particular step, you can set it.
 
+For more detailed information on how deep you can go with the customization see [customization details.](#Hazeline-customizable-properties-details)
+
 #### Example of global customization
 ```typescript
 haze.addSection({
@@ -99,7 +101,7 @@ haze.addSection({
 ```
 
 #### Result
-![Hazeline GIF demo](./docs/global-conf-example.png)
+![Hazeline GIF demo](https://github.com/caiusCitiriga/Hazeline/raw/dev/docs/global-conf-example.png)
 
 #### Example of dynamic customization
 The same logic applies for the steps, same options available:
@@ -138,6 +140,81 @@ haze.addSection({
 
 As you can see I just moved the options from the global place to the dynamic place on the first step. The result is the same as above, since we have only one step.
 
+## Textual Overlay Mode
+
+By default Hazeline uses a lightbox to describe an element that is highlighted. This means that the concerned element has some meaning to the user, or you just want to describe it and introduce its functions.
+
+But what if you don't have a specific element to highlight or describe? Let's say that you just want to give a brief description about the whole section, or greet the user with a message, and then start the actual tutorial. But a lightbox and a hightlighted element in that scenario wouldn't be the best choice.
+
+Instead, you could use the **Textual Overlay**. When defining the step required options (text, and elementSelector) you can optionally activate the `useOverlayInsteadOfLightbox` property. For this step, the lightbox won't appear, and no particular element will be highlighted, even though you've specified the element selector. 
+
+As the lightbox, and all the other Hazeline's components, even this one is designed to work out of the box, but still you can customize it like the others. For more detailed information about the Textual Overlay see its specific [configuration](#Textual-overlay) 
+
+## Hazeline customizable properties details
+---
+### Overlay
+
+The `overlay` option, allows you to customize the overlay that surrounds the highlighted element. <br>
+
+Properties:<br>
+Property name | Description | Accepted values
+--------------|-------------|-----------------
+`closeBtnText`  | The text inside the button to end the tutorial | `string`
+`overlayCSS` | The CSS for the overlay | `HazelineCSSRules`
+`ebdTutorialBtnCSS` | The CSS for the end tutorial btn | `HazelineCSSRules`
+`endTutorialBtnHoverCSS` | The CSS for the end tutorial btn when in hover mode| `HazelineCSSRules`<br>
+
+### Lightbox
+
+The `lightbox` option, allows you to customize the box that is placed near the highlighted element, containing the Next and Previous buttons and the text for the section step.<br>
+
+General Properties:<br>
+Property name | Description | Accepted values
+--------------|-------------|-----------------
+`nextBtnText` | The text for the next button | `string`
+`prevBtnText` | The text for the previous button | `string`
+`lastStepNextBtnText` | When reaching the last step, you can specify a different text for the next button. | `string`
+`lightboxWrapperCSS` | The CSS for the main lightbox wrapper | `HazelineCSSRules`
+`lightboxNextBtnCSS` | The CSS for the next btn | `HazelineCSSRules`
+`lightboxPrevBtnCSS` | The CSS for the previous btn | `HazelineCSSRules`
+`lightboxTextWrapperCSS` | The CSS for the text wrapper. The wrapper that contains the text for the step | `HazelineCSSRules`
+`lightboxControlsWrapperCSS` | The CSS for the buttons wrapper. The wrapper that contains the next and previous buttons | `HazelineCSSRules`
+`lightboxPrevBtnHoverCSS` | The CSS for the previous button when in hover mode | `HazelineCSSRules`
+`lightboxNextBtnHoverCSS` | The CSS for the next button when in hover mode | `HazelineCSSRules`
+<br>
+
+Positioning Properties:<br>
+
+Property name | Description | Accepted values
+--------------|-------------|-----------------
+`positioning.offset` | The offset for the lightbox from the highlighted element. For more information, see [Tether offset](http://tether.io/#offset)  | `string`
+`positioning.attachment` | The attachment point for the lightbox. For more information, see [Tether attachment](http://tether.io/#attachment)  | `string`
+`positioning.targetOffset` | For more information, see [Tether offset](http://tether.io/#offset)  | `string`
+`positioning.targetAttachment` | The attachment point for the highlighted element. For more information, see [Tether attachment](http://tether.io/#attachment)  | `string`
+`positioning.constraints` | The constraints for the lightbox and the highlighted element. For more information, see [Tether constraints](http://tether.io/#constraints)  | `string`
+`positioning.classes` | Additional classes you'd like to add. For more information, see [Tether classes](http://tether.io/#classes)  | `string`<br>
+
+### Textual Overlay
+
+The textual overlay is the overlay that appears instead of the lightbox when you set `useOverlayInsteadOfLightbox` on the section step.<br>
+
+Properties:<br>
+
+Property name | Description | Accepted values
+--------------|-------------|-----------------
+`hideButtons` | Wheter to show or not the next/previous buttons. **Note**: if you hide the buttons, the `clickAnywhereForNextStep` is automatically activated, and there will be no way to go back to the previous step from there | `boolean` 
+`disableBgFadeIn` | By default, the bg of the textual overlay fades in and out when appearing and disappearing. You can disable this behaviour | `boolean`
+`disableTextFadeIn` | By default, the text of the textual overlay paragraph fades in and out when appearing and disappearing. You can disable this behaviour | `boolean`
+`clickAnywhereForNextStep` | You can enable the next step triggering by clicking anywhere on the textual overlay | `boolean`
+`bgFadeInTimeInMs` | The time that the fade transition will take to complete on the overlay. **Note**: the `ease-in-out` method is used for easing | `number`
+`textFadeInTimeInMs` | The time that the fade transition will take to complete on the paragraph. **Note**: the `ease-in-out` method is used for easing | `number`
+`overlayBgFadeInOpacity` | The final opacity to set on the overlay. | `number`
+`overlayParagraphFadeInOpacity` | The final opacity to set on the paragraph. | `number`
+`overlayCSS` | The CSS for the textual overlay | `HazelineCSSRules`
+`paragraphCSS` | The CSS for the textual overlay paragraph | `HazelineCSSRules`
+`prevNextButtonsCSS` | Common styling for the previous and next buttons of the textual overlay | `HazelineCSSRules`
+`prevNextButtonsHoverCSS` | Common styling for the previous and next buttons of the textual overlay when in hover mode| `HazelineCSSRules`<br>
+
 ## Hazeline methods
 **`addSection`**
 ---
@@ -149,6 +226,8 @@ Argument #01  | section
 ------------- | -------------
 **Required**  | yes
 **Type**  | HazelineTutorialSection
+
+<br>
 
 Argument #02      | clearPreviousSections
 ----------------- | -------------
@@ -178,7 +257,8 @@ Argument #01  | sectionId
 **Required**  | yes
 **Type**      | string
 
-**Returns:** `Observable<HazelineTutorialStatus>`
+
+**Returns**: `Observable<HazelineTutorialStatus>`
 
 ## Hazeline interfaces and enums
 
@@ -266,6 +346,29 @@ interface HazelineLightboxOptions {
 }
 ```
 
+### **`HazelineTextualOverlayOptions`**
+
+**Type:** Interface
+```ts
+interface HazelineTextualOverlayOptions {
+    hideButtons?: boolean;
+    disableBgFadeIn?: boolean;
+    disableTextFadeIn?: boolean;
+    clickAnywhereForNextStep?: boolean;
+
+    bgFadeInTimeInMs?: number;
+    textFadeInTimeInMs?: number;
+
+    overlayBgFadeInOpacity?: number;
+    overlayParagraphFadeInOpacity?: number;
+
+    overlayCSS?: HazelineCSSRules;
+    paragraphCSS?: HazelineCSSRules;
+    prevNextButtonsCSS?: HazelineCSSRules;
+    prevNextButtonsHoverCSS?: HazelineCSSRules;
+}
+```
+
 ### **`HazelineTutorialStep`**
 
 **Type:** Interface
@@ -279,8 +382,8 @@ interface HazelineTutorialStep {
 
 ## Upcoming features
 
++ Margin offset on highlighted item
 + Ability to add delay between a step and another
-+ Ability to use a overlay that fully covers the page and specifies a text. In that case the lightbox won't be used.
 + Ability to attach events on:
     + `onStepEnd()`
     + `onStepStart()`
