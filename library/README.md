@@ -156,7 +156,6 @@ As the lightbox, and all the other Hazeline's components, even this one is desig
 
 The `overlay` option, allows you to customize the overlay that surrounds the highlighted element. <br>
 
-Properties:<br>
 Property name | Description | Accepted values
 --------------|-------------|-----------------
 `closeBtnText`  | The text inside the button to end the tutorial | `string`
@@ -169,6 +168,7 @@ Property name | Description | Accepted values
 The `lightbox` option, allows you to customize the box that is placed near the highlighted element, containing the Next and Previous buttons and the text for the section step.<br>
 
 General Properties:<br>
+
 Property name | Description | Accepted values
 --------------|-------------|-----------------
 `nextBtnText` | The text for the next button | `string`
@@ -197,8 +197,6 @@ Property name | Description | Accepted values
 ### Textual Overlay
 
 The textual overlay is the overlay that appears instead of the lightbox when you set `useOverlayInsteadOfLightbox` on the section step.<br>
-
-Properties:<br>
 
 Property name | Description | Accepted values
 --------------|-------------|-----------------
