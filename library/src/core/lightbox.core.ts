@@ -21,7 +21,6 @@ export class HazelineLightbox {
     private lightboxPrevBtn: HTMLButtonElement;
     private lightboxControlsWrp: HTMLDivElement;
 
-    private lightboxText: string;
     private ligthboxOptions: HazelineLightboxOptions = HazelineElementsDefaults.lightbox;
 
     private prevBtnClickEvtListener = () =>
@@ -71,41 +70,25 @@ export class HazelineLightbox {
         this.updateLightboxPlacement(target);
     }
 
-    public setOptions(lightboxOpts: HazelineLightboxOptions): void {
-        this.ligthboxOptions = lightboxOpts;
+    public setOptions(opts: HazelineLightboxOptions): void {
+        Object.keys(opts).forEach(optKey => {
+            if (typeof opts[optKey] === 'object') {
+                this.ligthboxOptions[optKey] = Object.assign({}, HazelineElementsDefaults.lightbox[optKey], opts[optKey]);
+                return;
+            }
 
-        //  The user might not have set the texts, since a Object.assign might cause strange behaviours due to styles,
-        //  we override the defaults with the user options, but since he could have forgot to set the texts, we check it
-        //  here, and ensure that at least, even if in english, the buttons have texts set.
-        this.ligthboxOptions.lastStepNextBtnText = this.ligthboxOptions.lastStepNextBtnText
-            ? this.ligthboxOptions.lastStepNextBtnText
-            : HazelineElementsDefaults.lightbox.lastStepNextBtnText;
+            if (!!opts[optKey]) {
+                this.ligthboxOptions[optKey] = opts[optKey];
+            }
 
-        this.ligthboxOptions.nextBtnText = this.ligthboxOptions.nextBtnText
-            ? this.ligthboxOptions.nextBtnText
-            : HazelineElementsDefaults.lightbox.nextBtnText;
-
-        this.ligthboxOptions.prevBtnText = this.ligthboxOptions.prevBtnText
-            ? this.ligthboxOptions.prevBtnText
-            : HazelineElementsDefaults.lightbox.prevBtnText;
+        });
     }
 
     public updateLightboxPlacement(target: HTMLElement): void {
-        const offset = this.ligthboxOptions && this.ligthboxOptions.positioning && this.ligthboxOptions.positioning.offset
-            ? this.ligthboxOptions.positioning.offset
-            : HazelineElementsDefaults.lightbox.positioning.offset;
-
-        const attachment = this.ligthboxOptions && this.ligthboxOptions.positioning && this.ligthboxOptions.positioning.attachment
-            ? this.ligthboxOptions.positioning.attachment
-            : HazelineElementsDefaults.lightbox.positioning.attachment;
-
-        const targetAttachment = this.ligthboxOptions && this.ligthboxOptions.positioning && this.ligthboxOptions.positioning.targetAttachment
-            ? this.ligthboxOptions.positioning.targetAttachment
-            : HazelineElementsDefaults.lightbox.positioning.targetAttachment;
-
-        const constraints = this.ligthboxOptions && this.ligthboxOptions.positioning && this.ligthboxOptions.positioning.constraints
-            ? this.ligthboxOptions.positioning.constraints
-            : HazelineElementsDefaults.lightbox.positioning.constraints;
+        const offset = this.ligthboxOptions.positioning.offset;
+        const attachment = this.ligthboxOptions.positioning.attachment;
+        const constraints = this.ligthboxOptions.positioning.constraints;
+        const targetAttachment = this.ligthboxOptions.positioning.targetAttachment;
 
         if (!this.tether) {
             this.tether = new Tether({
@@ -131,9 +114,7 @@ export class HazelineLightbox {
     }
 
     private applyTexts(sectionStep: HazelineTutorialStep, isLastStep = false): void {
-        this.lightboxText = sectionStep.text;
-
-        this.lightboxTextWrp.innerHTML = this.lightboxText;
+        this.lightboxTextWrp.innerHTML = sectionStep.text;
         this.lightboxPrevBtn.innerHTML = this.ligthboxOptions.prevBtnText;
         this.lightboxNextBtn.innerHTML = isLastStep
             ? this.ligthboxOptions.lastStepNextBtnText
@@ -183,10 +164,10 @@ export class HazelineLightbox {
 
     private styleWholeLigthboxElement(): void {
         HazelineStylesManager.styleElement<HTMLDivElement>(this.lightboxWrp, this.ligthboxOptions.lightboxWrapperCSS);
-        HazelineStylesManager.styleElement<HTMLDivElement>(this.lightboxWrp, this.ligthboxOptions.lightboxWrapperCSS || HazelineElementsDefaults.lightbox.lightboxWrapperCSS);
-        HazelineStylesManager.styleElement<HTMLButtonElement>(this.lightboxNextBtn, this.ligthboxOptions.lightboxNextBtnCSS || HazelineElementsDefaults.lightbox.lightboxNextBtnCSS);
-        HazelineStylesManager.styleElement<HTMLButtonElement>(this.lightboxPrevBtn, this.ligthboxOptions.lightboxPrevBtnCSS || HazelineElementsDefaults.lightbox.lightboxPrevBtnCSS);
-        HazelineStylesManager.styleElement<HTMLDivElement>(this.lightboxTextWrp, this.ligthboxOptions.lightboxTextWrapperCSS || HazelineElementsDefaults.lightbox.lightboxTextWrapperCSS);
-        HazelineStylesManager.styleElement<HTMLDivElement>(this.lightboxControlsWrp, this.ligthboxOptions.lightboxControlsWrapperCSS || HazelineElementsDefaults.lightbox.lightboxControlsWrapperCSS);
+        HazelineStylesManager.styleElement<HTMLDivElement>(this.lightboxWrp, this.ligthboxOptions.lightboxWrapperCSS);
+        HazelineStylesManager.styleElement<HTMLButtonElement>(this.lightboxNextBtn, this.ligthboxOptions.lightboxNextBtnCSS);
+        HazelineStylesManager.styleElement<HTMLButtonElement>(this.lightboxPrevBtn, this.ligthboxOptions.lightboxPrevBtnCSS);
+        HazelineStylesManager.styleElement<HTMLDivElement>(this.lightboxTextWrp, this.ligthboxOptions.lightboxTextWrapperCSS);
+        HazelineStylesManager.styleElement<HTMLDivElement>(this.lightboxControlsWrp, this.ligthboxOptions.lightboxControlsWrapperCSS);
     }
 }

@@ -6,8 +6,19 @@ var tutorial_section_statuses_enum_1 = require("./enums/tutorial-section-statuse
 var element_manager_core_1 = require("./element-manager.core");
 var HazelineRunner = /** @class */ (function () {
     function HazelineRunner(lightbox, renderer, elementManager) {
+        var _this = this;
         this._$sectionStatus = new rxjs_1.BehaviorSubject(null);
         this.currentSectionStep = 0;
+        this.windowResizeEvtListener = function () {
+            var wrapElementsDimensions = _this.elementManager.getWrappingElementsDimensions(_this.currentSection.steps[_this.currentSectionStep].elementSelector);
+            _this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
+            _this.lightbox.updateLightboxPlacement(element_manager_core_1.HazelineElementManager.getElementBySelector(_this.currentSection.steps[_this.currentSectionStep].elementSelector));
+        };
+        this.windowScrollEvtListener = function () {
+            var wrapElementsDimensions = _this.elementManager.getWrappingElementsDimensions(_this.currentSection.steps[_this.currentSectionStep].elementSelector);
+            _this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
+            _this.lightbox.updateLightboxPlacement(element_manager_core_1.HazelineElementManager.getElementBySelector(_this.currentSection.steps[_this.currentSectionStep].elementSelector));
+        };
         this.lightbox = lightbox;
         this.overlayRenderer = renderer;
         this.elementManager = elementManager;
@@ -16,6 +27,8 @@ var HazelineRunner = /** @class */ (function () {
     HazelineRunner.prototype.endTutorial = function () {
         this.lightbox.dispose();
         this.overlayRenderer.dispose();
+        window.removeEventListener('resize', this.windowResizeEvtListener);
+        window.removeEventListener('scroll', this.windowScrollEvtListener);
     };
     HazelineRunner.prototype.runSection = function (section) {
         if (!section) {
@@ -84,16 +97,8 @@ var HazelineRunner = /** @class */ (function () {
     };
     HazelineRunner.prototype.startResponsiveListeners = function () {
         var _this = this;
-        window.addEventListener('resize', function () {
-            var wrapElementsDimensions = _this.elementManager.getWrappingElementsDimensions(_this.currentSection.steps[_this.currentSectionStep].elementSelector);
-            _this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
-            _this.lightbox.updateLightboxPlacement(element_manager_core_1.HazelineElementManager.getElementBySelector(_this.currentSection.steps[_this.currentSectionStep].elementSelector));
-        });
-        window.addEventListener('scroll', function () {
-            var wrapElementsDimensions = _this.elementManager.getWrappingElementsDimensions(_this.currentSection.steps[_this.currentSectionStep].elementSelector);
-            _this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
-            _this.lightbox.updateLightboxPlacement(element_manager_core_1.HazelineElementManager.getElementBySelector(_this.currentSection.steps[_this.currentSectionStep].elementSelector));
-        });
+        window.addEventListener('resize', function () { return _this.windowResizeEvtListener; });
+        window.addEventListener('scroll', function () { return _this.windowScrollEvtListener; });
     };
     return HazelineRunner;
 }());

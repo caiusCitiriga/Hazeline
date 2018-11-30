@@ -19,6 +19,18 @@ export class HazelineRunner {
     private currentSectionStep = 0;
     private currentSection: HazelineTutorialSection;
 
+    private windowResizeEvtListener = () => {
+        const wrapElementsDimensions = this.elementManager.getWrappingElementsDimensions(this.currentSection.steps[this.currentSectionStep].elementSelector);
+        this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
+        this.lightbox.updateLightboxPlacement(HazelineElementManager.getElementBySelector(this.currentSection.steps[this.currentSectionStep].elementSelector));
+    };
+
+    private windowScrollEvtListener = () => {
+        const wrapElementsDimensions = this.elementManager.getWrappingElementsDimensions(this.currentSection.steps[this.currentSectionStep].elementSelector);
+        this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
+        this.lightbox.updateLightboxPlacement(HazelineElementManager.getElementBySelector(this.currentSection.steps[this.currentSectionStep].elementSelector));
+    };
+
     public constructor(
         lightbox: HazelineLightbox,
         renderer: HazelineOverlayRenderer,
@@ -33,6 +45,8 @@ export class HazelineRunner {
     public endTutorial(): void {
         this.lightbox.dispose();
         this.overlayRenderer.dispose();
+        window.removeEventListener('resize', this.windowResizeEvtListener);
+        window.removeEventListener('scroll', this.windowScrollEvtListener);
     }
 
     public runSection(section: HazelineTutorialSection): Observable<HazelineTutorialSectionStatus> {
@@ -130,17 +144,8 @@ export class HazelineRunner {
     }
 
     private startResponsiveListeners(): void {
-        window.addEventListener('resize', () => {
-            const wrapElementsDimensions = this.elementManager.getWrappingElementsDimensions(this.currentSection.steps[this.currentSectionStep].elementSelector);
-            this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
-            this.lightbox.updateLightboxPlacement(HazelineElementManager.getElementBySelector(this.currentSection.steps[this.currentSectionStep].elementSelector));
-        });
-
-        window.addEventListener('scroll', () => {
-            const wrapElementsDimensions = this.elementManager.getWrappingElementsDimensions(this.currentSection.steps[this.currentSectionStep].elementSelector);
-            this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
-            this.lightbox.updateLightboxPlacement(HazelineElementManager.getElementBySelector(this.currentSection.steps[this.currentSectionStep].elementSelector));
-        });
+        window.addEventListener('resize', () => this.windowResizeEvtListener);
+        window.addEventListener('scroll', () => this.windowScrollEvtListener);
     }
 
 }

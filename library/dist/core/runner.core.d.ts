@@ -11,6 +11,8 @@ export declare class HazelineRunner {
     private _$sectionStatus;
     private currentSectionStep;
     private currentSection;
+    private windowResizeEvtListener;
+    private windowScrollEvtListener;
     constructor(lightbox: HazelineLightbox, renderer: HazelineOverlayRenderer, elementManager: HazelineElementManager);
     endTutorial(): void;
     runSection(section: HazelineTutorialSection): Observable<HazelineTutorialSectionStatus>;

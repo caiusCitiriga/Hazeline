@@ -58,34 +58,23 @@ var HazelineLightbox = /** @class */ (function () {
         this.styleWholeLigthboxElement();
         this.updateLightboxPlacement(target);
     };
-    HazelineLightbox.prototype.setOptions = function (lightboxOpts) {
-        this.ligthboxOptions = lightboxOpts;
-        //  The user might not have set the texts, since a Object.assign might cause strange behaviours due to styles,
-        //  we override the defaults with the user options, but since he could have forgot to set the texts, we check it
-        //  here, and ensure that at least, even if in english, the buttons have texts set.
-        this.ligthboxOptions.lastStepNextBtnText = this.ligthboxOptions.lastStepNextBtnText
-            ? this.ligthboxOptions.lastStepNextBtnText
-            : elements_defaults_const_1.HazelineElementsDefaults.lightbox.lastStepNextBtnText;
-        this.ligthboxOptions.nextBtnText = this.ligthboxOptions.nextBtnText
-            ? this.ligthboxOptions.nextBtnText
-            : elements_defaults_const_1.HazelineElementsDefaults.lightbox.nextBtnText;
-        this.ligthboxOptions.prevBtnText = this.ligthboxOptions.prevBtnText
-            ? this.ligthboxOptions.prevBtnText
-            : elements_defaults_const_1.HazelineElementsDefaults.lightbox.prevBtnText;
+    HazelineLightbox.prototype.setOptions = function (opts) {
+        var _this = this;
+        Object.keys(opts).forEach(function (optKey) {
+            if (typeof opts[optKey] === 'object') {
+                _this.ligthboxOptions[optKey] = Object.assign({}, elements_defaults_const_1.HazelineElementsDefaults.lightbox[optKey], opts[optKey]);
+                return;
+            }
+            if (!!opts[optKey]) {
+                _this.ligthboxOptions[optKey] = opts[optKey];
+            }
+        });
     };
     HazelineLightbox.prototype.updateLightboxPlacement = function (target) {
-        var offset = this.ligthboxOptions && this.ligthboxOptions.positioning && this.ligthboxOptions.positioning.offset
-            ? this.ligthboxOptions.positioning.offset
-            : elements_defaults_const_1.HazelineElementsDefaults.lightbox.positioning.offset;
-        var attachment = this.ligthboxOptions && this.ligthboxOptions.positioning && this.ligthboxOptions.positioning.attachment
-            ? this.ligthboxOptions.positioning.attachment
-            : elements_defaults_const_1.HazelineElementsDefaults.lightbox.positioning.attachment;
-        var targetAttachment = this.ligthboxOptions && this.ligthboxOptions.positioning && this.ligthboxOptions.positioning.targetAttachment
-            ? this.ligthboxOptions.positioning.targetAttachment
-            : elements_defaults_const_1.HazelineElementsDefaults.lightbox.positioning.targetAttachment;
-        var constraints = this.ligthboxOptions && this.ligthboxOptions.positioning && this.ligthboxOptions.positioning.constraints
-            ? this.ligthboxOptions.positioning.constraints
-            : elements_defaults_const_1.HazelineElementsDefaults.lightbox.positioning.constraints;
+        var offset = this.ligthboxOptions.positioning.offset;
+        var attachment = this.ligthboxOptions.positioning.attachment;
+        var constraints = this.ligthboxOptions.positioning.constraints;
+        var targetAttachment = this.ligthboxOptions.positioning.targetAttachment;
         if (!this.tether) {
             this.tether = new tether_1.default({
                 target: target,
@@ -110,8 +99,7 @@ var HazelineLightbox = /** @class */ (function () {
     };
     HazelineLightbox.prototype.applyTexts = function (sectionStep, isLastStep) {
         if (isLastStep === void 0) { isLastStep = false; }
-        this.lightboxText = sectionStep.text;
-        this.lightboxTextWrp.innerHTML = this.lightboxText;
+        this.lightboxTextWrp.innerHTML = sectionStep.text;
         this.lightboxPrevBtn.innerHTML = this.ligthboxOptions.prevBtnText;
         this.lightboxNextBtn.innerHTML = isLastStep
             ? this.ligthboxOptions.lastStepNextBtnText
@@ -151,11 +139,11 @@ var HazelineLightbox = /** @class */ (function () {
     };
     HazelineLightbox.prototype.styleWholeLigthboxElement = function () {
         styles_manager_core_1.HazelineStylesManager.styleElement(this.lightboxWrp, this.ligthboxOptions.lightboxWrapperCSS);
-        styles_manager_core_1.HazelineStylesManager.styleElement(this.lightboxWrp, this.ligthboxOptions.lightboxWrapperCSS || elements_defaults_const_1.HazelineElementsDefaults.lightbox.lightboxWrapperCSS);
-        styles_manager_core_1.HazelineStylesManager.styleElement(this.lightboxNextBtn, this.ligthboxOptions.lightboxNextBtnCSS || elements_defaults_const_1.HazelineElementsDefaults.lightbox.lightboxNextBtnCSS);
-        styles_manager_core_1.HazelineStylesManager.styleElement(this.lightboxPrevBtn, this.ligthboxOptions.lightboxPrevBtnCSS || elements_defaults_const_1.HazelineElementsDefaults.lightbox.lightboxPrevBtnCSS);
-        styles_manager_core_1.HazelineStylesManager.styleElement(this.lightboxTextWrp, this.ligthboxOptions.lightboxTextWrapperCSS || elements_defaults_const_1.HazelineElementsDefaults.lightbox.lightboxTextWrapperCSS);
-        styles_manager_core_1.HazelineStylesManager.styleElement(this.lightboxControlsWrp, this.ligthboxOptions.lightboxControlsWrapperCSS || elements_defaults_const_1.HazelineElementsDefaults.lightbox.lightboxControlsWrapperCSS);
+        styles_manager_core_1.HazelineStylesManager.styleElement(this.lightboxWrp, this.ligthboxOptions.lightboxWrapperCSS);
+        styles_manager_core_1.HazelineStylesManager.styleElement(this.lightboxNextBtn, this.ligthboxOptions.lightboxNextBtnCSS);
+        styles_manager_core_1.HazelineStylesManager.styleElement(this.lightboxPrevBtn, this.ligthboxOptions.lightboxPrevBtnCSS);
+        styles_manager_core_1.HazelineStylesManager.styleElement(this.lightboxTextWrp, this.ligthboxOptions.lightboxTextWrapperCSS);
+        styles_manager_core_1.HazelineStylesManager.styleElement(this.lightboxControlsWrp, this.ligthboxOptions.lightboxControlsWrapperCSS);
     };
     return HazelineLightbox;
 }());

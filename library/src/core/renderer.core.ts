@@ -27,7 +27,19 @@ export class HazelineOverlayRenderer {
     }
 
     public setOptions(overlayOpts: HazelineOverlyOptions): void {
-        this.overlayOptions = overlayOpts;
+        if (!overlayOpts) {
+            return;
+        }
+
+        Object.keys(overlayOpts).forEach(optsKey => {
+            if (typeof overlayOpts[optsKey] === 'object') {
+                this.overlayOptions[optsKey] = Object.assign({}, HazelineElementsDefaults.overlay[optsKey], overlayOpts[optsKey]);
+            }
+
+            if (!!overlayOpts[optsKey] && typeof overlayOpts[optsKey] !== 'object') {
+                this.overlayOptions[optsKey] = overlayOpts[optsKey];
+            }
+        });
     }
 
     public updateElementsDimensions(dimensions: HazelineWrappingElementsDimensions): void {
@@ -105,14 +117,14 @@ export class HazelineOverlayRenderer {
         this.endTutorialBtn.id = HazelineElementsIds.endTutorialButton;
 
         Object.keys(elements).forEach(el => {
-            HazelineStylesManager.styleElement(elements[el], this.overlayOptions.overlayCSS || HazelineElementsDefaults.overlay.overlayCSS);
+            HazelineStylesManager.styleElement(elements[el], this.overlayOptions.overlayCSS);
         });
 
-        this.endTutorialBtn.innerHTML = this.overlayOptions.closeBtnText || HazelineElementsDefaults.overlay.closeBtnText;
+        this.endTutorialBtn.innerHTML = this.overlayOptions.closeBtnText;
         this.endTutorialBtn.addEventListener('click', () => this._$prematureEndRequired.next(true));
-        this.endTutorialBtn.addEventListener('mouseleave', () => HazelineStylesManager.styleElement(this.endTutorialBtn, this.overlayOptions.endTutorialBtnCSS || HazelineElementsDefaults.overlay.endTutorialBtnCSS));
-        this.endTutorialBtn.addEventListener('mouseenter', () => HazelineStylesManager.styleElement(this.endTutorialBtn, this.overlayOptions.endTutorialBtnHoverCSS || HazelineElementsDefaults.overlay.endTutorialBtnHoverCSS));
-        HazelineStylesManager.styleElement(this.endTutorialBtn, this.overlayOptions.endTutorialBtnCSS || HazelineElementsDefaults.overlay.endTutorialBtnCSS);
+        this.endTutorialBtn.addEventListener('mouseleave', () => HazelineStylesManager.styleElement(this.endTutorialBtn, this.overlayOptions.endTutorialBtnCSS));
+        this.endTutorialBtn.addEventListener('mouseenter', () => HazelineStylesManager.styleElement(this.endTutorialBtn, this.overlayOptions.endTutorialBtnHoverCSS));
+        HazelineStylesManager.styleElement(this.endTutorialBtn, this.overlayOptions.endTutorialBtnCSS);
 
         elements.topBox.style.width = `${dimensions.topBox.width}px`;
         elements.topBox.style.height = `${dimensions.topBox.height}px`;
