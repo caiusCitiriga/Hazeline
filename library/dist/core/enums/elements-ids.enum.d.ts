@@ -8,6 +8,7 @@ export declare enum HazelineElementsIds {
     lightboxText = "hazeline-lightbox-text",
     lightboxControls = "hazeline-lightbox-ctrls",
     lightboxNextButton = "hazeline-lightbox-next-btn",
-    lightboxPrevButton = "hazeline-lightbox-prev-btn"
+    lightboxPrevButton = "hazeline-lightbox-prev-btn",
+    lightboxTextualOverlay = "hazeline-lightbox-textual-overlay"
 }
 //# sourceMappingURL=elements-ids.enum.d.ts.map

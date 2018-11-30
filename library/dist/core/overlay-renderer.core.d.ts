@@ -13,16 +13,20 @@ export declare class HazelineOverlayRenderer {
     private endTutorialBtnMouseLeaveEvtListener;
     private endTutorialBtnMouseEnterEvtListener;
     $premartureEndRequired(): Observable<boolean>;
+    placeEndTutorialButton(): void;
     dispose(): void;
     setDynamicOptions(overlayOpts: HazelineOverlayOptions): void;
     setGlobalOptions(overlayOpts: HazelineOverlayOptions): void;
     updateElementsDimensions(dimensions: HazelineWrappingElementsDimensions): void;
     wrapElement(dimensions: HazelineWrappingElementsDimensions): void;
     private attachElementsToBody;
-    private attachEventListeners;
+    private attachEndTutorialButtonToBody;
+    private attachEndTutorialBtnEventsListeners;
     private detachEventListeners;
+    private createEndTutorialButton;
     private createWrappingElements;
     private destroyPreviousElementsIfAny;
+    private applyEndTutorialBtnOptions;
     private applyOptionsOnElements;
 }
 //# sourceMappingURL=overlay-renderer.core.d.ts.map

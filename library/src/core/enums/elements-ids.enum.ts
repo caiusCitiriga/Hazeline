@@ -11,4 +11,5 @@ export enum HazelineElementsIds {
     lightboxControls = 'hazeline-lightbox-ctrls',
     lightboxNextButton = 'hazeline-lightbox-next-btn',
     lightboxPrevButton = 'hazeline-lightbox-prev-btn',
+    lightboxTextualOverlay = 'hazeline-lightbox-textual-overlay',
 }

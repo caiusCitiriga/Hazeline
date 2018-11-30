@@ -38,7 +38,7 @@ var Hazeline = /** @class */ (function () {
             });
         }
         this.runner.runSection(sectionToRun)
-            .pipe(operators_1.tap(function (status) {
+            .pipe(operators_1.filter(function (status) { return !!status; }), operators_1.tap(function (status) {
             if (status.status === tutorial_section_statuses_enum_1.HazelineTutorialSectionStatuses.errored) {
                 _this._$tutorialStatus.next({
                     status: tutorial_statuses_enum_1.HazelineTutorialStatuses.errored,

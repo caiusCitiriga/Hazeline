@@ -26,6 +26,13 @@ export class HazelineOverlayRenderer {
         return this._$prematureEndRequired;
     }
 
+    public placeEndTutorialButton(): void {
+        this.createEndTutorialButton();
+        this.applyEndTutorialBtnOptions();
+        this.attachEndTutorialButtonToBody();
+        this.attachEndTutorialBtnEventsListeners();
+    }
+
     public dispose(): void {
         this.detachEventListeners();
         this.destroyPreviousElementsIfAny();
@@ -69,22 +76,24 @@ export class HazelineOverlayRenderer {
         this.rightBox = document.getElementById(HazelineElementsIds.rightBox) as HTMLDivElement;
         this.bottomBox = document.getElementById(HazelineElementsIds.bottomBox) as HTMLDivElement;
 
-        this.detachEventListeners();
-        this.applyOptionsOnElements({
-            topBox: this.topBox,
-            leftBox: this.leftBox,
-            rightBox: this.rightBox,
-            bottomBox: this.bottomBox,
-        }, dimensions);
-        this.attachEventListeners();
+        if (!!this.topBox) {
+            // If a box is null or undefined, we are using a textual overlay. So there's no need to 
+            // apply options on elements. Event because it would end in a error.
+            this.applyOptionsOnElements({
+                topBox: this.topBox,
+                leftBox: this.leftBox,
+                rightBox: this.rightBox,
+                bottomBox: this.bottomBox,
+            }, dimensions);
+        }
+
+        this.applyEndTutorialBtnOptions();
     }
 
     public wrapElement(dimensions: HazelineWrappingElementsDimensions): void {
         this.destroyPreviousElementsIfAny();
         const wrappingElements = this.createWrappingElements(dimensions);
-
         this.attachElementsToBody(wrappingElements);
-        this.attachEventListeners();
     }
 
     private attachElementsToBody(elements: ElementsToAttachOnBody): void {
@@ -94,19 +103,30 @@ export class HazelineOverlayRenderer {
         (body as any).prepend(elements.leftBox); // not fully supported. See browser tables
         (body as any).prepend(elements.rightBox); // not fully supported. See browser tables
         (body as any).prepend(elements.bottomBox); // not fully supported. See browser tables
+    }
+
+    private attachEndTutorialButtonToBody(): void {
+        const body = document.querySelector('body');
         (body as any).prepend(this.endTutorialBtn); // not fully supported. See browser tables
     }
 
-    private attachEventListeners(): void {
+    private attachEndTutorialBtnEventsListeners(): void {
         this.endTutorialBtn.addEventListener('click', this.endTutorialBtnClickEvtListener);
         this.endTutorialBtn.addEventListener('mouseleave', this.endTutorialBtnMouseLeaveEvtListener);
         this.endTutorialBtn.addEventListener('mouseenter', this.endTutorialBtnMouseEnterEvtListener);
     }
 
     private detachEventListeners(): void {
-        this.endTutorialBtn.removeEventListener('click', this.endTutorialBtnClickEvtListener);
-        this.endTutorialBtn.removeEventListener('mouseleave', this.endTutorialBtnMouseLeaveEvtListener);
-        this.endTutorialBtn.removeEventListener('mouseenter', this.endTutorialBtnMouseEnterEvtListener);
+        if (this.endTutorialBtn) {
+            this.endTutorialBtn.removeEventListener('click', this.endTutorialBtnClickEvtListener);
+            this.endTutorialBtn.removeEventListener('mouseleave', this.endTutorialBtnMouseLeaveEvtListener);
+            this.endTutorialBtn.removeEventListener('mouseenter', this.endTutorialBtnMouseEnterEvtListener);
+        }
+    }
+
+    private createEndTutorialButton(): void {
+        this.endTutorialBtn = document.createElement('button');
+        this.endTutorialBtn.id = HazelineElementsIds.endTutorialButton;
     }
 
     private createWrappingElements(dimensions: HazelineWrappingElementsDimensions): ElementsToAttachOnBody {
@@ -114,7 +134,6 @@ export class HazelineOverlayRenderer {
         this.leftBox = document.createElement('div');
         this.rightBox = document.createElement('div');
         this.bottomBox = document.createElement('div');
-        this.endTutorialBtn = document.createElement('button');
 
         const elements = this.applyOptionsOnElements({
             topBox: this.topBox,
@@ -122,6 +141,8 @@ export class HazelineOverlayRenderer {
             rightBox: this.rightBox,
             bottomBox: this.bottomBox,
         }, dimensions);
+
+        this.applyEndTutorialBtnOptions();
 
         return elements;
     }
@@ -144,20 +165,22 @@ export class HazelineOverlayRenderer {
         }
     }
 
+    private applyEndTutorialBtnOptions(): void {
+        this.endTutorialBtn.innerHTML = this.overlayOptions.closeBtnText;
+        HazelineStylesManager.styleElement(this.endTutorialBtn, this.overlayOptions.endTutorialBtnCSS);
+    }
+
     private applyOptionsOnElements(elements: ElementsToAttachOnBody, dimensions: HazelineWrappingElementsDimensions): ElementsToAttachOnBody {
         elements.topBox.id = HazelineElementsIds.topBox;
         elements.leftBox.id = HazelineElementsIds.leftBox;
         elements.rightBox.id = HazelineElementsIds.rightBox;
         elements.bottomBox.id = HazelineElementsIds.bottomBox;
         elements.bottomBox.id = HazelineElementsIds.bottomBox;
-        this.endTutorialBtn.id = HazelineElementsIds.endTutorialButton;
 
         Object.keys(elements).forEach(el => {
             HazelineStylesManager.styleElement(elements[el], this.overlayOptions.overlayCSS);
         });
 
-        this.endTutorialBtn.innerHTML = this.overlayOptions.closeBtnText;
-        HazelineStylesManager.styleElement(this.endTutorialBtn, this.overlayOptions.endTutorialBtnCSS);
 
         elements.topBox.style.width = `${dimensions.topBox.width}px`;
         elements.topBox.style.height = `${dimensions.topBox.height}px`;

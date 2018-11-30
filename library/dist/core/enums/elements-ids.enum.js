@@ -12,5 +12,6 @@ var HazelineElementsIds;
     HazelineElementsIds["lightboxControls"] = "hazeline-lightbox-ctrls";
     HazelineElementsIds["lightboxNextButton"] = "hazeline-lightbox-next-btn";
     HazelineElementsIds["lightboxPrevButton"] = "hazeline-lightbox-prev-btn";
+    HazelineElementsIds["lightboxTextualOverlay"] = "hazeline-lightbox-textual-overlay";
 })(HazelineElementsIds = exports.HazelineElementsIds || (exports.HazelineElementsIds = {}));
 //# sourceMappingURL=elements-ids.enum.js.map

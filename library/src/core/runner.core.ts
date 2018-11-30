@@ -22,15 +22,22 @@ export class HazelineRunner {
 
     private windowResizeEvtListener = () => {
         const wrapElementsDimensions = this.elementManager.getWrappingElementsDimensions(this.currentSection.steps[this.currentSectionStepIdx].elementSelector);
-        this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
-        this.lightbox.updateLightboxPlacement(HazelineElementManager.getElementBySelector(this.currentSection.steps[this.currentSectionStepIdx].elementSelector));
+        if (this.currentSection.steps[this.currentSectionStepIdx].useOverlayInsteadOfLightbox) {
+            this.lightbox.updateTextualOverlayPlacement();
+        } else {
+            this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
+            this.lightbox.updateLightboxPlacement(HazelineElementManager.getElementBySelector(this.currentSection.steps[this.currentSectionStepIdx].elementSelector));
+        }
     };
 
     private windowScrollEvtListener = () => {
         const wrapElementsDimensions = this.elementManager.getWrappingElementsDimensions(this.currentSection.steps[this.currentSectionStepIdx].elementSelector);
-        this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
-        this.lightbox.updateLightboxPlacement(HazelineElementManager.getElementBySelector(this.currentSection.steps[this.currentSectionStepIdx].elementSelector));
-
+        if (this.currentSection.steps[this.currentSectionStepIdx].useOverlayInsteadOfLightbox) {
+            this.lightbox.updateTextualOverlayPlacement();
+        } else {
+            this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
+            this.lightbox.updateLightboxPlacement(HazelineElementManager.getElementBySelector(this.currentSection.steps[this.currentSectionStepIdx].elementSelector));
+        }
     };
 
     public constructor(
@@ -47,6 +54,7 @@ export class HazelineRunner {
     public endTutorial(): void {
         this.lightbox.dispose();
         this.overlayRenderer.dispose();
+        this.lightbox.disposeTextualOverlay();
         window.removeEventListener('resize', this.windowResizeEvtListener);
         window.removeEventListener('scroll', this.windowScrollEvtListener);
     }
@@ -63,30 +71,51 @@ export class HazelineRunner {
             return this._$sectionStatus;
         }
 
+        const isFirstStep = this.currentSectionStepIdx === 0;
+        const isLastStep = (section.steps.length - 1) === this.currentSectionStepIdx;
+        const thisStepUsesTextualOverlay = this.currentSection.steps[this.currentSectionStepIdx].useOverlayInsteadOfLightbox;
+        const previousStepUsedTextualOverlay = this.currentSectionStepIdx === 0
+            ? false
+            : this.currentSection.steps[this.currentSectionStepIdx - 1].useOverlayInsteadOfLightbox
+
         this.applyCustomOptionsIfAny(section.globalOptions);
         this.applyCustomOptionsIfAny(this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions, true);
 
         const wrapElementsDimensions = this.elementManager
             .getWrappingElementsDimensions(section.steps[this.currentSectionStepIdx].elementSelector);
 
-        if (this.currentSectionStepIdx > 0) {
-            this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
-        } else {
-            this.overlayRenderer.wrapElement(wrapElementsDimensions);
-            this._$sectionStatus.next({
-                runningSection: section,
-                status: HazelineTutorialSectionStatuses.started,
-                runningStepInSection: section.steps[this.currentSectionStepIdx]
-            });
+        if (!isFirstStep && !thisStepUsesTextualOverlay) {
+            if (previousStepUsedTextualOverlay) {
+                this.lightbox.disposeTextualOverlay();
+                this.overlayRenderer.wrapElement(wrapElementsDimensions);
+            } else {
+                this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
+            }
         }
 
-        this.lightbox.placeLightbox(
-            HazelineElementManager.getElementBySelector(section.steps[this.currentSectionStepIdx].elementSelector),
-            section.steps[this.currentSectionStepIdx],
-            (section.steps.length - 1) === this.currentSectionStepIdx
-        );
+        if (thisStepUsesTextualOverlay) {
+            if (!previousStepUsedTextualOverlay) {
+                this.overlayRenderer.dispose();
+            };
+
+            const sub = this.lightbox
+                .placeTextOverlay(this.currentSection.steps[this.currentSectionStepIdx], isLastStep)
+                .subscribe(() => sub.unsubscribe());
+        } else {
+            this.lightbox.placeLightbox(
+                HazelineElementManager.getElementBySelector(section.steps[this.currentSectionStepIdx].elementSelector),
+                section.steps[this.currentSectionStepIdx],
+                isLastStep);
+        }
+
+        this._$sectionStatus.next({
+            runningSection: section,
+            status: HazelineTutorialSectionStatuses.started,
+            runningStepInSection: section.steps[this.currentSectionStepIdx]
+        });
 
         this.startResponsiveListeners();
+        this.overlayRenderer.placeEndTutorialButton();
         return this._$sectionStatus;
     }
 
@@ -114,6 +143,7 @@ export class HazelineRunner {
             .pipe(
                 filter(res => !!res),
                 filter(() => {
+                    console.log('next called');
                     if (this.currentSectionStepIdx === (this.currentSection.steps.length - 1)) {
                         this._$sectionStatus.next({
                             runningSection: null,

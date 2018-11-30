@@ -5,4 +5,5 @@ export interface HazelineTutorialStep {
     elementSelector: string;
 
     dynamicOptions?: HazelineOptions;
+    useOverlayInsteadOfLightbox?: boolean;
 }

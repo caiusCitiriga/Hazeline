@@ -1,4 +1,4 @@
-import { tap } from 'rxjs/operators';
+import { tap, filter } from 'rxjs/operators';
 import { Observable, BehaviorSubject } from 'rxjs';
 
 import { HazelineTutorialStatus } from './core/interfaces/tutorial-status.interface';
@@ -59,6 +59,7 @@ export class Hazeline {
 
         this.runner.runSection(sectionToRun)
             .pipe(
+                filter(status => !!status),
                 tap(status => {
                     if (status.status === HazelineTutorialSectionStatuses.errored) {
                         this._$tutorialStatus.next({

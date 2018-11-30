@@ -16,6 +16,12 @@ var HazelineOverlayRenderer = /** @class */ (function () {
     HazelineOverlayRenderer.prototype.$premartureEndRequired = function () {
         return this._$prematureEndRequired;
     };
+    HazelineOverlayRenderer.prototype.placeEndTutorialButton = function () {
+        this.createEndTutorialButton();
+        this.applyEndTutorialBtnOptions();
+        this.attachEndTutorialButtonToBody();
+        this.attachEndTutorialBtnEventsListeners();
+    };
     HazelineOverlayRenderer.prototype.dispose = function () {
         this.detachEventListeners();
         this.destroyPreviousElementsIfAny();
@@ -53,20 +59,22 @@ var HazelineOverlayRenderer = /** @class */ (function () {
         this.leftBox = document.getElementById(elements_ids_enum_1.HazelineElementsIds.leftBox);
         this.rightBox = document.getElementById(elements_ids_enum_1.HazelineElementsIds.rightBox);
         this.bottomBox = document.getElementById(elements_ids_enum_1.HazelineElementsIds.bottomBox);
-        this.detachEventListeners();
-        this.applyOptionsOnElements({
-            topBox: this.topBox,
-            leftBox: this.leftBox,
-            rightBox: this.rightBox,
-            bottomBox: this.bottomBox,
-        }, dimensions);
-        this.attachEventListeners();
+        if (!!this.topBox) {
+            // If a box is null or undefined, we are using a textual overlay. So there's no need to 
+            // apply options on elements. Event because it would end in a error.
+            this.applyOptionsOnElements({
+                topBox: this.topBox,
+                leftBox: this.leftBox,
+                rightBox: this.rightBox,
+                bottomBox: this.bottomBox,
+            }, dimensions);
+        }
+        this.applyEndTutorialBtnOptions();
     };
     HazelineOverlayRenderer.prototype.wrapElement = function (dimensions) {
         this.destroyPreviousElementsIfAny();
         var wrappingElements = this.createWrappingElements(dimensions);
         this.attachElementsToBody(wrappingElements);
-        this.attachEventListeners();
     };
     HazelineOverlayRenderer.prototype.attachElementsToBody = function (elements) {
         var body = document.querySelector('body');
@@ -74,30 +82,39 @@ var HazelineOverlayRenderer = /** @class */ (function () {
         body.prepend(elements.leftBox); // not fully supported. See browser tables
         body.prepend(elements.rightBox); // not fully supported. See browser tables
         body.prepend(elements.bottomBox); // not fully supported. See browser tables
+    };
+    HazelineOverlayRenderer.prototype.attachEndTutorialButtonToBody = function () {
+        var body = document.querySelector('body');
         body.prepend(this.endTutorialBtn); // not fully supported. See browser tables
     };
-    HazelineOverlayRenderer.prototype.attachEventListeners = function () {
+    HazelineOverlayRenderer.prototype.attachEndTutorialBtnEventsListeners = function () {
         this.endTutorialBtn.addEventListener('click', this.endTutorialBtnClickEvtListener);
         this.endTutorialBtn.addEventListener('mouseleave', this.endTutorialBtnMouseLeaveEvtListener);
         this.endTutorialBtn.addEventListener('mouseenter', this.endTutorialBtnMouseEnterEvtListener);
     };
     HazelineOverlayRenderer.prototype.detachEventListeners = function () {
-        this.endTutorialBtn.removeEventListener('click', this.endTutorialBtnClickEvtListener);
-        this.endTutorialBtn.removeEventListener('mouseleave', this.endTutorialBtnMouseLeaveEvtListener);
-        this.endTutorialBtn.removeEventListener('mouseenter', this.endTutorialBtnMouseEnterEvtListener);
+        if (this.endTutorialBtn) {
+            this.endTutorialBtn.removeEventListener('click', this.endTutorialBtnClickEvtListener);
+            this.endTutorialBtn.removeEventListener('mouseleave', this.endTutorialBtnMouseLeaveEvtListener);
+            this.endTutorialBtn.removeEventListener('mouseenter', this.endTutorialBtnMouseEnterEvtListener);
+        }
+    };
+    HazelineOverlayRenderer.prototype.createEndTutorialButton = function () {
+        this.endTutorialBtn = document.createElement('button');
+        this.endTutorialBtn.id = elements_ids_enum_1.HazelineElementsIds.endTutorialButton;
     };
     HazelineOverlayRenderer.prototype.createWrappingElements = function (dimensions) {
         this.topBox = document.createElement('div');
         this.leftBox = document.createElement('div');
         this.rightBox = document.createElement('div');
         this.bottomBox = document.createElement('div');
-        this.endTutorialBtn = document.createElement('button');
         var elements = this.applyOptionsOnElements({
             topBox: this.topBox,
             leftBox: this.leftBox,
             rightBox: this.rightBox,
             bottomBox: this.bottomBox,
         }, dimensions);
+        this.applyEndTutorialBtnOptions();
         return elements;
     };
     HazelineOverlayRenderer.prototype.destroyPreviousElementsIfAny = function () {
@@ -117,6 +134,10 @@ var HazelineOverlayRenderer = /** @class */ (function () {
             document.body.removeChild(document.getElementById(elements_ids_enum_1.HazelineElementsIds.endTutorialButton));
         }
     };
+    HazelineOverlayRenderer.prototype.applyEndTutorialBtnOptions = function () {
+        this.endTutorialBtn.innerHTML = this.overlayOptions.closeBtnText;
+        styles_manager_core_1.HazelineStylesManager.styleElement(this.endTutorialBtn, this.overlayOptions.endTutorialBtnCSS);
+    };
     HazelineOverlayRenderer.prototype.applyOptionsOnElements = function (elements, dimensions) {
         var _this = this;
         elements.topBox.id = elements_ids_enum_1.HazelineElementsIds.topBox;
@@ -124,12 +145,9 @@ var HazelineOverlayRenderer = /** @class */ (function () {
         elements.rightBox.id = elements_ids_enum_1.HazelineElementsIds.rightBox;
         elements.bottomBox.id = elements_ids_enum_1.HazelineElementsIds.bottomBox;
         elements.bottomBox.id = elements_ids_enum_1.HazelineElementsIds.bottomBox;
-        this.endTutorialBtn.id = elements_ids_enum_1.HazelineElementsIds.endTutorialButton;
         Object.keys(elements).forEach(function (el) {
             styles_manager_core_1.HazelineStylesManager.styleElement(elements[el], _this.overlayOptions.overlayCSS);
         });
-        this.endTutorialBtn.innerHTML = this.overlayOptions.closeBtnText;
-        styles_manager_core_1.HazelineStylesManager.styleElement(this.endTutorialBtn, this.overlayOptions.endTutorialBtnCSS);
         elements.topBox.style.width = dimensions.topBox.width + "px";
         elements.topBox.style.height = dimensions.topBox.height + "px";
         elements.topBox.style.left = dimensions.topBox.offsetLeft + "px";

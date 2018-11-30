@@ -6,6 +6,7 @@ export declare class HazelineLightboxRenderer {
     private _$prevStepRequired;
     private tether;
     private lightboxWrp;
+    private textualOverlay;
     private lightboxTextWrp;
     private lightboxNextBtn;
     private lightboxPrevBtn;
@@ -20,13 +21,21 @@ export declare class HazelineLightboxRenderer {
     $nextStepRequired(): Observable<boolean>;
     $prevStepRequired(): Observable<boolean>;
     dispose(): void;
+    disposeTextualOverlay(): void;
     placeLightbox(target: HTMLElement, sectionStep: HazelineTutorialStep, isLastStep?: boolean): void;
+    placeTextOverlay(sectionStep: HazelineTutorialStep, isLastStep?: boolean): Observable<boolean>;
     setDynamicOptions(opts: HazelineLightboxOptions): void;
     setGlobalOptions(opts: HazelineLightboxOptions): void;
     updateLightboxPlacement(target: HTMLElement): void;
+    updateTextualOverlayPlacement(): void;
     private applyTexts;
-    private attachNextEventListeneres;
+    private attachNextPrevEventsListeneres;
+    private attachNextPrevHoverModesEventsListeners;
     private createLightbox;
+    private createLightboxButtons;
+    private createLightboxWrappers;
+    private setButttonsIds;
+    private setWrappersIds;
     private styleWholeLigthboxElement;
 }
 //# sourceMappingURL=lightbox-renderer.core.d.ts.map

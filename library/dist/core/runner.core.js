@@ -11,13 +11,23 @@ var HazelineRunner = /** @class */ (function () {
         this.currentSectionStepIdx = 0;
         this.windowResizeEvtListener = function () {
             var wrapElementsDimensions = _this.elementManager.getWrappingElementsDimensions(_this.currentSection.steps[_this.currentSectionStepIdx].elementSelector);
-            _this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
-            _this.lightbox.updateLightboxPlacement(element_manager_core_1.HazelineElementManager.getElementBySelector(_this.currentSection.steps[_this.currentSectionStepIdx].elementSelector));
+            if (_this.currentSection.steps[_this.currentSectionStepIdx].useOverlayInsteadOfLightbox) {
+                _this.lightbox.updateTextualOverlayPlacement();
+            }
+            else {
+                _this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
+                _this.lightbox.updateLightboxPlacement(element_manager_core_1.HazelineElementManager.getElementBySelector(_this.currentSection.steps[_this.currentSectionStepIdx].elementSelector));
+            }
         };
         this.windowScrollEvtListener = function () {
             var wrapElementsDimensions = _this.elementManager.getWrappingElementsDimensions(_this.currentSection.steps[_this.currentSectionStepIdx].elementSelector);
-            _this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
-            _this.lightbox.updateLightboxPlacement(element_manager_core_1.HazelineElementManager.getElementBySelector(_this.currentSection.steps[_this.currentSectionStepIdx].elementSelector));
+            if (_this.currentSection.steps[_this.currentSectionStepIdx].useOverlayInsteadOfLightbox) {
+                _this.lightbox.updateTextualOverlayPlacement();
+            }
+            else {
+                _this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
+                _this.lightbox.updateLightboxPlacement(element_manager_core_1.HazelineElementManager.getElementBySelector(_this.currentSection.steps[_this.currentSectionStepIdx].elementSelector));
+            }
         };
         this.lightbox = lightbox;
         this.overlayRenderer = renderer;
@@ -27,6 +37,7 @@ var HazelineRunner = /** @class */ (function () {
     HazelineRunner.prototype.endTutorial = function () {
         this.lightbox.dispose();
         this.overlayRenderer.dispose();
+        this.lightbox.disposeTextualOverlay();
         window.removeEventListener('resize', this.windowResizeEvtListener);
         window.removeEventListener('scroll', this.windowScrollEvtListener);
     };
@@ -40,23 +51,44 @@ var HazelineRunner = /** @class */ (function () {
             });
             return this._$sectionStatus;
         }
+        var isFirstStep = this.currentSectionStepIdx === 0;
+        var isLastStep = (section.steps.length - 1) === this.currentSectionStepIdx;
+        var thisStepUsesTextualOverlay = this.currentSection.steps[this.currentSectionStepIdx].useOverlayInsteadOfLightbox;
+        var previousStepUsedTextualOverlay = this.currentSectionStepIdx === 0
+            ? false
+            : this.currentSection.steps[this.currentSectionStepIdx - 1].useOverlayInsteadOfLightbox;
         this.applyCustomOptionsIfAny(section.globalOptions);
         this.applyCustomOptionsIfAny(this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions, true);
         var wrapElementsDimensions = this.elementManager
             .getWrappingElementsDimensions(section.steps[this.currentSectionStepIdx].elementSelector);
-        if (this.currentSectionStepIdx > 0) {
-            this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
+        if (!isFirstStep && !thisStepUsesTextualOverlay) {
+            if (previousStepUsedTextualOverlay) {
+                this.lightbox.disposeTextualOverlay();
+                this.overlayRenderer.wrapElement(wrapElementsDimensions);
+            }
+            else {
+                this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
+            }
+        }
+        if (thisStepUsesTextualOverlay) {
+            if (!previousStepUsedTextualOverlay) {
+                this.overlayRenderer.dispose();
+            }
+            ;
+            var sub_1 = this.lightbox
+                .placeTextOverlay(this.currentSection.steps[this.currentSectionStepIdx], isLastStep)
+                .subscribe(function () { return sub_1.unsubscribe(); });
         }
         else {
-            this.overlayRenderer.wrapElement(wrapElementsDimensions);
-            this._$sectionStatus.next({
-                runningSection: section,
-                status: tutorial_section_statuses_enum_1.HazelineTutorialSectionStatuses.started,
-                runningStepInSection: section.steps[this.currentSectionStepIdx]
-            });
+            this.lightbox.placeLightbox(element_manager_core_1.HazelineElementManager.getElementBySelector(section.steps[this.currentSectionStepIdx].elementSelector), section.steps[this.currentSectionStepIdx], isLastStep);
         }
-        this.lightbox.placeLightbox(element_manager_core_1.HazelineElementManager.getElementBySelector(section.steps[this.currentSectionStepIdx].elementSelector), section.steps[this.currentSectionStepIdx], (section.steps.length - 1) === this.currentSectionStepIdx);
+        this._$sectionStatus.next({
+            runningSection: section,
+            status: tutorial_section_statuses_enum_1.HazelineTutorialSectionStatuses.started,
+            runningStepInSection: section.steps[this.currentSectionStepIdx]
+        });
         this.startResponsiveListeners();
+        this.overlayRenderer.placeEndTutorialButton();
         return this._$sectionStatus;
     };
     HazelineRunner.prototype.applyCustomOptionsIfAny = function (options, isDynamicOptions) {
@@ -81,6 +113,7 @@ var HazelineRunner = /** @class */ (function () {
         var _this = this;
         this.lightbox.$nextStepRequired()
             .pipe(operators_1.filter(function (res) { return !!res; }), operators_1.filter(function () {
+            console.log('next called');
             if (_this.currentSectionStepIdx === (_this.currentSection.steps.length - 1)) {
                 _this._$sectionStatus.next({
                     runningSection: null,

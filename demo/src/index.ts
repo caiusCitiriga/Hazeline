@@ -7,46 +7,14 @@ window.onload = () => {
         steps: [
             {
                 elementSelector: '#input-1',
-                text: 'This is an awesome input box',
-                dynamicOptions: {
-                    overlay: {
-                        closeBtnText: 'Quit',
-                        overlayCSS: {
-                            background: 'rgba(255, 255, 255, .85)'
-                        }
-                    },
-                    lightbox: {
-                        nextBtnText: '>',
-                        prevBtnText: '<',
-                        lightboxNextBtnCSS: {
-                            border: 'none'
-                        },
-                        lightboxPrevBtnCSS: {
-                            border: 'none'
-                        },
-                        lightboxWrapperCSS: {
-                            boxShadow: '0px 3px 12px -5px #333'
-                        }
-                    }
-                }
+                text: 'Test me out!',
+                useOverlayInsteadOfLightbox: true
             },
             {
                 elementSelector: '#input-2',
-                text: 'This is another awesome input box',
-            },
-            {
-                elementSelector: '#input-3',
-                text: 'This is another awesome input box',
-            },
-        ],
-        globalOptions: {
-            lightbox: {
-                lightboxNextBtnCSS: {
-                    color: 'red'
-                },
-                nextBtnText: 'next'
+                text: 'Test me out in lightbox!',
             }
-        }
+        ],
     });
 
     haze.runTutorial('test');
