@@ -1,7 +1,14 @@
 # Hazeline
 
-A simple, lightweight, framework agnostic tutorial library for **any** web application.<br>
-Made with love in **TypeScript**, but works like a charm even with vanilla **JS**.
+<p align="center">
+A simple, lightweight, <b>framework agnostic</b> tutorial library for <b>any</b> web application.</p>
+<p align="center">
+Made with love in <b>TypeScript</b>, but works like a charm even with vanilla <b>JS</b>.
+</p>
+<p align="center">
+And yes, it works great with <b>Angular</b>!
+</p>
+<br>
 
 ![Hazeline GIF demo](https://github.com/caiusCitiriga/Hazeline/raw/dev/docs/hazeline-demo.gif)
 
