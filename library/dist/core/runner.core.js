@@ -40,17 +40,14 @@ var HazelineRunner = /** @class */ (function () {
             });
             return this._$sectionStatus;
         }
-        var wrapElementsDimensions = this.elementManager.getWrappingElementsDimensions(section.steps[this.currentSectionStepIdx].elementSelector);
+        this.applyCustomOptionsIfAny(section.globalOptions);
+        this.applyCustomOptionsIfAny(this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions, true);
+        var wrapElementsDimensions = this.elementManager
+            .getWrappingElementsDimensions(section.steps[this.currentSectionStepIdx].elementSelector);
         if (this.currentSectionStepIdx > 0) {
-            this.applyCustomOptionsIfAny(this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions, true);
             this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
         }
         else {
-            this.applyCustomOptionsIfAny(section.globalOptions);
-            //  if the tutorial has only one step apply the dynamic options too
-            if (this.currentSection.steps.length - 1 === this.currentSectionStepIdx) {
-                this.applyCustomOptionsIfAny(this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions, true);
-            }
             this.overlayRenderer.wrapElement(wrapElementsDimensions);
             this._$sectionStatus.next({
                 runningSection: section,

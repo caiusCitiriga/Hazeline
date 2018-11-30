@@ -1,7 +1,7 @@
 import { Observable } from 'rxjs';
 import { HazelineTutorialStep } from './interfaces/tutorial-step.interface';
 import { HazelineLightboxOptions } from './interfaces/hazeline-options.interface';
-export declare class HazelineLightbox {
+export declare class HazelineLightboxRenderer {
     private _$nextStepRequired;
     private _$prevStepRequired;
     private tether;
@@ -29,4 +29,4 @@ export declare class HazelineLightbox {
     private createLightbox;
     private styleWholeLigthboxElement;
 }
-//# sourceMappingURL=lightbox.core.d.ts.map
+//# sourceMappingURL=lightbox-renderer.core.d.ts.map

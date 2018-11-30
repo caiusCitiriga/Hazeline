@@ -356,10 +356,10 @@ var HazelineTutorialStatuses;
 
 /***/ }),
 
-/***/ "../library/dist/core/lightbox.core.js":
-/*!*********************************************!*\
-  !*** ../library/dist/core/lightbox.core.js ***!
-  \*********************************************/
+/***/ "../library/dist/core/lightbox-renderer.core.js":
+/*!******************************************************!*\
+  !*** ../library/dist/core/lightbox-renderer.core.js ***!
+  \******************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -374,8 +374,8 @@ var rxjs_1 = __webpack_require__(/*! rxjs */ "../library/node_modules/rxjs/_esm5
 var elements_ids_enum_1 = __webpack_require__(/*! ./enums/elements-ids.enum */ "../library/dist/core/enums/elements-ids.enum.js");
 var elements_defaults_const_1 = __webpack_require__(/*! ./consts/elements-defaults.const */ "../library/dist/core/consts/elements-defaults.const.js");
 var styles_manager_core_1 = __webpack_require__(/*! ./styles-manager.core */ "../library/dist/core/styles-manager.core.js");
-var HazelineLightbox = /** @class */ (function () {
-    function HazelineLightbox() {
+var HazelineLightboxRenderer = /** @class */ (function () {
+    function HazelineLightboxRenderer() {
         var _this = this;
         this._$nextStepRequired = new rxjs_1.Subject();
         this._$prevStepRequired = new rxjs_1.Subject();
@@ -399,9 +399,9 @@ var HazelineLightbox = /** @class */ (function () {
             return styles_manager_core_1.HazelineStylesManager.styleElement(_this.lightboxNextBtn, _this.ligthboxOptions.lightboxNextBtnHoverCSS || elements_defaults_const_1.HazelineElementsDefaults.lightbox.lightboxNextBtnHoverCSS);
         };
     }
-    HazelineLightbox.prototype.$nextStepRequired = function () { return this._$nextStepRequired; };
-    HazelineLightbox.prototype.$prevStepRequired = function () { return this._$prevStepRequired; };
-    HazelineLightbox.prototype.dispose = function () {
+    HazelineLightboxRenderer.prototype.$nextStepRequired = function () { return this._$nextStepRequired; };
+    HazelineLightboxRenderer.prototype.$prevStepRequired = function () { return this._$prevStepRequired; };
+    HazelineLightboxRenderer.prototype.dispose = function () {
         if (document.getElementById(elements_ids_enum_1.HazelineElementsIds.lightbox)) {
             this.lightboxPrevBtn.removeEventListener('mouseenter', this.prevBtnMouseEnterEvtListener);
             this.lightboxPrevBtn.removeEventListener('mouseleave', this.prevBtnMouseLeaveEvtListener);
@@ -413,7 +413,7 @@ var HazelineLightbox = /** @class */ (function () {
             document.body.removeChild(this.lightboxWrp);
         }
     };
-    HazelineLightbox.prototype.placeLightbox = function (target, sectionStep, isLastStep) {
+    HazelineLightboxRenderer.prototype.placeLightbox = function (target, sectionStep, isLastStep) {
         if (isLastStep === void 0) { isLastStep = false; }
         this.lightboxWrp = document.getElementById(elements_ids_enum_1.HazelineElementsIds.lightbox);
         if (!this.lightboxWrp) {
@@ -424,7 +424,7 @@ var HazelineLightbox = /** @class */ (function () {
         this.styleWholeLigthboxElement();
         this.updateLightboxPlacement(target);
     };
-    HazelineLightbox.prototype.setDynamicOptions = function (opts) {
+    HazelineLightboxRenderer.prototype.setDynamicOptions = function (opts) {
         var _this = this;
         Object.keys(opts).forEach(function (optKey) {
             if (typeof opts[optKey] === 'object') {
@@ -436,7 +436,7 @@ var HazelineLightbox = /** @class */ (function () {
             }
         });
     };
-    HazelineLightbox.prototype.setGlobalOptions = function (opts) {
+    HazelineLightboxRenderer.prototype.setGlobalOptions = function (opts) {
         var _this = this;
         Object.keys(opts).forEach(function (optKey) {
             if (typeof opts[optKey] === 'object') {
@@ -448,7 +448,7 @@ var HazelineLightbox = /** @class */ (function () {
             }
         });
     };
-    HazelineLightbox.prototype.updateLightboxPlacement = function (target) {
+    HazelineLightboxRenderer.prototype.updateLightboxPlacement = function (target) {
         var offset = this.ligthboxOptions.positioning.offset;
         var attachment = this.ligthboxOptions.positioning.attachment;
         var constraints = this.ligthboxOptions.positioning.constraints;
@@ -475,7 +475,7 @@ var HazelineLightbox = /** @class */ (function () {
         }
         this.tether.position();
     };
-    HazelineLightbox.prototype.applyTexts = function (sectionStep, isLastStep) {
+    HazelineLightboxRenderer.prototype.applyTexts = function (sectionStep, isLastStep) {
         if (isLastStep === void 0) { isLastStep = false; }
         this.lightboxTextWrp.innerHTML = sectionStep.text;
         this.lightboxPrevBtn.innerHTML = this.ligthboxOptions.prevBtnText;
@@ -483,7 +483,7 @@ var HazelineLightbox = /** @class */ (function () {
             ? this.ligthboxOptions.lastStepNextBtnText
             : this.ligthboxOptions.nextBtnText;
     };
-    HazelineLightbox.prototype.attachNextEventListeneres = function () {
+    HazelineLightboxRenderer.prototype.attachNextEventListeneres = function () {
         this.lightboxPrevBtn.addEventListener('click', this.prevBtnClickEvtListener);
         this.lightboxNextBtn.addEventListener('click', this.nextBtnClickEvtListener);
         //  Prev btn hover modes
@@ -493,7 +493,7 @@ var HazelineLightbox = /** @class */ (function () {
         this.lightboxNextBtn.addEventListener('mouseenter', this.nextBtnMouseEnterEvtListener);
         this.lightboxNextBtn.addEventListener('mouseleave', this.nextBtnMouseLeaveEvtListener);
     };
-    HazelineLightbox.prototype.createLightbox = function () {
+    HazelineLightboxRenderer.prototype.createLightbox = function () {
         //  Create the wrapper elements
         this.lightboxWrp = document.createElement('div');
         this.lightboxTextWrp = document.createElement('div');
@@ -515,7 +515,7 @@ var HazelineLightbox = /** @class */ (function () {
         //  Finally attach the listeners for next and previous buttons
         this.attachNextEventListeneres();
     };
-    HazelineLightbox.prototype.styleWholeLigthboxElement = function () {
+    HazelineLightboxRenderer.prototype.styleWholeLigthboxElement = function () {
         styles_manager_core_1.HazelineStylesManager.styleElement(this.lightboxWrp, this.ligthboxOptions.lightboxWrapperCSS);
         styles_manager_core_1.HazelineStylesManager.styleElement(this.lightboxWrp, this.ligthboxOptions.lightboxWrapperCSS);
         styles_manager_core_1.HazelineStylesManager.styleElement(this.lightboxNextBtn, this.ligthboxOptions.lightboxNextBtnCSS);
@@ -523,10 +523,10 @@ var HazelineLightbox = /** @class */ (function () {
         styles_manager_core_1.HazelineStylesManager.styleElement(this.lightboxTextWrp, this.ligthboxOptions.lightboxTextWrapperCSS);
         styles_manager_core_1.HazelineStylesManager.styleElement(this.lightboxControlsWrp, this.ligthboxOptions.lightboxControlsWrapperCSS);
     };
-    return HazelineLightbox;
+    return HazelineLightboxRenderer;
 }());
-exports.HazelineLightbox = HazelineLightbox;
-//# sourceMappingURL=lightbox.core.js.map
+exports.HazelineLightboxRenderer = HazelineLightboxRenderer;
+//# sourceMappingURL=lightbox-renderer.core.js.map
 
 /***/ }),
 
@@ -741,17 +741,14 @@ var HazelineRunner = /** @class */ (function () {
             });
             return this._$sectionStatus;
         }
-        var wrapElementsDimensions = this.elementManager.getWrappingElementsDimensions(section.steps[this.currentSectionStepIdx].elementSelector);
+        this.applyCustomOptionsIfAny(section.globalOptions);
+        this.applyCustomOptionsIfAny(this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions, true);
+        var wrapElementsDimensions = this.elementManager
+            .getWrappingElementsDimensions(section.steps[this.currentSectionStepIdx].elementSelector);
         if (this.currentSectionStepIdx > 0) {
-            this.applyCustomOptionsIfAny(this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions, true);
             this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
         }
         else {
-            this.applyCustomOptionsIfAny(section.globalOptions);
-            //  if the tutorial has only one step apply the dynamic options too
-            if (this.currentSection.steps.length - 1 === this.currentSectionStepIdx) {
-                this.applyCustomOptionsIfAny(this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions, true);
-            }
             this.overlayRenderer.wrapElement(wrapElementsDimensions);
             this._$sectionStatus.next({
                 runningSection: section,
@@ -861,16 +858,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var operators_1 = __webpack_require__(/*! rxjs/operators */ "../library/node_modules/rxjs/_esm5/operators/index.js");
 var rxjs_1 = __webpack_require__(/*! rxjs */ "../library/node_modules/rxjs/_esm5/index.js");
 var runner_core_1 = __webpack_require__(/*! ./core/runner.core */ "../library/dist/core/runner.core.js");
-var lightbox_core_1 = __webpack_require__(/*! ./core/lightbox.core */ "../library/dist/core/lightbox.core.js");
-var overlay_renderer_core_1 = __webpack_require__(/*! ./core/overlay-renderer.core */ "../library/dist/core/overlay-renderer.core.js");
 var element_manager_core_1 = __webpack_require__(/*! ./core/element-manager.core */ "../library/dist/core/element-manager.core.js");
+var overlay_renderer_core_1 = __webpack_require__(/*! ./core/overlay-renderer.core */ "../library/dist/core/overlay-renderer.core.js");
+var lightbox_renderer_core_1 = __webpack_require__(/*! ./core/lightbox-renderer.core */ "../library/dist/core/lightbox-renderer.core.js");
 var tutorial_statuses_enum_1 = __webpack_require__(/*! ./core/enums/tutorial-statuses.enum */ "../library/dist/core/enums/tutorial-statuses.enum.js");
 var tutorial_section_statuses_enum_1 = __webpack_require__(/*! ./core/enums/tutorial-section-statuses.enum */ "../library/dist/core/enums/tutorial-section-statuses.enum.js");
 var Hazeline = /** @class */ (function () {
     function Hazeline() {
         this._$tutorialStatus = new rxjs_1.BehaviorSubject(null);
         this.tutorialSections = [];
-        this.lightbox = new lightbox_core_1.HazelineLightbox();
+        this.lightbox = new lightbox_renderer_core_1.HazelineLightboxRenderer();
         this.renderer = new overlay_renderer_core_1.HazelineOverlayRenderer();
         this.elementManager = new element_manager_core_1.HazelineElementManager();
         this.runner = new runner_core_1.HazelineRunner(this.lightbox, this.renderer, this.elementManager);
@@ -15513,7 +15510,23 @@ window.onload = function () {
                     }
                 }
             },
+            {
+                elementSelector: '#input-2',
+                text: 'This is another awesome input box',
+            },
+            {
+                elementSelector: '#input-3',
+                text: 'This is another awesome input box',
+            },
         ],
+        globalOptions: {
+            lightbox: {
+                lightboxNextBtnCSS: {
+                    color: 'red'
+                },
+                nextBtnText: 'next'
+            }
+        }
     });
     haze.runTutorial('test');
 };

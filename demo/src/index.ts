@@ -30,7 +30,23 @@ window.onload = () => {
                     }
                 }
             },
+            {
+                elementSelector: '#input-2',
+                text: 'This is another awesome input box',
+            },
+            {
+                elementSelector: '#input-3',
+                text: 'This is another awesome input box',
+            },
         ],
+        globalOptions: {
+            lightbox: {
+                lightboxNextBtnCSS: {
+                    color: 'red'
+                },
+                nextBtnText: 'next'
+            }
+        }
     });
 
     haze.runTutorial('test');

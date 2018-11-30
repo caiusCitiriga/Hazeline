@@ -3,16 +3,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var operators_1 = require("rxjs/operators");
 var rxjs_1 = require("rxjs");
 var runner_core_1 = require("./core/runner.core");
-var lightbox_core_1 = require("./core/lightbox.core");
-var overlay_renderer_core_1 = require("./core/overlay-renderer.core");
 var element_manager_core_1 = require("./core/element-manager.core");
+var overlay_renderer_core_1 = require("./core/overlay-renderer.core");
+var lightbox_renderer_core_1 = require("./core/lightbox-renderer.core");
 var tutorial_statuses_enum_1 = require("./core/enums/tutorial-statuses.enum");
 var tutorial_section_statuses_enum_1 = require("./core/enums/tutorial-section-statuses.enum");
 var Hazeline = /** @class */ (function () {
     function Hazeline() {
         this._$tutorialStatus = new rxjs_1.BehaviorSubject(null);
         this.tutorialSections = [];
-        this.lightbox = new lightbox_core_1.HazelineLightbox();
+        this.lightbox = new lightbox_renderer_core_1.HazelineLightboxRenderer();
         this.renderer = new overlay_renderer_core_1.HazelineOverlayRenderer();
         this.elementManager = new element_manager_core_1.HazelineElementManager();
         this.runner = new runner_core_1.HazelineRunner(this.lightbox, this.renderer, this.elementManager);
