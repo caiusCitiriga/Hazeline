@@ -25,7 +25,6 @@ export interface HazelineLightboxOptions {
     positioning?: {
         offset?: string;
         attachment?: string;
-        classPrefix?: string;
         targetOffset?: string;
         targetAttachment?: string;
         constraints?: ITetherConstraint[];

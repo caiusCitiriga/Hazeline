@@ -133,9 +133,19 @@ export class HazelineLightboxRenderer {
         this.textualOverlayParagraph.innerHTML = sectionStep.text;
         this.textualOverlayParagraph = HazelineStylesManager.styleElement<HTMLDivElement>(this.textualOverlayParagraph, this.textualOverlayOptions.paragraphCSS);
 
+        if (!this.textualOverlayOptions.disableTextFadeIn) {
+            this.textualOverlayParagraph.style.transition = `all ${this.textualOverlayOptions.textFadeInTimeInMs}ms ease-in-out`;
+            this.textualOverlayParagraph.style.transitionProperty = this.textualOverlayOptions.paragraphCSS.transitionProperty;
+        }
+
         this.textualOverlay = document.createElement('div');
         this.textualOverlay.id = HazelineElementsIds.lightboxTextualOverlay;
         this.textualOverlay = HazelineStylesManager.styleElement<HTMLDivElement>(this.textualOverlay, this.textualOverlayOptions.overlayCSS);
+
+        if (!this.textualOverlayOptions.disableBgFadeIn) {
+            this.textualOverlay.style.transition = `all ${this.textualOverlayOptions.bgFadeInTimeInMs}ms ease-in-out`;
+            this.textualOverlay.style.transitionProperty = this.textualOverlayOptions.overlayCSS.transitionProperty;
+        }
 
         if (!this.textualOverlayOptions.hideButtons) {
             this.textualOverlay.appendChild(this.lightboxPrevBtn);
@@ -178,12 +188,12 @@ export class HazelineLightboxRenderer {
             },
                 this.textualOverlayOptions.disableTextFadeIn
                     ? 0
-                    : this.textualOverlayOptions.textFadeInTimeInMs
+                    : 10
             );
         },
             this.textualOverlayOptions.disableBgFadeIn
                 ? 0
-                : this.textualOverlayOptions.bgFadeInTimeInMs
+                : 10
         );
 
         return overlayPlaced;

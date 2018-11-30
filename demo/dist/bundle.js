@@ -529,9 +529,17 @@ var HazelineLightboxRenderer = /** @class */ (function () {
         this.textualOverlayParagraph = document.createElement('div');
         this.textualOverlayParagraph.innerHTML = sectionStep.text;
         this.textualOverlayParagraph = styles_manager_core_1.HazelineStylesManager.styleElement(this.textualOverlayParagraph, this.textualOverlayOptions.paragraphCSS);
+        if (!this.textualOverlayOptions.disableTextFadeIn) {
+            this.textualOverlayParagraph.style.transition = "all " + this.textualOverlayOptions.textFadeInTimeInMs + "ms ease-in-out";
+            this.textualOverlayParagraph.style.transitionProperty = this.textualOverlayOptions.paragraphCSS.transitionProperty;
+        }
         this.textualOverlay = document.createElement('div');
         this.textualOverlay.id = elements_ids_enum_1.HazelineElementsIds.lightboxTextualOverlay;
         this.textualOverlay = styles_manager_core_1.HazelineStylesManager.styleElement(this.textualOverlay, this.textualOverlayOptions.overlayCSS);
+        if (!this.textualOverlayOptions.disableBgFadeIn) {
+            this.textualOverlay.style.transition = "all " + this.textualOverlayOptions.bgFadeInTimeInMs + "ms ease-in-out";
+            this.textualOverlay.style.transitionProperty = this.textualOverlayOptions.overlayCSS.transitionProperty;
+        }
         if (!this.textualOverlayOptions.hideButtons) {
             this.textualOverlay.appendChild(this.lightboxPrevBtn);
             this.textualOverlay.appendChild(this.textualOverlayParagraph);
@@ -572,10 +580,10 @@ var HazelineLightboxRenderer = /** @class */ (function () {
                 overlayPlaced.complete();
             }, _this.textualOverlayOptions.disableTextFadeIn
                 ? 0
-                : _this.textualOverlayOptions.textFadeInTimeInMs);
+                : 10);
         }, this.textualOverlayOptions.disableBgFadeIn
             ? 0
-            : this.textualOverlayOptions.bgFadeInTimeInMs);
+            : 10);
         return overlayPlaced;
     };
     HazelineLightboxRenderer.prototype.setLightboxDynamicOptions = function (opts) {
@@ -15806,7 +15814,9 @@ window.onload = function () {
             }
         ],
     });
-    haze.runTutorial('test');
+    setTimeout(function () {
+        haze.runTutorial('test');
+    }, 2000);
 };
 
 

@@ -18,6 +18,7 @@ export interface HazelineLightboxOptions {
     nextBtnText?: string;
     prevBtnText?: string;
     lastStepNextBtnText?: string;
+
     lightboxWrapperCSS?: HazelineCSSRules;
     lightboxNextBtnCSS?: HazelineCSSRules;
     lightboxPrevBtnCSS?: HazelineCSSRules;
@@ -30,7 +31,6 @@ export interface HazelineLightboxOptions {
     positioning?: {
         offset?: string;
         attachment?: string;
-        classPrefix?: string;
         targetOffset?: string;
         targetAttachment?: string;
         constraints?: ITetherConstraint[];

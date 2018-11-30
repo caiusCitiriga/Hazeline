@@ -50,5 +50,7 @@ window.onload = () => {
         ],
     });
 
-    haze.runTutorial('test');
+    setTimeout(() => {
+        haze.runTutorial('test');
+    }, 2000);
 }
