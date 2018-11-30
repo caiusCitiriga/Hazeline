@@ -171,7 +171,7 @@ exports.HazelineElementsDefaults = {
             color: '#fff',
             cursor: 'pointer',
             background: '#ff7a00',
-        }
+        },
     },
     overlay: {
         closeBtnText: 'End tutorial',
@@ -196,6 +196,51 @@ exports.HazelineElementsDefaults = {
             background: 'transparent',
             border: '2px solid #E53935',
         },
+    },
+    textualOverlay: {
+        bgFadeInTimeInMs: 300,
+        disableBgFadeIn: false,
+        disableTextFadeIn: false,
+        textFadeInTimeInMs: 1000,
+        overlayBgFadeInOpacity: 1,
+        overlayTextFadeInColor: '#fff',
+        overlayCSS: {
+            top: '0',
+            left: '0',
+            opacity: '0',
+            zIndex: '99999',
+            display: 'flex',
+            fontSize: '30px',
+            position: 'fixed',
+            paddingLeft: '8px',
+            paddingRight: '8px',
+            textAlign: 'center',
+            color: 'transparent',
+            alignItems: 'center',
+            background: 'rgba(0,0,0,.93)',
+            width: window.innerWidth + "px",
+            justifyContent: 'space-between',
+            height: window.innerHeight + "px",
+            transition: 'all 120ms ease-in-out',
+            transitionProperty: 'color, opacity',
+            lineHeight: window.innerHeight.toString() + "px",
+        },
+        prevNextButtonsCSS: {
+            width: '150px',
+            color: '#fff',
+            opacity: '.3',
+            height: '80px',
+            fontSize: '20px',
+            cursor: 'pointer',
+            lineHeight: '50px',
+            textAlign: 'center',
+            border: '2px solid #ff7a00',
+            backgroundColor: 'transparent',
+            transition: 'all 200ms ease-in-out',
+        },
+        prevNextButtonsHoverCSS: {
+            opacity: '1'
+        }
     }
 };
 //# sourceMappingURL=elements-defaults.const.js.map
@@ -381,6 +426,7 @@ var HazelineLightboxRenderer = /** @class */ (function () {
         this._$nextStepRequired = new rxjs_1.Subject();
         this._$prevStepRequired = new rxjs_1.Subject();
         this.ligthboxOptions = elements_defaults_const_1.HazelineElementsDefaults.lightbox;
+        this.textualOverlayOptions = elements_defaults_const_1.HazelineElementsDefaults.textualOverlay;
         this.prevBtnClickEvtListener = function () {
             return _this._$prevStepRequired.next(true);
         };
@@ -402,25 +448,27 @@ var HazelineLightboxRenderer = /** @class */ (function () {
     }
     HazelineLightboxRenderer.prototype.$nextStepRequired = function () { return this._$nextStepRequired; };
     HazelineLightboxRenderer.prototype.$prevStepRequired = function () { return this._$prevStepRequired; };
-    HazelineLightboxRenderer.prototype.dispose = function () {
+    HazelineLightboxRenderer.prototype.dispose = function (detachListeners) {
+        if (detachListeners === void 0) { detachListeners = false; }
         if (document.getElementById(elements_ids_enum_1.HazelineElementsIds.lightbox)) {
-            this.lightboxPrevBtn.removeEventListener('mouseenter', this.prevBtnMouseEnterEvtListener);
-            this.lightboxPrevBtn.removeEventListener('mouseleave', this.prevBtnMouseLeaveEvtListener);
-            this.lightboxNextBtn.removeEventListener('mouseenter', this.nextBtnMouseEnterEvtListener);
-            this.lightboxNextBtn.removeEventListener('mouseleave', this.nextBtnMouseLeaveEvtListener);
+            if (detachListeners) {
+                this.detachNextPrevEventsListeneres();
+                this.detachNextPrevHoverModesEventsListeners();
+            }
             this.tether.disable();
             this.tether.destroy();
             this.tether = null;
             document.body.removeChild(this.lightboxWrp);
         }
     };
-    HazelineLightboxRenderer.prototype.disposeTextualOverlay = function () {
+    HazelineLightboxRenderer.prototype.disposeTextualOverlay = function (detachListeners) {
         var _this = this;
+        if (detachListeners === void 0) { detachListeners = false; }
         if (document.getElementById(elements_ids_enum_1.HazelineElementsIds.lightboxTextualOverlay)) {
-            this.lightboxPrevBtn.removeEventListener('mouseenter', this.prevBtnMouseEnterEvtListener);
-            this.lightboxPrevBtn.removeEventListener('mouseleave', this.prevBtnMouseLeaveEvtListener);
-            this.lightboxNextBtn.removeEventListener('mouseenter', this.nextBtnMouseEnterEvtListener);
-            this.lightboxNextBtn.removeEventListener('mouseleave', this.nextBtnMouseLeaveEvtListener);
+            if (detachListeners) {
+                this.detachNextPrevHoverModesEventsListeners();
+            }
+            this.textualOverlay.removeEventListener('click', this.nextBtnClickEvtListener);
             //  Restore the original lightbox event listeners
             this.prevBtnMouseLeaveEvtListener = function () {
                 return styles_manager_core_1.HazelineStylesManager.styleElement(_this.lightboxPrevBtn, _this.ligthboxOptions.lightboxPrevBtnCSS || elements_defaults_const_1.HazelineElementsDefaults.lightbox.lightboxPrevBtnCSS);
@@ -455,81 +503,55 @@ var HazelineLightboxRenderer = /** @class */ (function () {
         var _this = this;
         if (isLastStep === void 0) { isLastStep = false; }
         var overlayPlaced = new rxjs_1.Subject();
-        var buttonsStyle = {
-            width: '150px',
-            color: '#fff',
-            opacity: '.3',
-            height: '80px',
-            fontSize: '20px',
-            cursor: 'pointer',
-            lineHeight: '50px',
-            textAlign: 'center',
-            border: '2px solid #ff7a00',
-            backgroundColor: 'transparent',
-            transition: 'all 200ms ease-in-out',
-        };
-        var buttonsHoverStyle = {
-            opacity: '1'
-        };
-        var overlayStyle = {
-            top: '0',
-            left: '0',
-            opacity: '0',
-            display: 'flex',
-            fontSize: '30px',
-            position: 'fixed',
-            paddingLeft: '8px',
-            paddingRight: '8px',
-            textAlign: 'center',
-            color: 'transparent',
-            alignItems: 'center',
-            background: 'rgba(0,0,0,.93)',
-            width: window.innerWidth + "px",
-            justifyContent: 'space-between',
-            height: window.innerHeight + "px",
-            transition: 'all 120ms ease-in-out',
-            transitionProperty: 'color, opacity',
-            lineHeight: window.innerHeight.toString() + "px",
-            zIndex: elements_defaults_const_1.HazelineElementsDefaults.overlay.overlayCSS.zIndex,
-        };
         this.createLightboxButtons();
         this.setButttonsIds();
         this.lightboxPrevBtn.innerText = this.ligthboxOptions.prevBtnText;
         this.lightboxNextBtn.innerText = isLastStep ? this.ligthboxOptions.lastStepNextBtnText : this.ligthboxOptions.nextBtnText;
-        this.lightboxNextBtn = styles_manager_core_1.HazelineStylesManager.styleElement(this.lightboxNextBtn, buttonsStyle);
-        this.lightboxPrevBtn = styles_manager_core_1.HazelineStylesManager.styleElement(this.lightboxPrevBtn, buttonsStyle);
+        this.lightboxNextBtn = styles_manager_core_1.HazelineStylesManager.styleElement(this.lightboxNextBtn, this.textualOverlayOptions.prevNextButtonsCSS);
+        this.lightboxPrevBtn = styles_manager_core_1.HazelineStylesManager.styleElement(this.lightboxPrevBtn, this.textualOverlayOptions.prevNextButtonsCSS);
         this.attachNextPrevEventsListeneres();
         var text = document.createElement('p');
         text.innerText = sectionStep.text;
         this.textualOverlay = document.createElement('div');
         this.textualOverlay.id = elements_ids_enum_1.HazelineElementsIds.lightboxTextualOverlay;
-        this.textualOverlay = styles_manager_core_1.HazelineStylesManager.styleElement(this.textualOverlay, overlayStyle);
-        this.textualOverlay.appendChild(this.lightboxPrevBtn);
+        this.textualOverlay = styles_manager_core_1.HazelineStylesManager.styleElement(this.textualOverlay, this.textualOverlayOptions.overlayCSS);
+        if (!this.textualOverlayOptions.hideButtons) {
+            this.textualOverlay.appendChild(this.lightboxPrevBtn);
+        }
         this.textualOverlay.appendChild(text);
-        this.textualOverlay.appendChild(this.lightboxNextBtn);
+        if (!this.textualOverlayOptions.hideButtons) {
+            this.textualOverlay.appendChild(this.lightboxNextBtn);
+        }
+        if (this.textualOverlayOptions.hideButtons || this.textualOverlayOptions.clickAnywhereForNextStep) {
+            this.textualOverlay.addEventListener('click', this.nextBtnClickEvtListener);
+        }
         this.dispose();
         document.body.prepend(this.textualOverlay);
-        setTimeout(function () { return _this.textualOverlay.style.opacity = '1'; }, 300);
+        setTimeout(function () { return _this.textualOverlay.style.opacity = _this.textualOverlayOptions.overlayBgFadeInOpacity.toString(); }, this.textualOverlayOptions.disableBgFadeIn
+            ? 0
+            : this.textualOverlayOptions.bgFadeInTimeInMs);
         setTimeout(function () {
-            _this.textualOverlay.style.color = '#fff';
+            _this.textualOverlay.style.color = _this.textualOverlayOptions.overlayTextFadeInColor;
             _this.prevBtnMouseEnterEvtListener = function () {
-                return _this.lightboxPrevBtn = styles_manager_core_1.HazelineStylesManager.styleElement(_this.lightboxPrevBtn, buttonsHoverStyle);
+                return _this.lightboxPrevBtn = styles_manager_core_1.HazelineStylesManager.styleElement(_this.lightboxPrevBtn, _this.textualOverlayOptions.prevNextButtonsHoverCSS);
             };
             _this.nextBtnMouseEnterEvtListener = function () {
-                return _this.lightboxNextBtn = styles_manager_core_1.HazelineStylesManager.styleElement(_this.lightboxNextBtn, buttonsHoverStyle);
+                return _this.lightboxNextBtn = styles_manager_core_1.HazelineStylesManager.styleElement(_this.lightboxNextBtn, _this.textualOverlayOptions.prevNextButtonsHoverCSS);
             };
             _this.nextBtnMouseLeaveEvtListener = function () {
-                return _this.lightboxNextBtn = styles_manager_core_1.HazelineStylesManager.styleElement(_this.lightboxNextBtn, buttonsStyle);
+                return _this.lightboxNextBtn = styles_manager_core_1.HazelineStylesManager.styleElement(_this.lightboxNextBtn, _this.textualOverlayOptions.prevNextButtonsCSS);
             };
             _this.prevBtnMouseLeaveEvtListener = function () {
-                return _this.lightboxPrevBtn = styles_manager_core_1.HazelineStylesManager.styleElement(_this.lightboxPrevBtn, buttonsStyle);
+                return _this.lightboxPrevBtn = styles_manager_core_1.HazelineStylesManager.styleElement(_this.lightboxPrevBtn, _this.textualOverlayOptions.prevNextButtonsCSS);
             };
             _this.attachNextPrevHoverModesEventsListeners();
             overlayPlaced.next(true);
-        }, 1000);
+        }, this.textualOverlayOptions.disableTextFadeIn
+            ? 0
+            : this.textualOverlayOptions.textFadeInTimeInMs);
         return overlayPlaced;
     };
-    HazelineLightboxRenderer.prototype.setDynamicOptions = function (opts) {
+    HazelineLightboxRenderer.prototype.setLightboxDynamicOptions = function (opts) {
         var _this = this;
         Object.keys(opts).forEach(function (optKey) {
             if (typeof opts[optKey] === 'object') {
@@ -541,15 +563,39 @@ var HazelineLightboxRenderer = /** @class */ (function () {
             }
         });
     };
-    HazelineLightboxRenderer.prototype.setGlobalOptions = function (opts) {
+    HazelineLightboxRenderer.prototype.setTextualOverlayDynamicOptions = function (opts) {
         var _this = this;
         Object.keys(opts).forEach(function (optKey) {
             if (typeof opts[optKey] === 'object') {
-                _this.ligthboxOptions[optKey] = Object.assign({}, elements_defaults_const_1.HazelineElementsDefaults.lightbox[optKey], opts[optKey]);
+                _this.textualOverlayOptions[optKey] = Object.assign({}, _this.textualOverlayOptions[optKey], opts[optKey]);
+                return;
+            }
+            if (!!opts[optKey]) {
+                _this.textualOverlayOptions[optKey] = opts[optKey];
+            }
+        });
+    };
+    HazelineLightboxRenderer.prototype.setLightboxGlobalOptions = function (opts) {
+        var _this = this;
+        Object.keys(opts).forEach(function (optKey) {
+            if (typeof opts[optKey] === 'object') {
+                _this.ligthboxOptions[optKey] = Object.assign({}, elements_defaults_const_1.HazelineElementsDefaults.textualOverlay[optKey], opts[optKey]);
                 return;
             }
             if (!!opts[optKey]) {
                 _this.ligthboxOptions[optKey] = opts[optKey];
+            }
+        });
+    };
+    HazelineLightboxRenderer.prototype.setTextualOverlayGlobalOptions = function (opts) {
+        var _this = this;
+        Object.keys(opts).forEach(function (optKey) {
+            if (typeof opts[optKey] === 'object') {
+                _this.textualOverlayOptions[optKey] = Object.assign({}, elements_defaults_const_1.HazelineElementsDefaults.textualOverlay[optKey], opts[optKey]);
+                return;
+            }
+            if (!!opts[optKey]) {
+                _this.textualOverlayOptions[optKey] = opts[optKey];
             }
         });
     };
@@ -599,6 +645,10 @@ var HazelineLightboxRenderer = /** @class */ (function () {
         this.lightboxPrevBtn.addEventListener('click', this.prevBtnClickEvtListener);
         this.lightboxNextBtn.addEventListener('click', this.nextBtnClickEvtListener);
     };
+    HazelineLightboxRenderer.prototype.detachNextPrevEventsListeneres = function () {
+        this.lightboxPrevBtn.removeEventListener('click', this.prevBtnClickEvtListener);
+        this.lightboxNextBtn.removeEventListener('click', this.nextBtnClickEvtListener);
+    };
     HazelineLightboxRenderer.prototype.attachNextPrevHoverModesEventsListeners = function () {
         //  Prev btn hover modes
         this.lightboxPrevBtn.addEventListener('mouseenter', this.prevBtnMouseEnterEvtListener);
@@ -606,6 +656,14 @@ var HazelineLightboxRenderer = /** @class */ (function () {
         //  Next btn hover modes
         this.lightboxNextBtn.addEventListener('mouseenter', this.nextBtnMouseEnterEvtListener);
         this.lightboxNextBtn.addEventListener('mouseleave', this.nextBtnMouseLeaveEvtListener);
+    };
+    HazelineLightboxRenderer.prototype.detachNextPrevHoverModesEventsListeners = function () {
+        //  Prev btn hover modes
+        this.lightboxPrevBtn.removeEventListener('mouseenter', this.prevBtnMouseEnterEvtListener);
+        this.lightboxPrevBtn.removeEventListener('mouseleave', this.prevBtnMouseLeaveEvtListener);
+        //  Next btn hover modes
+        this.lightboxNextBtn.removeEventListener('mouseenter', this.nextBtnMouseEnterEvtListener);
+        this.lightboxNextBtn.removeEventListener('mouseleave', this.nextBtnMouseLeaveEvtListener);
     };
     HazelineLightboxRenderer.prototype.createLightbox = function () {
         this.createLightboxWrappers();
@@ -681,15 +739,21 @@ var HazelineOverlayRenderer = /** @class */ (function () {
     HazelineOverlayRenderer.prototype.$premartureEndRequired = function () {
         return this._$prematureEndRequired;
     };
+    HazelineOverlayRenderer.prototype.dispose = function () {
+        this.detachEndTutorialBtnEventListeners();
+        this.destroyPreviousElementsIfAny();
+    };
     HazelineOverlayRenderer.prototype.placeEndTutorialButton = function () {
         this.createEndTutorialButton();
         this.applyEndTutorialBtnOptions();
         this.attachEndTutorialButtonToBody();
         this.attachEndTutorialBtnEventsListeners();
     };
-    HazelineOverlayRenderer.prototype.dispose = function () {
-        this.detachEventListeners();
-        this.destroyPreviousElementsIfAny();
+    HazelineOverlayRenderer.prototype.removeEndTutorialButton = function () {
+        if (!!document.getElementById(elements_ids_enum_1.HazelineElementsIds.endTutorialButton)) {
+            this.detachEndTutorialBtnEventListeners();
+            document.body.removeChild(document.getElementById(elements_ids_enum_1.HazelineElementsIds.endTutorialButton));
+        }
     };
     HazelineOverlayRenderer.prototype.setDynamicOptions = function (overlayOpts) {
         var _this = this;
@@ -757,7 +821,7 @@ var HazelineOverlayRenderer = /** @class */ (function () {
         this.endTutorialBtn.addEventListener('mouseleave', this.endTutorialBtnMouseLeaveEvtListener);
         this.endTutorialBtn.addEventListener('mouseenter', this.endTutorialBtnMouseEnterEvtListener);
     };
-    HazelineOverlayRenderer.prototype.detachEventListeners = function () {
+    HazelineOverlayRenderer.prototype.detachEndTutorialBtnEventListeners = function () {
         if (this.endTutorialBtn) {
             this.endTutorialBtn.removeEventListener('click', this.endTutorialBtnClickEvtListener);
             this.endTutorialBtn.removeEventListener('mouseleave', this.endTutorialBtnMouseLeaveEvtListener);
@@ -879,9 +943,9 @@ var HazelineRunner = /** @class */ (function () {
         this.startNextPrevButtonClicks();
     }
     HazelineRunner.prototype.endTutorial = function () {
-        this.lightbox.dispose();
+        this.lightbox.dispose(true);
         this.overlayRenderer.dispose();
-        this.lightbox.disposeTextualOverlay();
+        this.lightbox.disposeTextualOverlay(true);
         window.removeEventListener('resize', this.windowResizeEvtListener);
         window.removeEventListener('scroll', this.windowScrollEvtListener);
     };
@@ -941,10 +1005,16 @@ var HazelineRunner = /** @class */ (function () {
             return;
         }
         if (options.lightbox && isDynamicOptions) {
-            this.lightbox.setDynamicOptions(options.lightbox);
+            this.lightbox.setLightboxDynamicOptions(options.lightbox);
         }
         if (options.lightbox && !isDynamicOptions) {
-            this.lightbox.setGlobalOptions(options.lightbox);
+            this.lightbox.setLightboxGlobalOptions(options.lightbox);
+        }
+        if (options.textualOverlay && isDynamicOptions) {
+            this.lightbox.setTextualOverlayDynamicOptions(options.textualOverlay);
+        }
+        if (options.textualOverlay && !isDynamicOptions) {
+            this.lightbox.setTextualOverlayGlobalOptions(options.textualOverlay);
         }
         if (options.overlay && isDynamicOptions) {
             this.overlayRenderer.setDynamicOptions(options.overlay);
@@ -957,7 +1027,6 @@ var HazelineRunner = /** @class */ (function () {
         var _this = this;
         this.lightbox.$nextStepRequired()
             .pipe(operators_1.filter(function (res) { return !!res; }), operators_1.filter(function () {
-            console.log('next called');
             if (_this.currentSectionStepIdx === (_this.currentSection.steps.length - 1)) {
                 _this._$sectionStatus.next({
                     runningSection: null,
@@ -967,7 +1036,7 @@ var HazelineRunner = /** @class */ (function () {
                 return false;
             }
             return true;
-        }), operators_1.tap(function () { return _this.currentSectionStepIdx++; }), operators_1.tap(function () { return _this.runSection(_this.currentSection); })).subscribe();
+        }), operators_1.tap(function () { return _this.currentSectionStepIdx++; }), operators_1.tap(function () { return _this.overlayRenderer.removeEndTutorialButton(); }), operators_1.tap(function () { return _this.runSection(_this.currentSection); })).subscribe();
         this.lightbox.$prevStepRequired()
             .pipe(operators_1.filter(function (res) { return !!res; }), operators_1.filter(function () { return _this.currentSectionStepIdx === 0 ? false : true; }), operators_1.tap(function () { return _this.currentSectionStepIdx--; }), operators_1.tap(function () { return _this.runSection(_this.currentSection); })).subscribe();
         this.overlayRenderer.$premartureEndRequired()
@@ -15664,10 +15733,32 @@ window.onload = function () {
             {
                 elementSelector: '#input-1',
                 text: 'Test me out!',
-                useOverlayInsteadOfLightbox: true
+                useOverlayInsteadOfLightbox: true,
+                dynamicOptions: {
+                    textualOverlay: {
+                        hideButtons: true,
+                        overlayCSS: {
+                            color: 'transparent',
+                            flexWrap: 'wrap',
+                            justifyContent: 'center'
+                        },
+                        overlayTextFadeInColor: 'red',
+                        prevNextButtonsCSS: {
+                            color: 'red'
+                        }
+                    }
+                }
             },
             {
                 elementSelector: '#input-2',
+                text: 'Test me out in lightbox!',
+            },
+            {
+                elementSelector: '#input-3',
+                text: 'Test me out in lightbox!',
+            },
+            {
+                elementSelector: '#input-4',
                 text: 'Test me out in lightbox!',
             }
         ],
