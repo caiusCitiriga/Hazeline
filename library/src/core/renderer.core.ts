@@ -18,13 +18,19 @@ export class HazelineOverlayRenderer {
     private _$prematureEndRequired = new Subject<boolean>();
     private overlayOptions = HazelineElementsDefaults.overlay;
 
+    private endTutorialBtnClickEvtListener = () => this._$prematureEndRequired.next(true);
+    private endTutorialBtnMouseLeaveEvtListener = () => HazelineStylesManager.styleElement(this.endTutorialBtn, this.overlayOptions.endTutorialBtnCSS);
+    private endTutorialBtnMouseEnterEvtListener = () => HazelineStylesManager.styleElement(this.endTutorialBtn, this.overlayOptions.endTutorialBtnHoverCSS);
+
     public $premartureEndRequired(): Observable<boolean> {
         return this._$prematureEndRequired;
     }
 
     public dispose(): void {
+        this.detachEventListeners();
         this.destroyPreviousElementsIfAny();
     }
+
 
     public setOptions(overlayOpts: HazelineOverlyOptions): void {
         if (!overlayOpts) {
@@ -48,12 +54,14 @@ export class HazelineOverlayRenderer {
         this.rightBox = document.getElementById(HazelineElementsIds.rightBox) as HTMLDivElement;
         this.bottomBox = document.getElementById(HazelineElementsIds.bottomBox) as HTMLDivElement;
 
-        this.setElementsProperties({
+        this.detachEventListeners();
+        this.applyOptionsOnElements({
             topBox: this.topBox,
             leftBox: this.leftBox,
             rightBox: this.rightBox,
             bottomBox: this.bottomBox,
         }, dimensions);
+        this.attachEventListeners();
     }
 
     public wrapElement(dimensions: HazelineWrappingElementsDimensions): void {
@@ -61,6 +69,7 @@ export class HazelineOverlayRenderer {
         const wrappingElements = this.createWrappingElements(dimensions);
 
         this.attachElementsToBody(wrappingElements);
+        this.attachEventListeners();
     }
 
     private attachElementsToBody(elements: ElementsToAttachOnBody): void {
@@ -73,6 +82,18 @@ export class HazelineOverlayRenderer {
         (body as any).prepend(this.endTutorialBtn); // not fully supported. See browser tables
     }
 
+    private attachEventListeners(): void {
+        this.endTutorialBtn.addEventListener('click', this.endTutorialBtnClickEvtListener);
+        this.endTutorialBtn.addEventListener('mouseleave', this.endTutorialBtnMouseLeaveEvtListener);
+        this.endTutorialBtn.addEventListener('mouseenter', this.endTutorialBtnMouseEnterEvtListener);
+    }
+
+    private detachEventListeners(): void {
+        this.endTutorialBtn.removeEventListener('click', this.endTutorialBtnClickEvtListener);
+        this.endTutorialBtn.removeEventListener('mouseleave', this.endTutorialBtnMouseLeaveEvtListener);
+        this.endTutorialBtn.removeEventListener('mouseenter', this.endTutorialBtnMouseEnterEvtListener);
+    }
+
     private createWrappingElements(dimensions: HazelineWrappingElementsDimensions): ElementsToAttachOnBody {
         this.topBox = document.createElement('div');
         this.leftBox = document.createElement('div');
@@ -80,7 +101,7 @@ export class HazelineOverlayRenderer {
         this.bottomBox = document.createElement('div');
         this.endTutorialBtn = document.createElement('button');
 
-        const elements = this.setElementsProperties({
+        const elements = this.applyOptionsOnElements({
             topBox: this.topBox,
             leftBox: this.leftBox,
             rightBox: this.rightBox,
@@ -108,7 +129,7 @@ export class HazelineOverlayRenderer {
         }
     }
 
-    private setElementsProperties(elements: ElementsToAttachOnBody, dimensions: HazelineWrappingElementsDimensions): ElementsToAttachOnBody {
+    private applyOptionsOnElements(elements: ElementsToAttachOnBody, dimensions: HazelineWrappingElementsDimensions): ElementsToAttachOnBody {
         elements.topBox.id = HazelineElementsIds.topBox;
         elements.leftBox.id = HazelineElementsIds.leftBox;
         elements.rightBox.id = HazelineElementsIds.rightBox;
@@ -121,9 +142,6 @@ export class HazelineOverlayRenderer {
         });
 
         this.endTutorialBtn.innerHTML = this.overlayOptions.closeBtnText;
-        this.endTutorialBtn.addEventListener('click', () => this._$prematureEndRequired.next(true));
-        this.endTutorialBtn.addEventListener('mouseleave', () => HazelineStylesManager.styleElement(this.endTutorialBtn, this.overlayOptions.endTutorialBtnCSS));
-        this.endTutorialBtn.addEventListener('mouseenter', () => HazelineStylesManager.styleElement(this.endTutorialBtn, this.overlayOptions.endTutorialBtnHoverCSS));
         HazelineStylesManager.styleElement(this.endTutorialBtn, this.overlayOptions.endTutorialBtnCSS);
 
         elements.topBox.style.width = `${dimensions.topBox.width}px`;

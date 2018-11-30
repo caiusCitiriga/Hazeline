@@ -1,9 +1,9 @@
 import { filter, tap } from 'rxjs/operators';
 import { Observable, BehaviorSubject } from 'rxjs';
 
-import { HazelineTutorialSection, HazelineGlobalOptions } from './interfaces/tutorial-section.interface';
 import { HazelineTutorialSectionStatuses } from './enums/tutorial-section-statuses.enum';
 import { HazelineTutorialSectionStatus } from './interfaces/tutorial-section-status.interface';
+import { HazelineTutorialSection, HazelineGlobalOptions } from './interfaces/tutorial-section.interface';
 
 import { HazelineLightbox } from './lightbox.core';
 import { HazelineOverlayRenderer } from './renderer.core';
@@ -29,6 +29,7 @@ export class HazelineRunner {
         const wrapElementsDimensions = this.elementManager.getWrappingElementsDimensions(this.currentSection.steps[this.currentSectionStep].elementSelector);
         this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
         this.lightbox.updateLightboxPlacement(HazelineElementManager.getElementBySelector(this.currentSection.steps[this.currentSectionStep].elementSelector));
+
     };
 
     public constructor(
@@ -116,7 +117,6 @@ export class HazelineRunner {
                 }),
                 tap(() => this.currentSectionStep++),
                 tap(() => this.runSection(this.currentSection)),
-                tap(() => console.log('Loading next step'))
             ).subscribe();
 
         this.lightbox.$prevStepRequired()
@@ -125,7 +125,6 @@ export class HazelineRunner {
                 filter(() => this.currentSectionStep === 0 ? false : true),
                 tap(() => this.currentSectionStep--),
                 tap(() => this.runSection(this.currentSection)),
-                tap(() => console.log('Loading previous step'))
             ).subscribe();
 
         this.overlayRenderer.$premartureEndRequired()
@@ -144,8 +143,8 @@ export class HazelineRunner {
     }
 
     private startResponsiveListeners(): void {
-        window.addEventListener('resize', () => this.windowResizeEvtListener);
-        window.addEventListener('scroll', () => this.windowScrollEvtListener);
+        window.addEventListener('resize', this.windowResizeEvtListener);
+        window.addEventListener('scroll', this.windowScrollEvtListener);
     }
 
 }

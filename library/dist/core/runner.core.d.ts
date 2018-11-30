@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs';
-import { HazelineTutorialSection } from './interfaces/tutorial-section.interface';
 import { HazelineTutorialSectionStatus } from './interfaces/tutorial-section-status.interface';
+import { HazelineTutorialSection } from './interfaces/tutorial-section.interface';
 import { HazelineLightbox } from './lightbox.core';
 import { HazelineOverlayRenderer } from './renderer.core';
 import { HazelineElementManager } from './element-manager.core';

@@ -81,9 +81,9 @@ var HazelineRunner = /** @class */ (function () {
                 return false;
             }
             return true;
-        }), operators_1.tap(function () { return _this.currentSectionStep++; }), operators_1.tap(function () { return _this.runSection(_this.currentSection); }), operators_1.tap(function () { return console.log('Loading next step'); })).subscribe();
+        }), operators_1.tap(function () { return _this.currentSectionStep++; }), operators_1.tap(function () { return _this.runSection(_this.currentSection); })).subscribe();
         this.lightbox.$prevStepRequired()
-            .pipe(operators_1.filter(function (res) { return !!res; }), operators_1.filter(function () { return _this.currentSectionStep === 0 ? false : true; }), operators_1.tap(function () { return _this.currentSectionStep--; }), operators_1.tap(function () { return _this.runSection(_this.currentSection); }), operators_1.tap(function () { return console.log('Loading previous step'); })).subscribe();
+            .pipe(operators_1.filter(function (res) { return !!res; }), operators_1.filter(function () { return _this.currentSectionStep === 0 ? false : true; }), operators_1.tap(function () { return _this.currentSectionStep--; }), operators_1.tap(function () { return _this.runSection(_this.currentSection); })).subscribe();
         this.overlayRenderer.$premartureEndRequired()
             .pipe(operators_1.filter(function (res) { return !!res; }), operators_1.tap(function () {
             _this._$sectionStatus.next({
@@ -96,9 +96,8 @@ var HazelineRunner = /** @class */ (function () {
             .subscribe();
     };
     HazelineRunner.prototype.startResponsiveListeners = function () {
-        var _this = this;
-        window.addEventListener('resize', function () { return _this.windowResizeEvtListener; });
-        window.addEventListener('scroll', function () { return _this.windowScrollEvtListener; });
+        window.addEventListener('resize', this.windowResizeEvtListener);
+        window.addEventListener('scroll', this.windowScrollEvtListener);
     };
     return HazelineRunner;
 }());

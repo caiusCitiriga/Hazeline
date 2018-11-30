@@ -9,14 +9,19 @@ export declare class HazelineOverlayRenderer {
     private endTutorialBtn;
     private _$prematureEndRequired;
     private overlayOptions;
+    private endTutorialBtnClickEvtListener;
+    private endTutorialBtnMouseLeaveEvtListener;
+    private endTutorialBtnMouseEnterEvtListener;
     $premartureEndRequired(): Observable<boolean>;
     dispose(): void;
     setOptions(overlayOpts: HazelineOverlyOptions): void;
     updateElementsDimensions(dimensions: HazelineWrappingElementsDimensions): void;
     wrapElement(dimensions: HazelineWrappingElementsDimensions): void;
     private attachElementsToBody;
+    private attachEventListeners;
+    private detachEventListeners;
     private createWrappingElements;
     private destroyPreviousElementsIfAny;
-    private setElementsProperties;
+    private applyOptionsOnElements;
 }
 //# sourceMappingURL=renderer.core.d.ts.map
