@@ -5,10 +5,11 @@ import { HazelineElementManager } from './element-manager.core';
 import { HazelineOverlayRenderer } from './overlay-renderer.core';
 import { HazelineLightboxRenderer } from './lightbox-renderer.core';
 export declare class HazelineRunner {
-    private lightbox;
+    private lightboxRenderer;
     private elementManager;
     private overlayRenderer;
     private _$sectionStatus;
+    private previousSectionStepIdx;
     private currentSectionStepIdx;
     private currentSection;
     private windowResizeEvtListener;

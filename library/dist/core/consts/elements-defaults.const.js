@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.HazelineElementsDefaults = {
     lightbox: {
         nextBtnText: 'Next',
-        closeBtnText: 'Close',
         prevBtnText: 'Previous',
         lastStepNextBtnText: 'Finish',
         positioning: {
@@ -107,7 +106,7 @@ exports.HazelineElementsDefaults = {
         disableTextFadeIn: false,
         textFadeInTimeInMs: 1000,
         overlayBgFadeInOpacity: 1,
-        overlayTextFadeInColor: '#fff',
+        overlayParagraphFadeInOpacity: 1,
         overlayCSS: {
             top: '0',
             left: '0',
@@ -119,7 +118,6 @@ exports.HazelineElementsDefaults = {
             paddingLeft: '8px',
             paddingRight: '8px',
             textAlign: 'center',
-            color: 'transparent',
             alignItems: 'center',
             background: 'rgba(0,0,0,.93)',
             width: window.innerWidth + "px",
@@ -127,7 +125,10 @@ exports.HazelineElementsDefaults = {
             height: window.innerHeight + "px",
             transition: 'all 120ms ease-in-out',
             transitionProperty: 'color, opacity',
-            lineHeight: window.innerHeight.toString() + "px",
+        },
+        paragraphCSS: {
+            opacity: '0',
+            color: '#ff7a00'
         },
         prevNextButtonsCSS: {
             width: '150px',

@@ -6,11 +6,12 @@ export declare class HazelineLightboxRenderer {
     private _$prevStepRequired;
     private tether;
     private lightboxWrp;
-    private textualOverlay;
     private lightboxTextWrp;
     private lightboxNextBtn;
     private lightboxPrevBtn;
     private lightboxControlsWrp;
+    private textualOverlay;
+    private textualOverlayParagraph;
     private ligthboxOptions;
     private textualOverlayOptions;
     private prevBtnClickEvtListener;
@@ -22,7 +23,7 @@ export declare class HazelineLightboxRenderer {
     $nextStepRequired(): Observable<boolean>;
     $prevStepRequired(): Observable<boolean>;
     dispose(detachListeners?: boolean): void;
-    disposeTextualOverlay(detachListeners?: boolean): void;
+    disposeTextualOverlay(detachListeners?: boolean, fadeOutBeforeRemoving?: boolean): Observable<boolean>;
     placeLightbox(target: HTMLElement, sectionStep: HazelineTutorialStep, isLastStep?: boolean): void;
     placeTextOverlay(sectionStep: HazelineTutorialStep, isLastStep?: boolean): Observable<boolean>;
     setLightboxDynamicOptions(opts: HazelineLightboxOptions): void;

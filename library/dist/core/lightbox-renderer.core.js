@@ -18,9 +18,7 @@ var HazelineLightboxRenderer = /** @class */ (function () {
         this.prevBtnClickEvtListener = function () {
             return _this._$prevStepRequired.next(true);
         };
-        this.nextBtnClickEvtListener = function () {
-            return _this._$nextStepRequired.next(true);
-        };
+        this.nextBtnClickEvtListener = function () { console.log('Next step required'); _this._$nextStepRequired.next(true); };
         this.prevBtnMouseLeaveEvtListener = function () {
             return styles_manager_core_1.HazelineStylesManager.styleElement(_this.lightboxPrevBtn, _this.ligthboxOptions.lightboxPrevBtnCSS || elements_defaults_const_1.HazelineElementsDefaults.lightbox.lightboxPrevBtnCSS);
         };
@@ -49,9 +47,11 @@ var HazelineLightboxRenderer = /** @class */ (function () {
             document.body.removeChild(this.lightboxWrp);
         }
     };
-    HazelineLightboxRenderer.prototype.disposeTextualOverlay = function (detachListeners) {
+    HazelineLightboxRenderer.prototype.disposeTextualOverlay = function (detachListeners, fadeOutBeforeRemoving) {
         var _this = this;
         if (detachListeners === void 0) { detachListeners = false; }
+        if (fadeOutBeforeRemoving === void 0) { fadeOutBeforeRemoving = false; }
+        var elementRemoved = new rxjs_1.Subject();
         if (document.getElementById(elements_ids_enum_1.HazelineElementsIds.lightboxTextualOverlay)) {
             if (detachListeners) {
                 this.detachNextPrevHoverModesEventsListeners();
@@ -72,9 +72,24 @@ var HazelineLightboxRenderer = /** @class */ (function () {
             };
             this.attachNextPrevEventsListeneres();
             this.attachNextPrevHoverModesEventsListeners();
+            if (fadeOutBeforeRemoving) {
+                this.textualOverlay.style.opacity = '0';
+                setTimeout(function () {
+                    document.body.removeChild(_this.textualOverlay);
+                    _this.textualOverlay = null;
+                    _this.textualOverlayParagraph = null;
+                    elementRemoved.next(true);
+                }, this.textualOverlayOptions.bgFadeInTimeInMs || 0);
+                return elementRemoved;
+            }
             document.body.removeChild(this.textualOverlay);
             this.textualOverlay = null;
+            this.textualOverlayParagraph = null;
+            rxjs_1.timer(10).subscribe(function () { return elementRemoved.next(true); });
+            return elementRemoved;
         }
+        rxjs_1.timer(10).subscribe(function () { return elementRemoved.next(true); });
+        return elementRemoved;
     };
     HazelineLightboxRenderer.prototype.placeLightbox = function (target, sectionStep, isLastStep) {
         if (isLastStep === void 0) { isLastStep = false; }
@@ -90,7 +105,7 @@ var HazelineLightboxRenderer = /** @class */ (function () {
     HazelineLightboxRenderer.prototype.placeTextOverlay = function (sectionStep, isLastStep) {
         var _this = this;
         if (isLastStep === void 0) { isLastStep = false; }
-        var overlayPlaced = new rxjs_1.Subject();
+        var overlayPlaced = new rxjs_1.BehaviorSubject(null);
         this.createLightboxButtons();
         this.setButttonsIds();
         this.lightboxPrevBtn.innerText = this.ligthboxOptions.prevBtnText;
@@ -98,45 +113,56 @@ var HazelineLightboxRenderer = /** @class */ (function () {
         this.lightboxNextBtn = styles_manager_core_1.HazelineStylesManager.styleElement(this.lightboxNextBtn, this.textualOverlayOptions.prevNextButtonsCSS);
         this.lightboxPrevBtn = styles_manager_core_1.HazelineStylesManager.styleElement(this.lightboxPrevBtn, this.textualOverlayOptions.prevNextButtonsCSS);
         this.attachNextPrevEventsListeneres();
-        var text = document.createElement('p');
-        text.innerText = sectionStep.text;
+        this.textualOverlayParagraph = document.createElement('div');
+        this.textualOverlayParagraph.innerHTML = sectionStep.text;
+        this.textualOverlayParagraph = styles_manager_core_1.HazelineStylesManager.styleElement(this.textualOverlayParagraph, this.textualOverlayOptions.paragraphCSS);
         this.textualOverlay = document.createElement('div');
         this.textualOverlay.id = elements_ids_enum_1.HazelineElementsIds.lightboxTextualOverlay;
         this.textualOverlay = styles_manager_core_1.HazelineStylesManager.styleElement(this.textualOverlay, this.textualOverlayOptions.overlayCSS);
         if (!this.textualOverlayOptions.hideButtons) {
             this.textualOverlay.appendChild(this.lightboxPrevBtn);
-        }
-        this.textualOverlay.appendChild(text);
-        if (!this.textualOverlayOptions.hideButtons) {
+            this.textualOverlay.appendChild(this.textualOverlayParagraph);
             this.textualOverlay.appendChild(this.lightboxNextBtn);
         }
+        else {
+            this.textualOverlay.appendChild(this.textualOverlayParagraph);
+        }
         if (this.textualOverlayOptions.hideButtons || this.textualOverlayOptions.clickAnywhereForNextStep) {
+            //  remove previously added listener if any
+            this.textualOverlay.removeEventListener('click', this.nextBtnClickEvtListener);
             this.textualOverlay.addEventListener('click', this.nextBtnClickEvtListener);
+            this.textualOverlay.style.cursor = 'pointer';
+        }
+        else {
+            this.textualOverlay.style.cursor = 'default';
         }
         this.dispose();
         document.body.prepend(this.textualOverlay);
-        setTimeout(function () { return _this.textualOverlay.style.opacity = _this.textualOverlayOptions.overlayBgFadeInOpacity.toString(); }, this.textualOverlayOptions.disableBgFadeIn
+        setTimeout(function () {
+            _this.textualOverlay.style.opacity = _this.textualOverlayOptions.overlayBgFadeInOpacity.toString();
+            setTimeout(function () {
+                _this.textualOverlayParagraph.style.opacity = _this.textualOverlayOptions.overlayParagraphFadeInOpacity.toString();
+                _this.prevBtnMouseEnterEvtListener = function () {
+                    return _this.lightboxPrevBtn = styles_manager_core_1.HazelineStylesManager.styleElement(_this.lightboxPrevBtn, _this.textualOverlayOptions.prevNextButtonsHoverCSS);
+                };
+                _this.nextBtnMouseEnterEvtListener = function () {
+                    return _this.lightboxNextBtn = styles_manager_core_1.HazelineStylesManager.styleElement(_this.lightboxNextBtn, _this.textualOverlayOptions.prevNextButtonsHoverCSS);
+                };
+                _this.nextBtnMouseLeaveEvtListener = function () {
+                    return _this.lightboxNextBtn = styles_manager_core_1.HazelineStylesManager.styleElement(_this.lightboxNextBtn, _this.textualOverlayOptions.prevNextButtonsCSS);
+                };
+                _this.prevBtnMouseLeaveEvtListener = function () {
+                    return _this.lightboxPrevBtn = styles_manager_core_1.HazelineStylesManager.styleElement(_this.lightboxPrevBtn, _this.textualOverlayOptions.prevNextButtonsCSS);
+                };
+                _this.attachNextPrevHoverModesEventsListeners();
+                overlayPlaced.next(true);
+                overlayPlaced.complete();
+            }, _this.textualOverlayOptions.disableTextFadeIn
+                ? 0
+                : _this.textualOverlayOptions.textFadeInTimeInMs);
+        }, this.textualOverlayOptions.disableBgFadeIn
             ? 0
             : this.textualOverlayOptions.bgFadeInTimeInMs);
-        setTimeout(function () {
-            _this.textualOverlay.style.color = _this.textualOverlayOptions.overlayTextFadeInColor;
-            _this.prevBtnMouseEnterEvtListener = function () {
-                return _this.lightboxPrevBtn = styles_manager_core_1.HazelineStylesManager.styleElement(_this.lightboxPrevBtn, _this.textualOverlayOptions.prevNextButtonsHoverCSS);
-            };
-            _this.nextBtnMouseEnterEvtListener = function () {
-                return _this.lightboxNextBtn = styles_manager_core_1.HazelineStylesManager.styleElement(_this.lightboxNextBtn, _this.textualOverlayOptions.prevNextButtonsHoverCSS);
-            };
-            _this.nextBtnMouseLeaveEvtListener = function () {
-                return _this.lightboxNextBtn = styles_manager_core_1.HazelineStylesManager.styleElement(_this.lightboxNextBtn, _this.textualOverlayOptions.prevNextButtonsCSS);
-            };
-            _this.prevBtnMouseLeaveEvtListener = function () {
-                return _this.lightboxPrevBtn = styles_manager_core_1.HazelineStylesManager.styleElement(_this.lightboxPrevBtn, _this.textualOverlayOptions.prevNextButtonsCSS);
-            };
-            _this.attachNextPrevHoverModesEventsListeners();
-            overlayPlaced.next(true);
-        }, this.textualOverlayOptions.disableTextFadeIn
-            ? 0
-            : this.textualOverlayOptions.textFadeInTimeInMs);
         return overlayPlaced;
     };
     HazelineLightboxRenderer.prototype.setLightboxDynamicOptions = function (opts) {

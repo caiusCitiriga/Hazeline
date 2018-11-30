@@ -2,9 +2,8 @@ import { HazelineCSSRules } from '../interfaces/css-rules.interface';
 import { HazelineOptions, HazelineLightboxOptions } from '../interfaces/hazeline-options.interface';
 
 export const HazelineElementsDefaults: HazelineOptions = {
-    lightbox: <HazelineLightboxOptions>{
+    lightbox: {
         nextBtnText: 'Next',
-        closeBtnText: 'Close',
         prevBtnText: 'Previous',
         lastStepNextBtnText: 'Finish',
         positioning: {
@@ -19,7 +18,7 @@ export const HazelineElementsDefaults: HazelineOptions = {
             offset: '-20px 0'
         },
 
-        lightboxWrapperCSS: <HazelineCSSRules>{
+        lightboxWrapperCSS: {
             padding: '8px',
             width: '350px',
             height: '250px',
@@ -29,20 +28,20 @@ export const HazelineElementsDefaults: HazelineOptions = {
             background: '#fff',
             flexDirection: 'column'
         },
-        lightboxTextWrapperCSS: <HazelineCSSRules>{
+        lightboxTextWrapperCSS: {
             width: '100%',
             flexGrow: '2',
             overflowY: 'scroll',
             textAlign: 'justify'
         },
-        lightboxControlsWrapperCSS: <HazelineCSSRules>{
+        lightboxControlsWrapperCSS: {
             width: '100%',
             height: '40px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
         },
-        lightboxNextBtnCSS: <HazelineCSSRules>{
+        lightboxNextBtnCSS: {
             width: '100px',
             height: '38px',
             outline: 'none',
@@ -55,7 +54,7 @@ export const HazelineElementsDefaults: HazelineOptions = {
             border: '3px solid #ff7a00',
             transition: 'all 120ms ease-in-out',
         },
-        lightboxPrevBtnCSS: <HazelineCSSRules>{
+        lightboxPrevBtnCSS: {
             width: '100px',
             height: '38px',
             outline: 'none',
@@ -68,12 +67,12 @@ export const HazelineElementsDefaults: HazelineOptions = {
             border: '3px solid #ff7a00',
             transition: 'all 120ms ease-in-out',
         },
-        lightboxPrevBtnHoverCSS: <HazelineCSSRules>{
+        lightboxPrevBtnHoverCSS: {
             color: '#fff',
             cursor: 'pointer',
             background: '#ff7a00',
         },
-        lightboxNextBtnHoverCSS: <HazelineCSSRules>{
+        lightboxNextBtnHoverCSS: {
             color: '#fff',
             cursor: 'pointer',
             background: '#ff7a00',
@@ -112,7 +111,7 @@ export const HazelineElementsDefaults: HazelineOptions = {
         disableTextFadeIn: false,
         textFadeInTimeInMs: 1000,
         overlayBgFadeInOpacity: 1,
-        overlayTextFadeInColor: '#fff',
+        overlayParagraphFadeInOpacity: 1,
         overlayCSS: {
             top: '0',
             left: '0',
@@ -124,7 +123,6 @@ export const HazelineElementsDefaults: HazelineOptions = {
             paddingLeft: '8px',
             paddingRight: '8px',
             textAlign: 'center',
-            color: 'transparent',
             alignItems: 'center',
             background: 'rgba(0,0,0,.93)',
             width: `${window.innerWidth}px`,
@@ -132,7 +130,10 @@ export const HazelineElementsDefaults: HazelineOptions = {
             height: `${window.innerHeight}px`,
             transition: 'all 120ms ease-in-out',
             transitionProperty: 'color, opacity',
-            lineHeight: `${window.innerHeight.toString()}px`,
+        },
+        paragraphCSS: {
+            opacity: '0',
+            color: '#ff7a00'
         },
         prevNextButtonsCSS: {
             width: '150px',

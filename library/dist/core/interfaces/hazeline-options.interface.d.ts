@@ -37,13 +37,14 @@ export interface HazelineLightboxOptions {
 export interface HazelineTextualOverlayOptions {
     hideButtons?: boolean;
     disableBgFadeIn?: boolean;
-    bgFadeInTimeInMs?: number;
     disableTextFadeIn?: boolean;
-    textFadeInTimeInMs?: number;
-    overlayCSS?: HazelineCSSRules;
-    overlayBgFadeInOpacity?: number;
-    overlayTextFadeInColor?: string;
     clickAnywhereForNextStep?: boolean;
+    bgFadeInTimeInMs?: number;
+    textFadeInTimeInMs?: number;
+    overlayBgFadeInOpacity?: number;
+    overlayParagraphFadeInOpacity?: number;
+    overlayCSS?: HazelineCSSRules;
+    paragraphCSS?: HazelineCSSRules;
     prevNextButtonsCSS?: HazelineCSSRules;
     prevNextButtonsHoverCSS?: HazelineCSSRules;
 }
