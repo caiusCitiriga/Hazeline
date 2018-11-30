@@ -4,6 +4,7 @@ import { HazelineCSSRules } from './css-rules.interface';
 export interface HazelineOptions {
     overlay?: HazelineOverlayOptions;
     lightbox?: HazelineLightboxOptions;
+    textualOverlay?: HazelineTextualOverlayOptions;
 }
 
 export interface HazelineOverlayOptions {
@@ -35,4 +36,18 @@ export interface HazelineLightboxOptions {
         constraints?: ITetherConstraint[];
         classes?: { [className: string]: boolean | string };
     };
+}
+
+export interface HazelineTextualOverlayOptions {
+    hideButtons?: boolean;
+    disableBgFadeIn?: boolean;
+    bgFadeInTimeInMs?: number;
+    disableTextFadeIn?: boolean;
+    textFadeInTimeInMs?: number;
+    overlayCSS?: HazelineCSSRules;
+    overlayBgFadeInOpacity?: number;
+    overlayTextFadeInColor?: string;
+    clickAnywhereForNextStep?: boolean;
+    prevNextButtonsCSS?: HazelineCSSRules;
+    prevNextButtonsHoverCSS?: HazelineCSSRules;
 }

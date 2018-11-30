@@ -16,15 +16,21 @@ var HazelineOverlayRenderer = /** @class */ (function () {
     HazelineOverlayRenderer.prototype.$premartureEndRequired = function () {
         return this._$prematureEndRequired;
     };
+    HazelineOverlayRenderer.prototype.dispose = function () {
+        this.detachEndTutorialBtnEventListeners();
+        this.destroyPreviousElementsIfAny();
+    };
     HazelineOverlayRenderer.prototype.placeEndTutorialButton = function () {
         this.createEndTutorialButton();
         this.applyEndTutorialBtnOptions();
         this.attachEndTutorialButtonToBody();
         this.attachEndTutorialBtnEventsListeners();
     };
-    HazelineOverlayRenderer.prototype.dispose = function () {
-        this.detachEventListeners();
-        this.destroyPreviousElementsIfAny();
+    HazelineOverlayRenderer.prototype.removeEndTutorialButton = function () {
+        if (!!document.getElementById(elements_ids_enum_1.HazelineElementsIds.endTutorialButton)) {
+            this.detachEndTutorialBtnEventListeners();
+            document.body.removeChild(document.getElementById(elements_ids_enum_1.HazelineElementsIds.endTutorialButton));
+        }
     };
     HazelineOverlayRenderer.prototype.setDynamicOptions = function (overlayOpts) {
         var _this = this;
@@ -92,7 +98,7 @@ var HazelineOverlayRenderer = /** @class */ (function () {
         this.endTutorialBtn.addEventListener('mouseleave', this.endTutorialBtnMouseLeaveEvtListener);
         this.endTutorialBtn.addEventListener('mouseenter', this.endTutorialBtnMouseEnterEvtListener);
     };
-    HazelineOverlayRenderer.prototype.detachEventListeners = function () {
+    HazelineOverlayRenderer.prototype.detachEndTutorialBtnEventListeners = function () {
         if (this.endTutorialBtn) {
             this.endTutorialBtn.removeEventListener('click', this.endTutorialBtnClickEvtListener);
             this.endTutorialBtn.removeEventListener('mouseleave', this.endTutorialBtnMouseLeaveEvtListener);

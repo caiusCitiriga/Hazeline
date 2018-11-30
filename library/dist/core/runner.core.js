@@ -35,9 +35,9 @@ var HazelineRunner = /** @class */ (function () {
         this.startNextPrevButtonClicks();
     }
     HazelineRunner.prototype.endTutorial = function () {
-        this.lightbox.dispose();
+        this.lightbox.dispose(true);
         this.overlayRenderer.dispose();
-        this.lightbox.disposeTextualOverlay();
+        this.lightbox.disposeTextualOverlay(true);
         window.removeEventListener('resize', this.windowResizeEvtListener);
         window.removeEventListener('scroll', this.windowScrollEvtListener);
     };
@@ -97,10 +97,16 @@ var HazelineRunner = /** @class */ (function () {
             return;
         }
         if (options.lightbox && isDynamicOptions) {
-            this.lightbox.setDynamicOptions(options.lightbox);
+            this.lightbox.setLightboxDynamicOptions(options.lightbox);
         }
         if (options.lightbox && !isDynamicOptions) {
-            this.lightbox.setGlobalOptions(options.lightbox);
+            this.lightbox.setLightboxGlobalOptions(options.lightbox);
+        }
+        if (options.textualOverlay && isDynamicOptions) {
+            this.lightbox.setTextualOverlayDynamicOptions(options.textualOverlay);
+        }
+        if (options.textualOverlay && !isDynamicOptions) {
+            this.lightbox.setTextualOverlayGlobalOptions(options.textualOverlay);
         }
         if (options.overlay && isDynamicOptions) {
             this.overlayRenderer.setDynamicOptions(options.overlay);
@@ -113,7 +119,6 @@ var HazelineRunner = /** @class */ (function () {
         var _this = this;
         this.lightbox.$nextStepRequired()
             .pipe(operators_1.filter(function (res) { return !!res; }), operators_1.filter(function () {
-            console.log('next called');
             if (_this.currentSectionStepIdx === (_this.currentSection.steps.length - 1)) {
                 _this._$sectionStatus.next({
                     runningSection: null,
@@ -123,7 +128,7 @@ var HazelineRunner = /** @class */ (function () {
                 return false;
             }
             return true;
-        }), operators_1.tap(function () { return _this.currentSectionStepIdx++; }), operators_1.tap(function () { return _this.runSection(_this.currentSection); })).subscribe();
+        }), operators_1.tap(function () { return _this.currentSectionStepIdx++; }), operators_1.tap(function () { return _this.overlayRenderer.removeEndTutorialButton(); }), operators_1.tap(function () { return _this.runSection(_this.currentSection); })).subscribe();
         this.lightbox.$prevStepRequired()
             .pipe(operators_1.filter(function (res) { return !!res; }), operators_1.filter(function () { return _this.currentSectionStepIdx === 0 ? false : true; }), operators_1.tap(function () { return _this.currentSectionStepIdx--; }), operators_1.tap(function () { return _this.runSection(_this.currentSection); })).subscribe();
         this.overlayRenderer.$premartureEndRequired()

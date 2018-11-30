@@ -52,9 +52,9 @@ export class HazelineRunner {
     }
 
     public endTutorial(): void {
-        this.lightbox.dispose();
+        this.lightbox.dispose(true);
         this.overlayRenderer.dispose();
-        this.lightbox.disposeTextualOverlay();
+        this.lightbox.disposeTextualOverlay(true);
         window.removeEventListener('resize', this.windowResizeEvtListener);
         window.removeEventListener('scroll', this.windowScrollEvtListener);
     }
@@ -125,10 +125,16 @@ export class HazelineRunner {
         }
 
         if (options.lightbox && isDynamicOptions) {
-            this.lightbox.setDynamicOptions(options.lightbox);
+            this.lightbox.setLightboxDynamicOptions(options.lightbox);
         }
         if (options.lightbox && !isDynamicOptions) {
-            this.lightbox.setGlobalOptions(options.lightbox);
+            this.lightbox.setLightboxGlobalOptions(options.lightbox);
+        }
+        if (options.textualOverlay && isDynamicOptions) {
+            this.lightbox.setTextualOverlayDynamicOptions(options.textualOverlay);
+        }
+        if (options.textualOverlay && !isDynamicOptions) {
+            this.lightbox.setTextualOverlayGlobalOptions(options.textualOverlay);
         }
         if (options.overlay && isDynamicOptions) {
             this.overlayRenderer.setDynamicOptions(options.overlay);
@@ -143,7 +149,6 @@ export class HazelineRunner {
             .pipe(
                 filter(res => !!res),
                 filter(() => {
-                    console.log('next called');
                     if (this.currentSectionStepIdx === (this.currentSection.steps.length - 1)) {
                         this._$sectionStatus.next({
                             runningSection: null,
@@ -156,6 +161,7 @@ export class HazelineRunner {
                     return true;
                 }),
                 tap(() => this.currentSectionStepIdx++),
+                tap(() => this.overlayRenderer.removeEndTutorialButton()),
                 tap(() => this.runSection(this.currentSection)),
             ).subscribe();
 

@@ -13,8 +13,9 @@ export declare class HazelineOverlayRenderer {
     private endTutorialBtnMouseLeaveEvtListener;
     private endTutorialBtnMouseEnterEvtListener;
     $premartureEndRequired(): Observable<boolean>;
-    placeEndTutorialButton(): void;
     dispose(): void;
+    placeEndTutorialButton(): void;
+    removeEndTutorialButton(): void;
     setDynamicOptions(overlayOpts: HazelineOverlayOptions): void;
     setGlobalOptions(overlayOpts: HazelineOverlayOptions): void;
     updateElementsDimensions(dimensions: HazelineWrappingElementsDimensions): void;
@@ -22,7 +23,7 @@ export declare class HazelineOverlayRenderer {
     private attachElementsToBody;
     private attachEndTutorialButtonToBody;
     private attachEndTutorialBtnEventsListeners;
-    private detachEventListeners;
+    private detachEndTutorialBtnEventListeners;
     private createEndTutorialButton;
     private createWrappingElements;
     private destroyPreviousElementsIfAny;

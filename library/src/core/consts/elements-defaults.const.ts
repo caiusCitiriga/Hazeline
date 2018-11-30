@@ -77,7 +77,7 @@ export const HazelineElementsDefaults: HazelineOptions = {
             color: '#fff',
             cursor: 'pointer',
             background: '#ff7a00',
-        }
+        },
     },
 
     overlay: {
@@ -104,5 +104,51 @@ export const HazelineElementsDefaults: HazelineOptions = {
             background: 'transparent',
             border: '2px solid #E53935',
         },
+    },
+
+    textualOverlay: {
+        bgFadeInTimeInMs: 300,
+        disableBgFadeIn: false,
+        disableTextFadeIn: false,
+        textFadeInTimeInMs: 1000,
+        overlayBgFadeInOpacity: 1,
+        overlayTextFadeInColor: '#fff',
+        overlayCSS: {
+            top: '0',
+            left: '0',
+            opacity: '0',
+            zIndex: '99999',
+            display: 'flex',
+            fontSize: '30px',
+            position: 'fixed',
+            paddingLeft: '8px',
+            paddingRight: '8px',
+            textAlign: 'center',
+            color: 'transparent',
+            alignItems: 'center',
+            background: 'rgba(0,0,0,.93)',
+            width: `${window.innerWidth}px`,
+            justifyContent: 'space-between',
+            height: `${window.innerHeight}px`,
+            transition: 'all 120ms ease-in-out',
+            transitionProperty: 'color, opacity',
+            lineHeight: `${window.innerHeight.toString()}px`,
+        },
+        prevNextButtonsCSS: {
+            width: '150px',
+            color: '#fff',
+            opacity: '.3',
+            height: '80px',
+            fontSize: '20px',
+            cursor: 'pointer',
+            lineHeight: '50px',
+            textAlign: 'center',
+            border: '2px solid #ff7a00',
+            backgroundColor: 'transparent',
+            transition: 'all 200ms ease-in-out',
+        },
+        prevNextButtonsHoverCSS: {
+            opacity: '1'
+        }
     }
 }

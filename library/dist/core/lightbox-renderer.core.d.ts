@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs';
 import { HazelineTutorialStep } from './interfaces/tutorial-step.interface';
-import { HazelineLightboxOptions } from './interfaces/hazeline-options.interface';
+import { HazelineLightboxOptions, HazelineTextualOverlayOptions } from './interfaces/hazeline-options.interface';
 export declare class HazelineLightboxRenderer {
     private _$nextStepRequired;
     private _$prevStepRequired;
@@ -12,6 +12,7 @@ export declare class HazelineLightboxRenderer {
     private lightboxPrevBtn;
     private lightboxControlsWrp;
     private ligthboxOptions;
+    private textualOverlayOptions;
     private prevBtnClickEvtListener;
     private nextBtnClickEvtListener;
     private prevBtnMouseLeaveEvtListener;
@@ -20,17 +21,21 @@ export declare class HazelineLightboxRenderer {
     private nextBtnMouseEnterEvtListener;
     $nextStepRequired(): Observable<boolean>;
     $prevStepRequired(): Observable<boolean>;
-    dispose(): void;
-    disposeTextualOverlay(): void;
+    dispose(detachListeners?: boolean): void;
+    disposeTextualOverlay(detachListeners?: boolean): void;
     placeLightbox(target: HTMLElement, sectionStep: HazelineTutorialStep, isLastStep?: boolean): void;
     placeTextOverlay(sectionStep: HazelineTutorialStep, isLastStep?: boolean): Observable<boolean>;
-    setDynamicOptions(opts: HazelineLightboxOptions): void;
-    setGlobalOptions(opts: HazelineLightboxOptions): void;
+    setLightboxDynamicOptions(opts: HazelineLightboxOptions): void;
+    setTextualOverlayDynamicOptions(opts: HazelineTextualOverlayOptions): void;
+    setLightboxGlobalOptions(opts: HazelineLightboxOptions): void;
+    setTextualOverlayGlobalOptions(opts: HazelineTextualOverlayOptions): void;
     updateLightboxPlacement(target: HTMLElement): void;
     updateTextualOverlayPlacement(): void;
     private applyTexts;
     private attachNextPrevEventsListeneres;
+    private detachNextPrevEventsListeneres;
     private attachNextPrevHoverModesEventsListeners;
+    private detachNextPrevHoverModesEventsListeners;
     private createLightbox;
     private createLightboxButtons;
     private createLightboxWrappers;

@@ -3,6 +3,7 @@ import { HazelineCSSRules } from './css-rules.interface';
 export interface HazelineOptions {
     overlay?: HazelineOverlayOptions;
     lightbox?: HazelineLightboxOptions;
+    textualOverlay?: HazelineTextualOverlayOptions;
 }
 export interface HazelineOverlayOptions {
     closeBtnText?: string;
@@ -32,5 +33,18 @@ export interface HazelineLightboxOptions {
             [className: string]: boolean | string;
         };
     };
+}
+export interface HazelineTextualOverlayOptions {
+    hideButtons?: boolean;
+    disableBgFadeIn?: boolean;
+    bgFadeInTimeInMs?: number;
+    disableTextFadeIn?: boolean;
+    textFadeInTimeInMs?: number;
+    overlayCSS?: HazelineCSSRules;
+    overlayBgFadeInOpacity?: number;
+    overlayTextFadeInColor?: string;
+    clickAnywhereForNextStep?: boolean;
+    prevNextButtonsCSS?: HazelineCSSRules;
+    prevNextButtonsHoverCSS?: HazelineCSSRules;
 }
 //# sourceMappingURL=hazeline-options.interface.d.ts.map

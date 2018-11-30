@@ -6,8 +6,7 @@ import { HazelineTutorialStep } from './interfaces/tutorial-step.interface';
 import { HazelineElementsDefaults } from './consts/elements-defaults.const';
 
 import { HazelineStylesManager } from './styles-manager.core';
-import { HazelineLightboxOptions } from './interfaces/hazeline-options.interface';
-import { HazelineCSSRules } from './interfaces/css-rules.interface';
+import { HazelineLightboxOptions, HazelineTextualOverlayOptions } from './interfaces/hazeline-options.interface';
 
 export class HazelineLightboxRenderer {
 
@@ -22,7 +21,9 @@ export class HazelineLightboxRenderer {
     private lightboxNextBtn: HTMLButtonElement;
     private lightboxPrevBtn: HTMLButtonElement;
     private lightboxControlsWrp: HTMLDivElement;
+
     private ligthboxOptions: HazelineLightboxOptions = HazelineElementsDefaults.lightbox;
+    private textualOverlayOptions: HazelineTextualOverlayOptions = HazelineElementsDefaults.textualOverlay;
 
     private prevBtnClickEvtListener = () =>
         this._$prevStepRequired.next(true);
@@ -42,12 +43,12 @@ export class HazelineLightboxRenderer {
     public $nextStepRequired(): Observable<boolean> { return this._$nextStepRequired; }
     public $prevStepRequired(): Observable<boolean> { return this._$prevStepRequired; }
 
-    public dispose(): void {
+    public dispose(detachListeners = false): void {
         if (document.getElementById(HazelineElementsIds.lightbox)) {
-            this.lightboxPrevBtn.removeEventListener('mouseenter', this.prevBtnMouseEnterEvtListener);
-            this.lightboxPrevBtn.removeEventListener('mouseleave', this.prevBtnMouseLeaveEvtListener);
-            this.lightboxNextBtn.removeEventListener('mouseenter', this.nextBtnMouseEnterEvtListener);
-            this.lightboxNextBtn.removeEventListener('mouseleave', this.nextBtnMouseLeaveEvtListener);
+            if (detachListeners) {
+                this.detachNextPrevEventsListeneres();
+                this.detachNextPrevHoverModesEventsListeners();
+            }
 
             this.tether.disable();
             this.tether.destroy();
@@ -57,12 +58,13 @@ export class HazelineLightboxRenderer {
         }
     }
 
-    public disposeTextualOverlay(): void {
+    public disposeTextualOverlay(detachListeners = false): void {
         if (document.getElementById(HazelineElementsIds.lightboxTextualOverlay)) {
-            this.lightboxPrevBtn.removeEventListener('mouseenter', this.prevBtnMouseEnterEvtListener);
-            this.lightboxPrevBtn.removeEventListener('mouseleave', this.prevBtnMouseLeaveEvtListener);
-            this.lightboxNextBtn.removeEventListener('mouseenter', this.nextBtnMouseEnterEvtListener);
-            this.lightboxNextBtn.removeEventListener('mouseleave', this.nextBtnMouseLeaveEvtListener);
+            if (detachListeners) {
+                this.detachNextPrevHoverModesEventsListeners();
+            }
+
+            this.textualOverlay.removeEventListener('click', this.nextBtnClickEvtListener);
 
             //  Restore the original lightbox event listeners
             this.prevBtnMouseLeaveEvtListener = () =>
@@ -99,50 +101,13 @@ export class HazelineLightboxRenderer {
 
     public placeTextOverlay(sectionStep: HazelineTutorialStep, isLastStep = false): Observable<boolean> {
         const overlayPlaced = new Subject<boolean>();
-        const buttonsStyle = <HazelineCSSRules>{
-            width: '150px',
-            color: '#fff',
-            opacity: '.3',
-            height: '80px',
-            fontSize: '20px',
-            cursor: 'pointer',
-            lineHeight: '50px',
-            textAlign: 'center',
-            border: '2px solid #ff7a00',
-            backgroundColor: 'transparent',
-            transition: 'all 200ms ease-in-out',
-        };
-        const buttonsHoverStyle = <HazelineCSSRules>{
-            opacity: '1'
-        };
-        const overlayStyle = <HazelineCSSRules>{
-            top: '0',
-            left: '0',
-            opacity: '0',
-            display: 'flex',
-            fontSize: '30px',
-            position: 'fixed',
-            paddingLeft: '8px',
-            paddingRight: '8px',
-            textAlign: 'center',
-            color: 'transparent',
-            alignItems: 'center',
-            background: 'rgba(0,0,0,.93)',
-            width: `${window.innerWidth}px`,
-            justifyContent: 'space-between',
-            height: `${window.innerHeight}px`,
-            transition: 'all 120ms ease-in-out',
-            transitionProperty: 'color, opacity',
-            lineHeight: `${window.innerHeight.toString()}px`,
-            zIndex: HazelineElementsDefaults.overlay.overlayCSS.zIndex,
-        };
 
         this.createLightboxButtons();
         this.setButttonsIds();
         this.lightboxPrevBtn.innerText = this.ligthboxOptions.prevBtnText;
         this.lightboxNextBtn.innerText = isLastStep ? this.ligthboxOptions.lastStepNextBtnText : this.ligthboxOptions.nextBtnText;
-        this.lightboxNextBtn = HazelineStylesManager.styleElement<HTMLButtonElement>(this.lightboxNextBtn, buttonsStyle);
-        this.lightboxPrevBtn = HazelineStylesManager.styleElement<HTMLButtonElement>(this.lightboxPrevBtn, buttonsStyle);
+        this.lightboxNextBtn = HazelineStylesManager.styleElement<HTMLButtonElement>(this.lightboxNextBtn, this.textualOverlayOptions.prevNextButtonsCSS);
+        this.lightboxPrevBtn = HazelineStylesManager.styleElement<HTMLButtonElement>(this.lightboxPrevBtn, this.textualOverlayOptions.prevNextButtonsCSS);
         this.attachNextPrevEventsListeneres();
 
         const text = document.createElement('p');
@@ -150,36 +115,53 @@ export class HazelineLightboxRenderer {
 
         this.textualOverlay = document.createElement('div');
         this.textualOverlay.id = HazelineElementsIds.lightboxTextualOverlay;
-        this.textualOverlay = HazelineStylesManager.styleElement<HTMLDivElement>(this.textualOverlay, overlayStyle);
+        this.textualOverlay = HazelineStylesManager.styleElement<HTMLDivElement>(this.textualOverlay, this.textualOverlayOptions.overlayCSS);
 
-        this.textualOverlay.appendChild(this.lightboxPrevBtn);
+        if (!this.textualOverlayOptions.hideButtons) {
+            this.textualOverlay.appendChild(this.lightboxPrevBtn);
+        }
         this.textualOverlay.appendChild(text);
-        this.textualOverlay.appendChild(this.lightboxNextBtn);
+        if (!this.textualOverlayOptions.hideButtons) {
+            this.textualOverlay.appendChild(this.lightboxNextBtn);
+        }
 
+        if (this.textualOverlayOptions.hideButtons || this.textualOverlayOptions.clickAnywhereForNextStep) {
+            this.textualOverlay.addEventListener('click', this.nextBtnClickEvtListener);
+        }
 
         this.dispose();
         (document.body as any).prepend(this.textualOverlay);
-        setTimeout(() => this.textualOverlay.style.opacity = '1', 300);
+
+        setTimeout(() => this.textualOverlay.style.opacity = this.textualOverlayOptions.overlayBgFadeInOpacity.toString(),
+            this.textualOverlayOptions.disableBgFadeIn
+                ? 0
+                : this.textualOverlayOptions.bgFadeInTimeInMs
+        );
         setTimeout(() => {
-            this.textualOverlay.style.color = '#fff';
+            this.textualOverlay.style.color = this.textualOverlayOptions.overlayTextFadeInColor;
 
             this.prevBtnMouseEnterEvtListener = () =>
-                this.lightboxPrevBtn = HazelineStylesManager.styleElement<HTMLButtonElement>(this.lightboxPrevBtn, buttonsHoverStyle);
+                this.lightboxPrevBtn = HazelineStylesManager.styleElement<HTMLButtonElement>(this.lightboxPrevBtn, this.textualOverlayOptions.prevNextButtonsHoverCSS);
             this.nextBtnMouseEnterEvtListener = () =>
-                this.lightboxNextBtn = HazelineStylesManager.styleElement<HTMLButtonElement>(this.lightboxNextBtn, buttonsHoverStyle);
+                this.lightboxNextBtn = HazelineStylesManager.styleElement<HTMLButtonElement>(this.lightboxNextBtn, this.textualOverlayOptions.prevNextButtonsHoverCSS);
+
             this.nextBtnMouseLeaveEvtListener = () =>
-                this.lightboxNextBtn = HazelineStylesManager.styleElement<HTMLButtonElement>(this.lightboxNextBtn, buttonsStyle);
+                this.lightboxNextBtn = HazelineStylesManager.styleElement<HTMLButtonElement>(this.lightboxNextBtn, this.textualOverlayOptions.prevNextButtonsCSS);
             this.prevBtnMouseLeaveEvtListener = () =>
-                this.lightboxPrevBtn = HazelineStylesManager.styleElement<HTMLButtonElement>(this.lightboxPrevBtn, buttonsStyle);
+                this.lightboxPrevBtn = HazelineStylesManager.styleElement<HTMLButtonElement>(this.lightboxPrevBtn, this.textualOverlayOptions.prevNextButtonsCSS);
             this.attachNextPrevHoverModesEventsListeners();
 
             overlayPlaced.next(true);
-        }, 1000);
+        },
+            this.textualOverlayOptions.disableTextFadeIn
+                ? 0
+                : this.textualOverlayOptions.textFadeInTimeInMs
+        );
 
         return overlayPlaced;
     }
 
-    public setDynamicOptions(opts: HazelineLightboxOptions): void {
+    public setLightboxDynamicOptions(opts: HazelineLightboxOptions): void {
         Object.keys(opts).forEach(optKey => {
             if (typeof opts[optKey] === 'object') {
                 this.ligthboxOptions[optKey] = Object.assign({}, this.ligthboxOptions[optKey], opts[optKey]);
@@ -193,15 +175,43 @@ export class HazelineLightboxRenderer {
         });
     }
 
-    public setGlobalOptions(opts: HazelineLightboxOptions): void {
+    public setTextualOverlayDynamicOptions(opts: HazelineTextualOverlayOptions): void {
         Object.keys(opts).forEach(optKey => {
             if (typeof opts[optKey] === 'object') {
-                this.ligthboxOptions[optKey] = Object.assign({}, HazelineElementsDefaults.lightbox[optKey], opts[optKey]);
+                this.textualOverlayOptions[optKey] = Object.assign({}, this.textualOverlayOptions[optKey], opts[optKey]);
+                return;
+            }
+
+            if (!!opts[optKey]) {
+                this.textualOverlayOptions[optKey] = opts[optKey];
+            }
+
+        });
+    }
+
+    public setLightboxGlobalOptions(opts: HazelineLightboxOptions): void {
+        Object.keys(opts).forEach(optKey => {
+            if (typeof opts[optKey] === 'object') {
+                this.ligthboxOptions[optKey] = Object.assign({}, HazelineElementsDefaults.textualOverlay[optKey], opts[optKey]);
                 return;
             }
 
             if (!!opts[optKey]) {
                 this.ligthboxOptions[optKey] = opts[optKey];
+            }
+
+        });
+    }
+
+    public setTextualOverlayGlobalOptions(opts: HazelineTextualOverlayOptions): void {
+        Object.keys(opts).forEach(optKey => {
+            if (typeof opts[optKey] === 'object') {
+                this.textualOverlayOptions[optKey] = Object.assign({}, HazelineElementsDefaults.textualOverlay[optKey], opts[optKey]);
+                return;
+            }
+
+            if (!!opts[optKey]) {
+                this.textualOverlayOptions[optKey] = opts[optKey];
             }
 
         });
@@ -258,6 +268,11 @@ export class HazelineLightboxRenderer {
         this.lightboxNextBtn.addEventListener('click', this.nextBtnClickEvtListener);
     }
 
+    private detachNextPrevEventsListeneres(): void {
+        this.lightboxPrevBtn.removeEventListener('click', this.prevBtnClickEvtListener);
+        this.lightboxNextBtn.removeEventListener('click', this.nextBtnClickEvtListener);
+    }
+
     private attachNextPrevHoverModesEventsListeners(): void {
         //  Prev btn hover modes
         this.lightboxPrevBtn.addEventListener('mouseenter', this.prevBtnMouseEnterEvtListener);
@@ -266,6 +281,16 @@ export class HazelineLightboxRenderer {
         //  Next btn hover modes
         this.lightboxNextBtn.addEventListener('mouseenter', this.nextBtnMouseEnterEvtListener);
         this.lightboxNextBtn.addEventListener('mouseleave', this.nextBtnMouseLeaveEvtListener);
+    }
+
+    private detachNextPrevHoverModesEventsListeners(): void {
+        //  Prev btn hover modes
+        this.lightboxPrevBtn.removeEventListener('mouseenter', this.prevBtnMouseEnterEvtListener);
+        this.lightboxPrevBtn.removeEventListener('mouseleave', this.prevBtnMouseLeaveEvtListener);
+
+        //  Next btn hover modes
+        this.lightboxNextBtn.removeEventListener('mouseenter', this.nextBtnMouseEnterEvtListener);
+        this.lightboxNextBtn.removeEventListener('mouseleave', this.nextBtnMouseLeaveEvtListener);
     }
 
     private createLightbox(): void {

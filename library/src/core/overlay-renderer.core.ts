@@ -26,6 +26,11 @@ export class HazelineOverlayRenderer {
         return this._$prematureEndRequired;
     }
 
+    public dispose(): void {
+        this.detachEndTutorialBtnEventListeners();
+        this.destroyPreviousElementsIfAny();
+    }
+
     public placeEndTutorialButton(): void {
         this.createEndTutorialButton();
         this.applyEndTutorialBtnOptions();
@@ -33,9 +38,11 @@ export class HazelineOverlayRenderer {
         this.attachEndTutorialBtnEventsListeners();
     }
 
-    public dispose(): void {
-        this.detachEventListeners();
-        this.destroyPreviousElementsIfAny();
+    public removeEndTutorialButton(): void {
+        if (!!document.getElementById(HazelineElementsIds.endTutorialButton)) {
+            this.detachEndTutorialBtnEventListeners();
+            document.body.removeChild(document.getElementById(HazelineElementsIds.endTutorialButton));
+        }
     }
 
     public setDynamicOptions(overlayOpts: HazelineOverlayOptions): void {
@@ -116,7 +123,7 @@ export class HazelineOverlayRenderer {
         this.endTutorialBtn.addEventListener('mouseenter', this.endTutorialBtnMouseEnterEvtListener);
     }
 
-    private detachEventListeners(): void {
+    private detachEndTutorialBtnEventListeners(): void {
         if (this.endTutorialBtn) {
             this.endTutorialBtn.removeEventListener('click', this.endTutorialBtnClickEvtListener);
             this.endTutorialBtn.removeEventListener('mouseleave', this.endTutorialBtnMouseLeaveEvtListener);
