@@ -384,7 +384,6 @@ interface HazelineTutorialStep {
 
 + Margin offset on highlighted item
 + Ability to add delay between a step and another
-+ Ability to use a overlay that fully covers the page and specifies a text. In that case the lightbox won't be used.
 + Ability to attach events on:
     + `onStepEnd()`
     + `onStepStart()`
