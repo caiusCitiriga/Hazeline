@@ -7,26 +7,37 @@ window.onload = () => {
         steps: [
             {
                 elementSelector: '#input-1',
-                text: 'Test me out!',
+                text: 'Test <strong>me</strong> out!<br><small style="color: #fff">Premi ovunque per continuare</small>',
                 useOverlayInsteadOfLightbox: true,
                 dynamicOptions: {
                     textualOverlay: {
                         hideButtons: true,
                         overlayCSS: {
-                            color: 'transparent',
-                            flexWrap: 'wrap',
                             justifyContent: 'center'
                         },
-                        overlayTextFadeInColor: 'red',
-                        prevNextButtonsCSS: {
-                            color: 'red'
-                        }
+                        overlayParagraphFadeInOpacity: 1,
                     }
                 }
             },
             {
                 elementSelector: '#input-2',
                 text: 'Test me out in lightbox!',
+                useOverlayInsteadOfLightbox: true,
+                dynamicOptions: {
+                    textualOverlay: {
+                        overlayBgFadeInOpacity: 1,
+                        clickAnywhereForNextStep: true,
+                        hideButtons: true,
+                        overlayCSS: {
+                            opacity: '0',
+                            background: 'rgba(113, 223, 172, .9)',
+                            justifyContent: 'center'
+                        },
+                        paragraphCSS: {
+                            justifyContent: 'center'
+                        }
+                    }
+                }
             },
             {
                 elementSelector: '#input-3',
