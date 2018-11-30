@@ -4,7 +4,8 @@
     "description": "An interactive walkthrough tutorial library for the web, done right.",
     "main": "dist/index.js",
     "scripts": {
-        "update": "sh ./scripts/update.sh"
+        "update": "sh ./scripts/update.sh",
+        "build": "tsc"
     },
     "repository": {
         "type": "git",
@@ -35,10 +36,10 @@
     "homepage": "https://github.com/caiuscitiriga/hazeline#readme",
     "dependencies": {
         "rxjs": "6.3.3",
-        "tether": "^1.4.5"
+        "tether": "1.4.5"
     },
     "devDependencies": {
-        "@types/tether": "^1.4.4",
+        "@types/tether": "1.4.4",
         "rimraf": "2.6.2",
         "typescript": "2.9.1"
     }

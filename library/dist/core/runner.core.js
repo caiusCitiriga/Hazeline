@@ -47,6 +47,10 @@ var HazelineRunner = /** @class */ (function () {
         }
         else {
             this.applyCustomOptionsIfAny(section.globalOptions);
+            //  if the tutorial has only one step apply the dynamic options too
+            if (this.currentSection.steps.length - 1 === this.currentSectionStepIdx) {
+                this.applyCustomOptionsIfAny(this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions, true);
+            }
             this.overlayRenderer.wrapElement(wrapElementsDimensions);
             this._$sectionStatus.next({
                 runningSection: section,
