@@ -107,9 +107,6 @@ haze.addSection({
 });
 ```
 
-#### Result
-![Hazeline GIF demo](https://github.com/caiusCitiriga/Hazeline/raw/dev/docs/global-conf-example.png)
-
 #### Example of dynamic customization
 The same logic applies for the steps, same options available:
 ```ts
@@ -157,7 +154,34 @@ Instead, you could use the **Textual Overlay**. When defining the step required 
 
 As the lightbox, and all the other Hazeline's components, even this one is designed to work out of the box, but still you can customize it like the others. For more detailed information about the Textual Overlay see its specific [configuration](#Textual-overlay) 
 
-## Hazeline customizable properties details
+## Step BeforeStartDelay
+
+It might happen that you have something asyncronus running that must be completed before the next step can begin. This might be a navigation to another page, on wich the element that the step about to start uses is present. 
+
+In these kind of situations the section step offers another type of configuration called `delayBeforeStart`. It is a number, and can set the milliseconds to wait before the step actually begin.
+
+**NOTE**: When you use the `delayBeforeStart` there are a few things to keep in mind:
+
+**1)** The majority of the CSS customization is done internally and based on your global or dynamic configuration for the normal overlay
+
+**2)** When activating the `delayBeforeStart` you **must** specify the `delayText`, which will be the text that will appear in the middle of the overlay. This text can be a simple 'Please wait...'. It also accepts HTML. Note that if you don't specify this information, the overlay will result empty and the tutorial might look like stuck to the user.
+
+**3)** Lastly, when activating the `delayBeforeStart`, you also **must** provide a text color for the overlay text. Since the normal overlay that wraps around the highlighted element doesn't contain any text, there's nothig that ensures that the property isn't `undefined`.
+
+## Hazeline section step specific properties
+---
+
+These are the `HazelineTutorialStep` specific properties:
+Property name | Description | Accepted values
+--------------|-------------|-----------------
+text| The text for this specific step. It will appear in the lightbox or textual wrapper | `string`
+delayBeforeStart | If set it will delay the rendering of the step according to the milliseconds set. | `number`
+delayText| If `delayBeforeStart` is set, this is **required**. It will be the text that will be shown to the user while waiting for the delay to end. | `string`
+delayTextColor| The color for the `delayText`. | `string`
+dynamicOptions| Dynamic options for this step. Will override the global options for this step. | `HazelineOptions`
+useOverlayInsteadOfLightbox| If set to `true` no lightbox will be used for this step, and no element will be highligted. Instead an overlay will appear and it will contain the text of the lightbox.|`boolean`
+
+## Hazeline section/step dynamic properties
 ---
 ### Overlay
 
@@ -167,7 +191,7 @@ Property name | Description | Accepted values
 --------------|-------------|-----------------
 `closeBtnText`  | The text inside the button to end the tutorial | `string`
 `overlayCSS` | The CSS for the overlay | `HazelineCSSRules`
-`ebdTutorialBtnCSS` | The CSS for the end tutorial btn | `HazelineCSSRules`
+`endTutorialBtnCSS` | The CSS for the end tutorial btn | `HazelineCSSRules`
 `endTutorialBtnHoverCSS` | The CSS for the end tutorial btn when in hover mode| `HazelineCSSRules`<br>
 
 ### Lightbox
