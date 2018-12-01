@@ -102,15 +102,16 @@ exports.HazelineElementsDefaults = {
         prevBtnText: 'Previous',
         lastStepNextBtnText: 'Finish',
         positioning: {
-            attachment: 'top center',
-            targetAttachment: 'bottom center',
+            offset: '',
+            targetOffset: '',
+            attachment: 'top right',
+            targetAttachment: 'bottom left',
             constraints: [
                 {
                     to: 'scrollParent',
                     attachment: 'together'
                 }
-            ],
-            offset: '-20px 0'
+            ]
         },
         lightboxWrapperCSS: {
             padding: '8px',
@@ -425,14 +426,15 @@ var styles_manager_core_1 = __webpack_require__(/*! ./styles-manager.core */ "..
 var HazelineLightboxRenderer = /** @class */ (function () {
     function HazelineLightboxRenderer() {
         var _this = this;
-        this._$nextStepRequired = new rxjs_1.Subject();
-        this._$prevStepRequired = new rxjs_1.Subject();
+        this._$eventTrigger = new rxjs_1.Subject();
         this.ligthboxOptions = elements_defaults_const_1.HazelineElementsDefaults.lightbox;
         this.textualOverlayOptions = elements_defaults_const_1.HazelineElementsDefaults.textualOverlay;
-        this.prevBtnClickEvtListener = function () {
-            return _this._$prevStepRequired.next(true);
+        this.nextBtnClickEvtListener = function () {
+            return _this._$eventTrigger.next({ type: HazelineEventTrigger.next });
         };
-        this.nextBtnClickEvtListener = function () { console.log('Next step required'); _this._$nextStepRequired.next(true); };
+        this.prevBtnClickEvtListener = function () {
+            _this._$eventTrigger.next({ type: HazelineEventTrigger.previous });
+        };
         this.prevBtnMouseLeaveEvtListener = function () {
             return styles_manager_core_1.HazelineStylesManager.styleElement(_this.lightboxPrevBtn, _this.ligthboxOptions.lightboxPrevBtnCSS || elements_defaults_const_1.HazelineElementsDefaults.lightbox.lightboxPrevBtnCSS);
         };
@@ -446,8 +448,7 @@ var HazelineLightboxRenderer = /** @class */ (function () {
             return styles_manager_core_1.HazelineStylesManager.styleElement(_this.lightboxNextBtn, _this.ligthboxOptions.lightboxNextBtnHoverCSS || elements_defaults_const_1.HazelineElementsDefaults.lightbox.lightboxNextBtnHoverCSS);
         };
     }
-    HazelineLightboxRenderer.prototype.$nextStepRequired = function () { return this._$nextStepRequired; };
-    HazelineLightboxRenderer.prototype.$prevStepRequired = function () { return this._$prevStepRequired; };
+    HazelineLightboxRenderer.prototype.$eventTriggered = function () { return this._$eventTrigger; };
     HazelineLightboxRenderer.prototype.dispose = function (detachListeners) {
         if (detachListeners === void 0) { detachListeners = false; }
         if (document.getElementById(elements_ids_enum_1.HazelineElementsIds.lightbox)) {
@@ -745,6 +746,11 @@ var HazelineLightboxRenderer = /** @class */ (function () {
     return HazelineLightboxRenderer;
 }());
 exports.HazelineLightboxRenderer = HazelineLightboxRenderer;
+var HazelineEventTrigger;
+(function (HazelineEventTrigger) {
+    HazelineEventTrigger[HazelineEventTrigger["next"] = 0] = "next";
+    HazelineEventTrigger[HazelineEventTrigger["previous"] = 1] = "previous";
+})(HazelineEventTrigger = exports.HazelineEventTrigger || (exports.HazelineEventTrigger = {}));
 //# sourceMappingURL=lightbox-renderer.core.js.map
 
 /***/ }),
@@ -1035,13 +1041,14 @@ var operators_1 = __webpack_require__(/*! rxjs/operators */ "../library/node_mod
 var rxjs_1 = __webpack_require__(/*! rxjs */ "../library/node_modules/rxjs/_esm5/index.js");
 var tutorial_section_statuses_enum_1 = __webpack_require__(/*! ./enums/tutorial-section-statuses.enum */ "../library/dist/core/enums/tutorial-section-statuses.enum.js");
 var element_manager_core_1 = __webpack_require__(/*! ./element-manager.core */ "../library/dist/core/element-manager.core.js");
+var lightbox_renderer_core_1 = __webpack_require__(/*! ./lightbox-renderer.core */ "../library/dist/core/lightbox-renderer.core.js");
 var HazelineRunner = /** @class */ (function () {
     function HazelineRunner(lightbox, renderer, elementManager) {
         var _this = this;
-        this._$sectionStatus = new rxjs_1.BehaviorSubject(null);
-        this.previousSectionStepIdx = 0;
-        this.currentSectionStepIdx = 0;
         this._$runWhenSectionStepsArePopulated = new rxjs_1.Subject();
+        this._$sectionStatus = new rxjs_1.BehaviorSubject(null);
+        this.currentSectionStepIdx = 0;
+        this.previousSectionStepIdx = 0;
         this.windowResizeEvtListener = function () {
             var wrapElementsDimensions = _this.elementManager.getWrappingElementsDimensions(_this.currentSection.steps[_this.currentSectionStepIdx].elementSelector);
             if (_this.currentSection.steps[_this.currentSectionStepIdx].useOverlayInsteadOfLightbox) {
@@ -1080,14 +1087,7 @@ var HazelineRunner = /** @class */ (function () {
     };
     HazelineRunner.prototype.runSection = function (section) {
         var _this = this;
-        this.currentSection = section;
-        this._$runWhenSectionStepsArePopulated.next(true);
-        if (!this.currentSection) {
-            this._$sectionStatus.next({
-                status: tutorial_section_statuses_enum_1.HazelineTutorialSectionStatuses.errored,
-                runningSection: section,
-                runningStepInSection: null
-            });
+        if (!this.sectionCanBeRan(section)) {
             return this._$sectionStatus;
         }
         var isFirstStep = this.currentSectionStepIdx === 0;
@@ -1112,8 +1112,9 @@ var HazelineRunner = /** @class */ (function () {
             }
             var fadeOutBeforeRemoving = !this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions.textualOverlay.disableBgFadeIn;
             this.lightboxRenderer.disposeTextualOverlay(false, fadeOutBeforeRemoving)
-                .pipe(operators_1.switchMap(function () { return _this.lightboxRenderer.placeTextOverlay(_this.currentSection.steps[_this.currentSectionStepIdx], isLastStep); }))
-                .subscribe();
+                .pipe(operators_1.switchMap(function () {
+                return _this.lightboxRenderer.placeTextOverlay(_this.currentSection.steps[_this.currentSectionStepIdx], isLastStep);
+            })).subscribe();
         }
         else {
             this.lightboxRenderer.placeLightbox(element_manager_core_1.HazelineElementManager.getElementBySelector(section.steps[this.currentSectionStepIdx].elementSelector), section.steps[this.currentSectionStepIdx], isLastStep);
@@ -1132,30 +1133,35 @@ var HazelineRunner = /** @class */ (function () {
         if (!options) {
             return;
         }
-        if (options.lightbox && isDynamicOptions) {
-            this.lightboxRenderer.setLightboxDynamicOptions(options.lightbox);
-        }
-        if (options.lightbox && !isDynamicOptions) {
-            this.lightboxRenderer.setLightboxGlobalOptions(options.lightbox);
-        }
-        if (options.textualOverlay && isDynamicOptions) {
-            this.lightboxRenderer.setTextualOverlayDynamicOptions(options.textualOverlay);
-        }
-        if (options.textualOverlay && !isDynamicOptions) {
-            this.lightboxRenderer.setTextualOverlayGlobalOptions(options.textualOverlay);
+        if (options.overlay && !isDynamicOptions) {
+            this.overlayRenderer.setGlobalOptions(options.overlay);
         }
         if (options.overlay && isDynamicOptions) {
             this.overlayRenderer.setDynamicOptions(options.overlay);
         }
-        if (options.overlay && !isDynamicOptions) {
-            this.overlayRenderer.setGlobalOptions(options.overlay);
+        if (options.lightbox && !isDynamicOptions) {
+            this.lightboxRenderer.setLightboxGlobalOptions(options.lightbox);
+        }
+        if (options.lightbox && isDynamicOptions) {
+            this.lightboxRenderer.setLightboxDynamicOptions(options.lightbox);
+        }
+        if (options.textualOverlay && !isDynamicOptions) {
+            this.lightboxRenderer.setTextualOverlayGlobalOptions(options.textualOverlay);
+        }
+        if (options.textualOverlay && isDynamicOptions) {
+            this.lightboxRenderer.setTextualOverlayDynamicOptions(options.textualOverlay);
         }
     };
     HazelineRunner.prototype.startNextPrevButtonClicks = function () {
         var _this = this;
-        this.lightboxRenderer.$nextStepRequired()
-            .pipe(operators_1.filter(function (res) { return !!res; }), operators_1.filter(function () {
-            if (_this.currentSectionStepIdx === (_this.currentSection.steps.length - 1)) {
+        var isNextStepRequired = undefined;
+        this.lightboxRenderer.$eventTriggered()
+            .pipe(operators_1.tap(function (eventTrigger) {
+            isNextStepRequired = eventTrigger.type === lightbox_renderer_core_1.HazelineEventTrigger.next ? true : false;
+            return eventTrigger;
+        }), operators_1.filter(function (res) { return !!res; }), operators_1.filter(function () {
+            //  If we've reached the last step
+            if (isNextStepRequired && _this.currentSectionStepIdx === (_this.currentSection.steps.length - 1)) {
                 _this._$sectionStatus.next({
                     runningSection: null,
                     runningStepInSection: null,
@@ -1164,11 +1170,8 @@ var HazelineRunner = /** @class */ (function () {
                 return false;
             }
             return true;
-        }), operators_1.tap(function () { return _this.currentSectionStepIdx++; }), operators_1.tap(function () { return _this.overlayRenderer.removeEndTutorialButton(); }), operators_1.filter(function () { return !!_this.currentSection.steps && !!_this.currentSection.steps.length; }), operators_1.switchMap(function () {
-            var beforeStartDelay = _this.currentSection.steps[_this.currentSectionStepIdx].delayBeforeStart;
-            return rxjs_1.of(beforeStartDelay);
-        }), operators_1.tap(function (res) {
-            if (!res) {
+        }), operators_1.tap(function () { return isNextStepRequired ? _this.currentSectionStepIdx++ : _this.currentSectionStepIdx--; }), operators_1.tap(function () { return _this.overlayRenderer.removeEndTutorialButton(); }), operators_1.filter(function () { return !!_this.currentSection.steps && !!_this.currentSection.steps.length; }), operators_1.switchMap(function () { return rxjs_1.of(_this.currentSection.steps[_this.currentSectionStepIdx].delayBeforeStart); }), operators_1.tap(function (dealyAmount) {
+            if (!dealyAmount) {
                 _this.runSection(_this.currentSection);
                 return false;
             }
@@ -1183,33 +1186,6 @@ var HazelineRunner = /** @class */ (function () {
         }), operators_1.switchMap(function () {
             var timeoutPassed = new rxjs_1.Subject();
             setTimeout(function () {
-                console.log('Removing wait overlay');
-                _this.overlayRenderer.removeWaitForDelayOverlay();
-                timeoutPassed.next(true);
-            }, _this.currentSection.steps[_this.currentSectionStepIdx].delayBeforeStart);
-            return timeoutPassed;
-        }), operators_1.tap(function () { return _this.runSection(_this.currentSection); })).subscribe();
-        this.lightboxRenderer.$prevStepRequired()
-            .pipe(operators_1.filter(function (res) { return !!res; }), operators_1.filter(function () { return _this.currentSectionStepIdx === 0 ? false : true; }), operators_1.tap(function () { return _this.currentSectionStepIdx--; }), operators_1.tap(function () { return _this.overlayRenderer.removeEndTutorialButton(); }), operators_1.filter(function () { return !!_this.currentSection.steps && !!_this.currentSection.steps.length; }), operators_1.switchMap(function () {
-            var beforeStartDelay = _this.currentSection.steps[_this.currentSectionStepIdx].delayBeforeStart;
-            return rxjs_1.of(beforeStartDelay);
-        }), operators_1.tap(function (res) {
-            if (!res) {
-                _this.runSection(_this.currentSection);
-                return false;
-            }
-            return true;
-        }), operators_1.filter(function (applyDelay) { return !!applyDelay; }), operators_1.switchMap(function () {
-            _this.overlayRenderer.dispose();
-            _this.lightboxRenderer.dispose();
-            _this.lightboxRenderer.disposeTextualOverlay();
-            var message = _this.currentSection.steps[_this.currentSectionStepIdx].delayText;
-            var textColor = _this.currentSection.steps[_this.currentSectionStepIdx].delayTextColor;
-            return _this.overlayRenderer.placeWaitForDelayOverlay(message, textColor);
-        }), operators_1.switchMap(function () {
-            var timeoutPassed = new rxjs_1.Subject();
-            setTimeout(function () {
-                console.log('Removing wait overlay');
                 _this.overlayRenderer.removeWaitForDelayOverlay();
                 timeoutPassed.next(true);
             }, _this.currentSection.steps[_this.currentSectionStepIdx].delayBeforeStart);
@@ -1223,8 +1199,20 @@ var HazelineRunner = /** @class */ (function () {
                 status: tutorial_section_statuses_enum_1.HazelineTutorialSectionStatuses.ended
             });
             _this._$sectionStatus.complete();
-        }), operators_1.tap(function () { return _this.overlayRenderer.removeEndTutorialButton(); }))
-            .subscribe();
+        }), operators_1.tap(function () { return _this.overlayRenderer.removeEndTutorialButton(); })).subscribe();
+    };
+    HazelineRunner.prototype.sectionCanBeRan = function (section) {
+        this.currentSection = section;
+        this._$runWhenSectionStepsArePopulated.next(true);
+        if (!this.currentSection) {
+            this._$sectionStatus.next({
+                status: tutorial_section_statuses_enum_1.HazelineTutorialSectionStatuses.errored,
+                runningSection: section,
+                runningStepInSection: null
+            });
+            return false;
+        }
+        return true;
     };
     HazelineRunner.prototype.startResponsiveListeners = function () {
         window.addEventListener('resize', this.windowResizeEvtListener);
@@ -15941,7 +15929,6 @@ window.onload = function () {
                 }
             },
             {
-                delayBeforeStart: 5000,
                 delayText: 'Please wait',
                 delayTextColor: '#fff',
                 elementSelector: '#input-3',

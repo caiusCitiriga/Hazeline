@@ -40,7 +40,6 @@ window.onload = () => {
                 }
             },
             {
-                delayBeforeStart: 5000,
                 delayText: 'Please wait',
                 delayTextColor: '#fff',
                 elementSelector: '#input-3',
