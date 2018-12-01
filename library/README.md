@@ -332,6 +332,7 @@ interface HazelineTutorialSection {
 interface HazelineOptions {
     overlay?: HazelineOverlayOptions;
     lightbox?: HazelineLightboxOptions;
+    textualOverlay?: HazelineTextualOverlayOptions;
 }
 ```
 
