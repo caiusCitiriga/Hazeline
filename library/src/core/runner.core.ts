@@ -1,5 +1,5 @@
-import { filter, tap, switchMap } from 'rxjs/operators';
-import { Observable, BehaviorSubject, of } from 'rxjs';
+import { filter, tap, switchMap, delay, take } from 'rxjs/operators';
+import { Observable, BehaviorSubject, of, Subject } from 'rxjs';
 
 import { HazelineTutorialSectionStatuses } from './enums/tutorial-section-statuses.enum';
 import { HazelineTutorialSectionStatus } from './interfaces/tutorial-section-status.interface';
@@ -20,6 +20,8 @@ export class HazelineRunner {
     private previousSectionStepIdx = 0;
     private currentSectionStepIdx = 0;
     private currentSection: HazelineTutorialSection;
+
+    private _$runWhenSectionStepsArePopulated = new Subject<boolean>();
 
     private windowResizeEvtListener = () => {
         const wrapElementsDimensions = this.elementManager.getWrappingElementsDimensions(this.currentSection.steps[this.currentSectionStepIdx].elementSelector);
@@ -49,8 +51,15 @@ export class HazelineRunner {
         this.lightboxRenderer = lightbox;
         this.overlayRenderer = renderer;
         this.elementManager = elementManager;
-        this.startNextPrevButtonClicks();
-        this.startResponsiveListeners();
+
+        this._$runWhenSectionStepsArePopulated
+            .pipe(
+                take(1),
+                tap(() => {
+                    this.startNextPrevButtonClicks();
+                    this.startResponsiveListeners();
+                })
+            ).subscribe();
     }
 
     public endTutorial(): void {
@@ -63,6 +72,7 @@ export class HazelineRunner {
 
     public runSection(section: HazelineTutorialSection): Observable<HazelineTutorialSectionStatus> {
         this.currentSection = section;
+        this._$runWhenSectionStepsArePopulated.next(true);
         if (!this.currentSection) {
             this._$sectionStatus.next({
                 status: HazelineTutorialSectionStatuses.errored,
@@ -88,11 +98,7 @@ export class HazelineRunner {
 
         if (!isFirstStep && !thisStepUsesTextualOverlay) {
             this.lightboxRenderer.disposeTextualOverlay();
-            if (previousStepUsedTextualOverlay) {
-                this.overlayRenderer.wrapElement(wrapElementsDimensions);
-            } else {
-                this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
-            }
+            this.overlayRenderer.wrapElement(wrapElementsDimensions);
         }
 
         if (thisStepUsesTextualOverlay) {
@@ -166,7 +172,39 @@ export class HazelineRunner {
                 }),
                 tap(() => this.currentSectionStepIdx++),
                 tap(() => this.overlayRenderer.removeEndTutorialButton()),
-                tap(() => this.runSection(this.currentSection)),
+                filter(() => !!this.currentSection.steps && !!this.currentSection.steps.length),
+                switchMap(() => {
+                    const beforeStartDelay = this.currentSection.steps[this.currentSectionStepIdx].delayBeforeStart;
+                    return of(beforeStartDelay)
+                }),
+                tap(res => {
+                    if (!res) {
+                        this.runSection(this.currentSection);
+                        return false;
+                    }
+                    return true;
+                }),
+                filter(applyDelay => !!applyDelay),
+                switchMap(() => {
+                    this.overlayRenderer.dispose();
+                    this.lightboxRenderer.dispose();
+                    this.lightboxRenderer.disposeTextualOverlay();
+
+                    const message = this.currentSection.steps[this.currentSectionStepIdx].delayText;
+                    const textColor = this.currentSection.steps[this.currentSectionStepIdx].delayTextColor;
+                    return this.overlayRenderer.placeWaitForDelayOverlay(message, textColor);
+                }),
+                switchMap(() => {
+                    const timeoutPassed = new Subject<boolean>();
+                    setTimeout(() => {
+                        console.log('Removing wait overlay');
+                        this.overlayRenderer.removeWaitForDelayOverlay();
+                        timeoutPassed.next(true);
+                    }, this.currentSection.steps[this.currentSectionStepIdx].delayBeforeStart)
+
+                    return timeoutPassed;
+                }),
+                tap(() => this.runSection(this.currentSection))
             ).subscribe();
 
         this.lightboxRenderer.$prevStepRequired()
@@ -175,7 +213,39 @@ export class HazelineRunner {
                 filter(() => this.currentSectionStepIdx === 0 ? false : true),
                 tap(() => this.currentSectionStepIdx--),
                 tap(() => this.overlayRenderer.removeEndTutorialButton()),
-                tap(() => this.runSection(this.currentSection)),
+                filter(() => !!this.currentSection.steps && !!this.currentSection.steps.length),
+                switchMap(() => {
+                    const beforeStartDelay = this.currentSection.steps[this.currentSectionStepIdx].delayBeforeStart;
+                    return of(beforeStartDelay)
+                }),
+                tap(res => {
+                    if (!res) {
+                        this.runSection(this.currentSection);
+                        return false;
+                    }
+                    return true;
+                }),
+                filter(applyDelay => !!applyDelay),
+                switchMap(() => {
+                    this.overlayRenderer.dispose();
+                    this.lightboxRenderer.dispose();
+                    this.lightboxRenderer.disposeTextualOverlay();
+
+                    const message = this.currentSection.steps[this.currentSectionStepIdx].delayText;
+                    const textColor = this.currentSection.steps[this.currentSectionStepIdx].delayTextColor;
+                    return this.overlayRenderer.placeWaitForDelayOverlay(message, textColor);
+                }),
+                switchMap(() => {
+                    const timeoutPassed = new Subject<boolean>();
+                    setTimeout(() => {
+                        console.log('Removing wait overlay');
+                        this.overlayRenderer.removeWaitForDelayOverlay();
+                        timeoutPassed.next(true);
+                    }, this.currentSection.steps[this.currentSectionStepIdx].delayBeforeStart)
+
+                    return timeoutPassed;
+                }),
+                tap(() => this.runSection(this.currentSection))
             ).subscribe();
 
         this.overlayRenderer.$premartureEndRequired()

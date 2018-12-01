@@ -7,6 +7,24 @@ var styles_manager_core_1 = require("./styles-manager.core");
 var HazelineOverlayRenderer = /** @class */ (function () {
     function HazelineOverlayRenderer() {
         var _this = this;
+        this.backupProperties = {
+            topBox: {
+                opacity: null,
+                transition: null,
+            },
+            leftBox: {
+                opacity: null,
+                transition: null,
+            },
+            rightBox: {
+                opacity: null,
+                transition: null,
+            },
+            bottomBox: {
+                opacity: null,
+                transition: null,
+            },
+        };
         this._$prematureEndRequired = new rxjs_1.Subject();
         this.overlayOptions = elements_defaults_const_1.HazelineElementsDefaults.overlay;
         this.endTutorialBtnClickEvtListener = function () { return _this._$prematureEndRequired.next(true); };
@@ -19,6 +37,44 @@ var HazelineOverlayRenderer = /** @class */ (function () {
     HazelineOverlayRenderer.prototype.dispose = function () {
         this.detachEndTutorialBtnEventListeners();
         this.destroyPreviousElementsIfAny();
+    };
+    HazelineOverlayRenderer.prototype.placeWaitForDelayOverlay = function (message, textColor) {
+        var _this = this;
+        var overlayShown = new rxjs_1.Subject();
+        var delayInProgressCSS = {
+            zIndex: this.overlayOptions.overlayCSS.zIndex,
+            top: '0',
+            left: '0',
+            opacity: '0',
+            display: 'flex',
+            color: textColor,
+            fontSize: '30px',
+            position: 'fixed',
+            textAlign: 'center',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: window.innerWidth + "px",
+            height: window.innerHeight + "px",
+            transition: 'opacity 200ms ease-in-out',
+            background: this.overlayOptions.overlayCSS.background,
+        };
+        this.delayInProgressOverlay = document.createElement('div');
+        document.body.prepend(this.delayInProgressOverlay);
+        this.delayInProgressOverlay = styles_manager_core_1.HazelineStylesManager.styleElement(this.delayInProgressOverlay, delayInProgressCSS);
+        this.delayInProgressOverlay.id = elements_ids_enum_1.HazelineElementsIds.waitForDelayOverlay;
+        this.delayInProgressOverlay.innerHTML = message;
+        setTimeout(function () {
+            _this.delayInProgressOverlay.style.opacity = '1';
+            overlayShown.next(true);
+        }, 220);
+        return overlayShown;
+    };
+    HazelineOverlayRenderer.prototype.removeWaitForDelayOverlay = function () {
+        if (!document.getElementById(elements_ids_enum_1.HazelineElementsIds.waitForDelayOverlay)) {
+            return;
+        }
+        document.body.removeChild(document.getElementById(elements_ids_enum_1.HazelineElementsIds.waitForDelayOverlay));
+        this.delayInProgressOverlay = null;
     };
     HazelineOverlayRenderer.prototype.placeEndTutorialButton = function () {
         this.createEndTutorialButton();
@@ -82,6 +138,34 @@ var HazelineOverlayRenderer = /** @class */ (function () {
         var wrappingElements = this.createWrappingElements(dimensions);
         this.attachElementsToBody(wrappingElements);
     };
+    HazelineOverlayRenderer.prototype.applyEndTutorialBtnOptions = function () {
+        this.endTutorialBtn.innerHTML = this.overlayOptions.closeBtnText;
+        styles_manager_core_1.HazelineStylesManager.styleElement(this.endTutorialBtn, this.overlayOptions.endTutorialBtnCSS);
+    };
+    HazelineOverlayRenderer.prototype.applyOptionsOnElements = function (elements, dimensions) {
+        var _this = this;
+        elements.topBox.id = elements_ids_enum_1.HazelineElementsIds.topBox;
+        elements.leftBox.id = elements_ids_enum_1.HazelineElementsIds.leftBox;
+        elements.rightBox.id = elements_ids_enum_1.HazelineElementsIds.rightBox;
+        elements.bottomBox.id = elements_ids_enum_1.HazelineElementsIds.bottomBox;
+        elements.bottomBox.id = elements_ids_enum_1.HazelineElementsIds.bottomBox;
+        Object.keys(elements).forEach(function (el) {
+            styles_manager_core_1.HazelineStylesManager.styleElement(elements[el], _this.overlayOptions.overlayCSS);
+        });
+        elements.topBox.style.width = dimensions.topBox.width + "px";
+        elements.topBox.style.height = dimensions.topBox.height + "px";
+        elements.topBox.style.left = dimensions.topBox.offsetLeft + "px";
+        elements.leftBox.style.width = dimensions.leftBox.width + "px";
+        elements.leftBox.style.height = dimensions.leftBox.height + "px";
+        elements.rightBox.style.width = dimensions.rightBox.width + "px";
+        elements.rightBox.style.height = dimensions.rightBox.height + "px";
+        elements.rightBox.style.left = dimensions.rightBox.offsetLeft + "px";
+        elements.bottomBox.style.width = dimensions.bottomBox.width + "px";
+        elements.bottomBox.style.height = dimensions.bottomBox.height + "px";
+        elements.bottomBox.style.top = dimensions.bottomBox.offsetTop + "px";
+        elements.bottomBox.style.left = dimensions.bottomBox.offsetLeft + "px";
+        return elements;
+    };
     HazelineOverlayRenderer.prototype.attachElementsToBody = function (elements) {
         var body = document.querySelector('body');
         body.prepend(elements.topBox); // not fully supported. See browser tables
@@ -98,12 +182,26 @@ var HazelineOverlayRenderer = /** @class */ (function () {
         this.endTutorialBtn.addEventListener('mouseleave', this.endTutorialBtnMouseLeaveEvtListener);
         this.endTutorialBtn.addEventListener('mouseenter', this.endTutorialBtnMouseEnterEvtListener);
     };
-    HazelineOverlayRenderer.prototype.detachEndTutorialBtnEventListeners = function () {
-        if (this.endTutorialBtn) {
-            this.endTutorialBtn.removeEventListener('click', this.endTutorialBtnClickEvtListener);
-            this.endTutorialBtn.removeEventListener('mouseleave', this.endTutorialBtnMouseLeaveEvtListener);
-            this.endTutorialBtn.removeEventListener('mouseenter', this.endTutorialBtnMouseEnterEvtListener);
+    HazelineOverlayRenderer.prototype.backupPropertiesOfOverlayBoxes = function () {
+        if (!this.topBox) {
+            return;
         }
+        this.backupProperties.topBox.opacity =
+            this.topBox.style.opacity;
+        this.backupProperties.topBox.opacity =
+            this.topBox.style.transition;
+        this.backupProperties.leftBox.opacity =
+            this.leftBox.style.opacity;
+        this.backupProperties.leftBox.opacity =
+            this.leftBox.style.transition;
+        this.backupProperties.rightBox.opacity =
+            this.rightBox.style.opacity;
+        this.backupProperties.rightBox.opacity =
+            this.rightBox.style.transition;
+        this.backupProperties.bottomBox.opacity =
+            this.bottomBox.style.opacity;
+        this.backupProperties.bottomBox.opacity =
+            this.bottomBox.style.transition;
     };
     HazelineOverlayRenderer.prototype.createEndTutorialButton = function () {
         this.endTutorialBtn = document.createElement('button');
@@ -140,33 +238,22 @@ var HazelineOverlayRenderer = /** @class */ (function () {
             document.body.removeChild(document.getElementById(elements_ids_enum_1.HazelineElementsIds.endTutorialButton));
         }
     };
-    HazelineOverlayRenderer.prototype.applyEndTutorialBtnOptions = function () {
-        this.endTutorialBtn.innerHTML = this.overlayOptions.closeBtnText;
-        styles_manager_core_1.HazelineStylesManager.styleElement(this.endTutorialBtn, this.overlayOptions.endTutorialBtnCSS);
+    HazelineOverlayRenderer.prototype.detachEndTutorialBtnEventListeners = function () {
+        if (this.endTutorialBtn) {
+            this.endTutorialBtn.removeEventListener('click', this.endTutorialBtnClickEvtListener);
+            this.endTutorialBtn.removeEventListener('mouseleave', this.endTutorialBtnMouseLeaveEvtListener);
+            this.endTutorialBtn.removeEventListener('mouseenter', this.endTutorialBtnMouseEnterEvtListener);
+        }
     };
-    HazelineOverlayRenderer.prototype.applyOptionsOnElements = function (elements, dimensions) {
+    HazelineOverlayRenderer.prototype.fadeOutOverlayBoxes = function () {
         var _this = this;
-        elements.topBox.id = elements_ids_enum_1.HazelineElementsIds.topBox;
-        elements.leftBox.id = elements_ids_enum_1.HazelineElementsIds.leftBox;
-        elements.rightBox.id = elements_ids_enum_1.HazelineElementsIds.rightBox;
-        elements.bottomBox.id = elements_ids_enum_1.HazelineElementsIds.bottomBox;
-        elements.bottomBox.id = elements_ids_enum_1.HazelineElementsIds.bottomBox;
-        Object.keys(elements).forEach(function (el) {
-            styles_manager_core_1.HazelineStylesManager.styleElement(elements[el], _this.overlayOptions.overlayCSS);
-        });
-        elements.topBox.style.width = dimensions.topBox.width + "px";
-        elements.topBox.style.height = dimensions.topBox.height + "px";
-        elements.topBox.style.left = dimensions.topBox.offsetLeft + "px";
-        elements.leftBox.style.width = dimensions.leftBox.width + "px";
-        elements.leftBox.style.height = dimensions.leftBox.height + "px";
-        elements.rightBox.style.width = dimensions.rightBox.width + "px";
-        elements.rightBox.style.height = dimensions.rightBox.height + "px";
-        elements.rightBox.style.left = dimensions.rightBox.offsetLeft + "px";
-        elements.bottomBox.style.width = dimensions.bottomBox.width + "px";
-        elements.bottomBox.style.height = dimensions.bottomBox.height + "px";
-        elements.bottomBox.style.top = dimensions.bottomBox.offsetTop + "px";
-        elements.bottomBox.style.left = dimensions.bottomBox.offsetLeft + "px";
-        return elements;
+        if (!this.topBox) {
+            return;
+        }
+        ['topBox', 'leftBox', 'rightBox', 'bottomBox']
+            .forEach(function (k) { return _this[k].style.transition = 'opacity 200ms ease-in-out'; });
+        setTimeout(function () { return ['topBox', 'leftBox', 'rightBox', 'bottomBox']
+            .forEach(function (k) { return _this[k].style.opacity = '0'; }); }, 10);
     };
     return HazelineOverlayRenderer;
 }());

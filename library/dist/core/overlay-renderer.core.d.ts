@@ -7,6 +7,8 @@ export declare class HazelineOverlayRenderer {
     private rightBox;
     private bottomBox;
     private endTutorialBtn;
+    private delayInProgressOverlay;
+    private backupProperties;
     private _$prematureEndRequired;
     private overlayOptions;
     private endTutorialBtnClickEvtListener;
@@ -14,20 +16,24 @@ export declare class HazelineOverlayRenderer {
     private endTutorialBtnMouseEnterEvtListener;
     $premartureEndRequired(): Observable<boolean>;
     dispose(): void;
+    placeWaitForDelayOverlay(message: string, textColor: string): Observable<boolean>;
+    removeWaitForDelayOverlay(): void;
     placeEndTutorialButton(): void;
     removeEndTutorialButton(): void;
     setDynamicOptions(overlayOpts: HazelineOverlayOptions): void;
     setGlobalOptions(overlayOpts: HazelineOverlayOptions): void;
     updateElementsDimensions(dimensions: HazelineWrappingElementsDimensions): void;
     wrapElement(dimensions: HazelineWrappingElementsDimensions): void;
+    private applyEndTutorialBtnOptions;
+    private applyOptionsOnElements;
     private attachElementsToBody;
     private attachEndTutorialButtonToBody;
     private attachEndTutorialBtnEventsListeners;
-    private detachEndTutorialBtnEventListeners;
+    private backupPropertiesOfOverlayBoxes;
     private createEndTutorialButton;
     private createWrappingElements;
     private destroyPreviousElementsIfAny;
-    private applyEndTutorialBtnOptions;
-    private applyOptionsOnElements;
+    private detachEndTutorialBtnEventListeners;
+    private fadeOutOverlayBoxes;
 }
 //# sourceMappingURL=overlay-renderer.core.d.ts.map

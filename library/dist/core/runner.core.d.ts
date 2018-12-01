@@ -12,6 +12,7 @@ export declare class HazelineRunner {
     private previousSectionStepIdx;
     private currentSectionStepIdx;
     private currentSection;
+    private _$runWhenSectionStepsArePopulated;
     private windowResizeEvtListener;
     private windowScrollEvtListener;
     constructor(lightbox: HazelineLightboxRenderer, renderer: HazelineOverlayRenderer, elementManager: HazelineElementManager);

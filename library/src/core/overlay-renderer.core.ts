@@ -6,6 +6,7 @@ import { HazelineWrappingElementsDimensions } from './interfaces/wrapping-elemen
 
 import { HazelineStylesManager } from './styles-manager.core';
 import { HazelineOverlayOptions } from './interfaces/hazeline-options.interface';
+import { HazelineCSSRules } from './interfaces/css-rules.interface';
 
 export class HazelineOverlayRenderer {
 
@@ -14,6 +15,26 @@ export class HazelineOverlayRenderer {
     private rightBox: HTMLDivElement;
     private bottomBox: HTMLDivElement;
     private endTutorialBtn: HTMLButtonElement;
+    private delayInProgressOverlay: HTMLDivElement;
+
+    private backupProperties = {
+        topBox: {
+            opacity: null,
+            transition: null,
+        },
+        leftBox: {
+            opacity: null,
+            transition: null,
+        },
+        rightBox: {
+            opacity: null,
+            transition: null,
+        },
+        bottomBox: {
+            opacity: null,
+            transition: null,
+        },
+    }
 
     private _$prematureEndRequired = new Subject<boolean>();
     private overlayOptions = HazelineElementsDefaults.overlay;
@@ -29,6 +50,49 @@ export class HazelineOverlayRenderer {
     public dispose(): void {
         this.detachEndTutorialBtnEventListeners();
         this.destroyPreviousElementsIfAny();
+    }
+
+    public placeWaitForDelayOverlay(message: string, textColor: string): Observable<boolean> {
+        const overlayShown = new Subject<boolean>();
+        const delayInProgressCSS = <HazelineCSSRules>{
+            zIndex: this.overlayOptions.overlayCSS.zIndex,
+            top: '0',
+            left: '0',
+            opacity: '0',
+            display: 'flex',
+            color: textColor,
+            fontSize: '30px',
+            position: 'fixed',
+            textAlign: 'center',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: `${window.innerWidth}px`,
+            height: `${window.innerHeight}px`,
+            transition: 'opacity 200ms ease-in-out',
+            background: this.overlayOptions.overlayCSS.background,
+        };
+
+        this.delayInProgressOverlay = document.createElement('div');
+        (document.body as any).prepend(this.delayInProgressOverlay);
+        this.delayInProgressOverlay = HazelineStylesManager.styleElement(this.delayInProgressOverlay, delayInProgressCSS);
+        this.delayInProgressOverlay.id = HazelineElementsIds.waitForDelayOverlay;
+        this.delayInProgressOverlay.innerHTML = message;
+
+        setTimeout(() => {
+            this.delayInProgressOverlay.style.opacity = '1';
+            overlayShown.next(true);
+        }, 220);
+
+        return overlayShown;
+    }
+
+    public removeWaitForDelayOverlay(): void {
+        if (!document.getElementById(HazelineElementsIds.waitForDelayOverlay)) {
+            return;
+        }
+
+        document.body.removeChild(document.getElementById(HazelineElementsIds.waitForDelayOverlay));
+        this.delayInProgressOverlay = null;
     }
 
     public placeEndTutorialButton(): void {
@@ -103,6 +167,42 @@ export class HazelineOverlayRenderer {
         this.attachElementsToBody(wrappingElements);
     }
 
+    private applyEndTutorialBtnOptions(): void {
+        this.endTutorialBtn.innerHTML = this.overlayOptions.closeBtnText;
+        HazelineStylesManager.styleElement(this.endTutorialBtn, this.overlayOptions.endTutorialBtnCSS);
+    }
+
+    private applyOptionsOnElements(elements: ElementsToAttachOnBody, dimensions: HazelineWrappingElementsDimensions): ElementsToAttachOnBody {
+        elements.topBox.id = HazelineElementsIds.topBox;
+        elements.leftBox.id = HazelineElementsIds.leftBox;
+        elements.rightBox.id = HazelineElementsIds.rightBox;
+        elements.bottomBox.id = HazelineElementsIds.bottomBox;
+        elements.bottomBox.id = HazelineElementsIds.bottomBox;
+
+        Object.keys(elements).forEach(el => {
+            HazelineStylesManager.styleElement(elements[el], this.overlayOptions.overlayCSS);
+        });
+
+
+        elements.topBox.style.width = `${dimensions.topBox.width}px`;
+        elements.topBox.style.height = `${dimensions.topBox.height}px`;
+        elements.topBox.style.left = `${dimensions.topBox.offsetLeft}px`;
+
+        elements.leftBox.style.width = `${dimensions.leftBox.width}px`;
+        elements.leftBox.style.height = `${dimensions.leftBox.height}px`;
+
+        elements.rightBox.style.width = `${dimensions.rightBox.width}px`;
+        elements.rightBox.style.height = `${dimensions.rightBox.height}px`;
+        elements.rightBox.style.left = `${dimensions.rightBox.offsetLeft}px`;
+
+        elements.bottomBox.style.width = `${dimensions.bottomBox.width}px`;
+        elements.bottomBox.style.height = `${dimensions.bottomBox.height}px`;
+        elements.bottomBox.style.top = `${dimensions.bottomBox.offsetTop}px`;
+        elements.bottomBox.style.left = `${dimensions.bottomBox.offsetLeft}px`;
+
+        return elements;
+    }
+
     private attachElementsToBody(elements: ElementsToAttachOnBody): void {
         const body = document.querySelector('body');
 
@@ -123,12 +223,27 @@ export class HazelineOverlayRenderer {
         this.endTutorialBtn.addEventListener('mouseenter', this.endTutorialBtnMouseEnterEvtListener);
     }
 
-    private detachEndTutorialBtnEventListeners(): void {
-        if (this.endTutorialBtn) {
-            this.endTutorialBtn.removeEventListener('click', this.endTutorialBtnClickEvtListener);
-            this.endTutorialBtn.removeEventListener('mouseleave', this.endTutorialBtnMouseLeaveEvtListener);
-            this.endTutorialBtn.removeEventListener('mouseenter', this.endTutorialBtnMouseEnterEvtListener);
+    private backupPropertiesOfOverlayBoxes() {
+        if (!this.topBox) {
+            return;
         }
+
+        this.backupProperties.topBox.opacity =
+            this.topBox.style.opacity;
+        this.backupProperties.topBox.opacity =
+            this.topBox.style.transition;
+        this.backupProperties.leftBox.opacity =
+            this.leftBox.style.opacity;
+        this.backupProperties.leftBox.opacity =
+            this.leftBox.style.transition;
+        this.backupProperties.rightBox.opacity =
+            this.rightBox.style.opacity;
+        this.backupProperties.rightBox.opacity =
+            this.rightBox.style.transition;
+        this.backupProperties.bottomBox.opacity =
+            this.bottomBox.style.opacity;
+        this.backupProperties.bottomBox.opacity =
+            this.bottomBox.style.transition;
     }
 
     private createEndTutorialButton(): void {
@@ -172,40 +287,23 @@ export class HazelineOverlayRenderer {
         }
     }
 
-    private applyEndTutorialBtnOptions(): void {
-        this.endTutorialBtn.innerHTML = this.overlayOptions.closeBtnText;
-        HazelineStylesManager.styleElement(this.endTutorialBtn, this.overlayOptions.endTutorialBtnCSS);
+    private detachEndTutorialBtnEventListeners(): void {
+        if (this.endTutorialBtn) {
+            this.endTutorialBtn.removeEventListener('click', this.endTutorialBtnClickEvtListener);
+            this.endTutorialBtn.removeEventListener('mouseleave', this.endTutorialBtnMouseLeaveEvtListener);
+            this.endTutorialBtn.removeEventListener('mouseenter', this.endTutorialBtnMouseEnterEvtListener);
+        }
     }
 
-    private applyOptionsOnElements(elements: ElementsToAttachOnBody, dimensions: HazelineWrappingElementsDimensions): ElementsToAttachOnBody {
-        elements.topBox.id = HazelineElementsIds.topBox;
-        elements.leftBox.id = HazelineElementsIds.leftBox;
-        elements.rightBox.id = HazelineElementsIds.rightBox;
-        elements.bottomBox.id = HazelineElementsIds.bottomBox;
-        elements.bottomBox.id = HazelineElementsIds.bottomBox;
+    private fadeOutOverlayBoxes() {
+        if (!this.topBox) {
+            return;
+        }
 
-        Object.keys(elements).forEach(el => {
-            HazelineStylesManager.styleElement(elements[el], this.overlayOptions.overlayCSS);
-        });
-
-
-        elements.topBox.style.width = `${dimensions.topBox.width}px`;
-        elements.topBox.style.height = `${dimensions.topBox.height}px`;
-        elements.topBox.style.left = `${dimensions.topBox.offsetLeft}px`;
-
-        elements.leftBox.style.width = `${dimensions.leftBox.width}px`;
-        elements.leftBox.style.height = `${dimensions.leftBox.height}px`;
-
-        elements.rightBox.style.width = `${dimensions.rightBox.width}px`;
-        elements.rightBox.style.height = `${dimensions.rightBox.height}px`;
-        elements.rightBox.style.left = `${dimensions.rightBox.offsetLeft}px`;
-
-        elements.bottomBox.style.width = `${dimensions.bottomBox.width}px`;
-        elements.bottomBox.style.height = `${dimensions.bottomBox.height}px`;
-        elements.bottomBox.style.top = `${dimensions.bottomBox.offsetTop}px`;
-        elements.bottomBox.style.left = `${dimensions.bottomBox.offsetLeft}px`;
-
-        return elements;
+        ['topBox', 'leftBox', 'rightBox', 'bottomBox']
+            .forEach(k => (this[k] as HTMLDivElement).style.transition = 'opacity 200ms ease-in-out');
+        setTimeout(() => ['topBox', 'leftBox', 'rightBox', 'bottomBox']
+            .forEach(k => (this[k] as HTMLDivElement).style.opacity = '0'), 10);
     }
 }
 

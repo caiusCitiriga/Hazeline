@@ -40,6 +40,9 @@ window.onload = () => {
                 }
             },
             {
+                delayBeforeStart: 5000,
+                delayText: 'Please wait',
+                delayTextColor: '#fff',
                 elementSelector: '#input-3',
                 text: 'Test me out in lightbox!',
             },
@@ -52,5 +55,5 @@ window.onload = () => {
 
     setTimeout(() => {
         haze.runTutorial('test');
-    }, 2000);
+    }, 800);
 }

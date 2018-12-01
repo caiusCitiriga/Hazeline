@@ -358,6 +358,7 @@ var HazelineElementsIds;
     HazelineElementsIds["lightboxNextButton"] = "hazeline-lightbox-next-btn";
     HazelineElementsIds["lightboxPrevButton"] = "hazeline-lightbox-prev-btn";
     HazelineElementsIds["lightboxTextualOverlay"] = "hazeline-lightbox-textual-overlay";
+    HazelineElementsIds["waitForDelayOverlay"] = "hazeline-wait-for-delay-overlay";
 })(HazelineElementsIds = exports.HazelineElementsIds || (exports.HazelineElementsIds = {}));
 //# sourceMappingURL=elements-ids.enum.js.map
 
@@ -765,6 +766,24 @@ var styles_manager_core_1 = __webpack_require__(/*! ./styles-manager.core */ "..
 var HazelineOverlayRenderer = /** @class */ (function () {
     function HazelineOverlayRenderer() {
         var _this = this;
+        this.backupProperties = {
+            topBox: {
+                opacity: null,
+                transition: null,
+            },
+            leftBox: {
+                opacity: null,
+                transition: null,
+            },
+            rightBox: {
+                opacity: null,
+                transition: null,
+            },
+            bottomBox: {
+                opacity: null,
+                transition: null,
+            },
+        };
         this._$prematureEndRequired = new rxjs_1.Subject();
         this.overlayOptions = elements_defaults_const_1.HazelineElementsDefaults.overlay;
         this.endTutorialBtnClickEvtListener = function () { return _this._$prematureEndRequired.next(true); };
@@ -777,6 +796,44 @@ var HazelineOverlayRenderer = /** @class */ (function () {
     HazelineOverlayRenderer.prototype.dispose = function () {
         this.detachEndTutorialBtnEventListeners();
         this.destroyPreviousElementsIfAny();
+    };
+    HazelineOverlayRenderer.prototype.placeWaitForDelayOverlay = function (message, textColor) {
+        var _this = this;
+        var overlayShown = new rxjs_1.Subject();
+        var delayInProgressCSS = {
+            zIndex: this.overlayOptions.overlayCSS.zIndex,
+            top: '0',
+            left: '0',
+            opacity: '0',
+            display: 'flex',
+            color: textColor,
+            fontSize: '30px',
+            position: 'fixed',
+            textAlign: 'center',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: window.innerWidth + "px",
+            height: window.innerHeight + "px",
+            transition: 'opacity 200ms ease-in-out',
+            background: this.overlayOptions.overlayCSS.background,
+        };
+        this.delayInProgressOverlay = document.createElement('div');
+        document.body.prepend(this.delayInProgressOverlay);
+        this.delayInProgressOverlay = styles_manager_core_1.HazelineStylesManager.styleElement(this.delayInProgressOverlay, delayInProgressCSS);
+        this.delayInProgressOverlay.id = elements_ids_enum_1.HazelineElementsIds.waitForDelayOverlay;
+        this.delayInProgressOverlay.innerHTML = message;
+        setTimeout(function () {
+            _this.delayInProgressOverlay.style.opacity = '1';
+            overlayShown.next(true);
+        }, 220);
+        return overlayShown;
+    };
+    HazelineOverlayRenderer.prototype.removeWaitForDelayOverlay = function () {
+        if (!document.getElementById(elements_ids_enum_1.HazelineElementsIds.waitForDelayOverlay)) {
+            return;
+        }
+        document.body.removeChild(document.getElementById(elements_ids_enum_1.HazelineElementsIds.waitForDelayOverlay));
+        this.delayInProgressOverlay = null;
     };
     HazelineOverlayRenderer.prototype.placeEndTutorialButton = function () {
         this.createEndTutorialButton();
@@ -840,6 +897,34 @@ var HazelineOverlayRenderer = /** @class */ (function () {
         var wrappingElements = this.createWrappingElements(dimensions);
         this.attachElementsToBody(wrappingElements);
     };
+    HazelineOverlayRenderer.prototype.applyEndTutorialBtnOptions = function () {
+        this.endTutorialBtn.innerHTML = this.overlayOptions.closeBtnText;
+        styles_manager_core_1.HazelineStylesManager.styleElement(this.endTutorialBtn, this.overlayOptions.endTutorialBtnCSS);
+    };
+    HazelineOverlayRenderer.prototype.applyOptionsOnElements = function (elements, dimensions) {
+        var _this = this;
+        elements.topBox.id = elements_ids_enum_1.HazelineElementsIds.topBox;
+        elements.leftBox.id = elements_ids_enum_1.HazelineElementsIds.leftBox;
+        elements.rightBox.id = elements_ids_enum_1.HazelineElementsIds.rightBox;
+        elements.bottomBox.id = elements_ids_enum_1.HazelineElementsIds.bottomBox;
+        elements.bottomBox.id = elements_ids_enum_1.HazelineElementsIds.bottomBox;
+        Object.keys(elements).forEach(function (el) {
+            styles_manager_core_1.HazelineStylesManager.styleElement(elements[el], _this.overlayOptions.overlayCSS);
+        });
+        elements.topBox.style.width = dimensions.topBox.width + "px";
+        elements.topBox.style.height = dimensions.topBox.height + "px";
+        elements.topBox.style.left = dimensions.topBox.offsetLeft + "px";
+        elements.leftBox.style.width = dimensions.leftBox.width + "px";
+        elements.leftBox.style.height = dimensions.leftBox.height + "px";
+        elements.rightBox.style.width = dimensions.rightBox.width + "px";
+        elements.rightBox.style.height = dimensions.rightBox.height + "px";
+        elements.rightBox.style.left = dimensions.rightBox.offsetLeft + "px";
+        elements.bottomBox.style.width = dimensions.bottomBox.width + "px";
+        elements.bottomBox.style.height = dimensions.bottomBox.height + "px";
+        elements.bottomBox.style.top = dimensions.bottomBox.offsetTop + "px";
+        elements.bottomBox.style.left = dimensions.bottomBox.offsetLeft + "px";
+        return elements;
+    };
     HazelineOverlayRenderer.prototype.attachElementsToBody = function (elements) {
         var body = document.querySelector('body');
         body.prepend(elements.topBox); // not fully supported. See browser tables
@@ -856,12 +941,26 @@ var HazelineOverlayRenderer = /** @class */ (function () {
         this.endTutorialBtn.addEventListener('mouseleave', this.endTutorialBtnMouseLeaveEvtListener);
         this.endTutorialBtn.addEventListener('mouseenter', this.endTutorialBtnMouseEnterEvtListener);
     };
-    HazelineOverlayRenderer.prototype.detachEndTutorialBtnEventListeners = function () {
-        if (this.endTutorialBtn) {
-            this.endTutorialBtn.removeEventListener('click', this.endTutorialBtnClickEvtListener);
-            this.endTutorialBtn.removeEventListener('mouseleave', this.endTutorialBtnMouseLeaveEvtListener);
-            this.endTutorialBtn.removeEventListener('mouseenter', this.endTutorialBtnMouseEnterEvtListener);
+    HazelineOverlayRenderer.prototype.backupPropertiesOfOverlayBoxes = function () {
+        if (!this.topBox) {
+            return;
         }
+        this.backupProperties.topBox.opacity =
+            this.topBox.style.opacity;
+        this.backupProperties.topBox.opacity =
+            this.topBox.style.transition;
+        this.backupProperties.leftBox.opacity =
+            this.leftBox.style.opacity;
+        this.backupProperties.leftBox.opacity =
+            this.leftBox.style.transition;
+        this.backupProperties.rightBox.opacity =
+            this.rightBox.style.opacity;
+        this.backupProperties.rightBox.opacity =
+            this.rightBox.style.transition;
+        this.backupProperties.bottomBox.opacity =
+            this.bottomBox.style.opacity;
+        this.backupProperties.bottomBox.opacity =
+            this.bottomBox.style.transition;
     };
     HazelineOverlayRenderer.prototype.createEndTutorialButton = function () {
         this.endTutorialBtn = document.createElement('button');
@@ -898,33 +997,22 @@ var HazelineOverlayRenderer = /** @class */ (function () {
             document.body.removeChild(document.getElementById(elements_ids_enum_1.HazelineElementsIds.endTutorialButton));
         }
     };
-    HazelineOverlayRenderer.prototype.applyEndTutorialBtnOptions = function () {
-        this.endTutorialBtn.innerHTML = this.overlayOptions.closeBtnText;
-        styles_manager_core_1.HazelineStylesManager.styleElement(this.endTutorialBtn, this.overlayOptions.endTutorialBtnCSS);
+    HazelineOverlayRenderer.prototype.detachEndTutorialBtnEventListeners = function () {
+        if (this.endTutorialBtn) {
+            this.endTutorialBtn.removeEventListener('click', this.endTutorialBtnClickEvtListener);
+            this.endTutorialBtn.removeEventListener('mouseleave', this.endTutorialBtnMouseLeaveEvtListener);
+            this.endTutorialBtn.removeEventListener('mouseenter', this.endTutorialBtnMouseEnterEvtListener);
+        }
     };
-    HazelineOverlayRenderer.prototype.applyOptionsOnElements = function (elements, dimensions) {
+    HazelineOverlayRenderer.prototype.fadeOutOverlayBoxes = function () {
         var _this = this;
-        elements.topBox.id = elements_ids_enum_1.HazelineElementsIds.topBox;
-        elements.leftBox.id = elements_ids_enum_1.HazelineElementsIds.leftBox;
-        elements.rightBox.id = elements_ids_enum_1.HazelineElementsIds.rightBox;
-        elements.bottomBox.id = elements_ids_enum_1.HazelineElementsIds.bottomBox;
-        elements.bottomBox.id = elements_ids_enum_1.HazelineElementsIds.bottomBox;
-        Object.keys(elements).forEach(function (el) {
-            styles_manager_core_1.HazelineStylesManager.styleElement(elements[el], _this.overlayOptions.overlayCSS);
-        });
-        elements.topBox.style.width = dimensions.topBox.width + "px";
-        elements.topBox.style.height = dimensions.topBox.height + "px";
-        elements.topBox.style.left = dimensions.topBox.offsetLeft + "px";
-        elements.leftBox.style.width = dimensions.leftBox.width + "px";
-        elements.leftBox.style.height = dimensions.leftBox.height + "px";
-        elements.rightBox.style.width = dimensions.rightBox.width + "px";
-        elements.rightBox.style.height = dimensions.rightBox.height + "px";
-        elements.rightBox.style.left = dimensions.rightBox.offsetLeft + "px";
-        elements.bottomBox.style.width = dimensions.bottomBox.width + "px";
-        elements.bottomBox.style.height = dimensions.bottomBox.height + "px";
-        elements.bottomBox.style.top = dimensions.bottomBox.offsetTop + "px";
-        elements.bottomBox.style.left = dimensions.bottomBox.offsetLeft + "px";
-        return elements;
+        if (!this.topBox) {
+            return;
+        }
+        ['topBox', 'leftBox', 'rightBox', 'bottomBox']
+            .forEach(function (k) { return _this[k].style.transition = 'opacity 200ms ease-in-out'; });
+        setTimeout(function () { return ['topBox', 'leftBox', 'rightBox', 'bottomBox']
+            .forEach(function (k) { return _this[k].style.opacity = '0'; }); }, 10);
     };
     return HazelineOverlayRenderer;
 }());
@@ -953,6 +1041,7 @@ var HazelineRunner = /** @class */ (function () {
         this._$sectionStatus = new rxjs_1.BehaviorSubject(null);
         this.previousSectionStepIdx = 0;
         this.currentSectionStepIdx = 0;
+        this._$runWhenSectionStepsArePopulated = new rxjs_1.Subject();
         this.windowResizeEvtListener = function () {
             var wrapElementsDimensions = _this.elementManager.getWrappingElementsDimensions(_this.currentSection.steps[_this.currentSectionStepIdx].elementSelector);
             if (_this.currentSection.steps[_this.currentSectionStepIdx].useOverlayInsteadOfLightbox) {
@@ -976,8 +1065,11 @@ var HazelineRunner = /** @class */ (function () {
         this.lightboxRenderer = lightbox;
         this.overlayRenderer = renderer;
         this.elementManager = elementManager;
-        this.startNextPrevButtonClicks();
-        this.startResponsiveListeners();
+        this._$runWhenSectionStepsArePopulated
+            .pipe(operators_1.take(1), operators_1.tap(function () {
+            _this.startNextPrevButtonClicks();
+            _this.startResponsiveListeners();
+        })).subscribe();
     }
     HazelineRunner.prototype.endTutorial = function () {
         this.lightboxRenderer.dispose(true);
@@ -989,6 +1081,7 @@ var HazelineRunner = /** @class */ (function () {
     HazelineRunner.prototype.runSection = function (section) {
         var _this = this;
         this.currentSection = section;
+        this._$runWhenSectionStepsArePopulated.next(true);
         if (!this.currentSection) {
             this._$sectionStatus.next({
                 status: tutorial_section_statuses_enum_1.HazelineTutorialSectionStatuses.errored,
@@ -1009,12 +1102,7 @@ var HazelineRunner = /** @class */ (function () {
             .getWrappingElementsDimensions(section.steps[this.currentSectionStepIdx].elementSelector);
         if (!isFirstStep && !thisStepUsesTextualOverlay) {
             this.lightboxRenderer.disposeTextualOverlay();
-            if (previousStepUsedTextualOverlay) {
-                this.overlayRenderer.wrapElement(wrapElementsDimensions);
-            }
-            else {
-                this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
-            }
+            this.overlayRenderer.wrapElement(wrapElementsDimensions);
         }
         if (thisStepUsesTextualOverlay) {
             if (!previousStepUsedTextualOverlay) {
@@ -1076,9 +1164,57 @@ var HazelineRunner = /** @class */ (function () {
                 return false;
             }
             return true;
-        }), operators_1.tap(function () { return _this.currentSectionStepIdx++; }), operators_1.tap(function () { return _this.overlayRenderer.removeEndTutorialButton(); }), operators_1.tap(function () { return _this.runSection(_this.currentSection); })).subscribe();
+        }), operators_1.tap(function () { return _this.currentSectionStepIdx++; }), operators_1.tap(function () { return _this.overlayRenderer.removeEndTutorialButton(); }), operators_1.filter(function () { return !!_this.currentSection.steps && !!_this.currentSection.steps.length; }), operators_1.switchMap(function () {
+            var beforeStartDelay = _this.currentSection.steps[_this.currentSectionStepIdx].delayBeforeStart;
+            return rxjs_1.of(beforeStartDelay);
+        }), operators_1.tap(function (res) {
+            if (!res) {
+                _this.runSection(_this.currentSection);
+                return false;
+            }
+            return true;
+        }), operators_1.filter(function (applyDelay) { return !!applyDelay; }), operators_1.switchMap(function () {
+            _this.overlayRenderer.dispose();
+            _this.lightboxRenderer.dispose();
+            _this.lightboxRenderer.disposeTextualOverlay();
+            var message = _this.currentSection.steps[_this.currentSectionStepIdx].delayText;
+            var textColor = _this.currentSection.steps[_this.currentSectionStepIdx].delayTextColor;
+            return _this.overlayRenderer.placeWaitForDelayOverlay(message, textColor);
+        }), operators_1.switchMap(function () {
+            var timeoutPassed = new rxjs_1.Subject();
+            setTimeout(function () {
+                console.log('Removing wait overlay');
+                _this.overlayRenderer.removeWaitForDelayOverlay();
+                timeoutPassed.next(true);
+            }, _this.currentSection.steps[_this.currentSectionStepIdx].delayBeforeStart);
+            return timeoutPassed;
+        }), operators_1.tap(function () { return _this.runSection(_this.currentSection); })).subscribe();
         this.lightboxRenderer.$prevStepRequired()
-            .pipe(operators_1.filter(function (res) { return !!res; }), operators_1.filter(function () { return _this.currentSectionStepIdx === 0 ? false : true; }), operators_1.tap(function () { return _this.currentSectionStepIdx--; }), operators_1.tap(function () { return _this.overlayRenderer.removeEndTutorialButton(); }), operators_1.tap(function () { return _this.runSection(_this.currentSection); })).subscribe();
+            .pipe(operators_1.filter(function (res) { return !!res; }), operators_1.filter(function () { return _this.currentSectionStepIdx === 0 ? false : true; }), operators_1.tap(function () { return _this.currentSectionStepIdx--; }), operators_1.tap(function () { return _this.overlayRenderer.removeEndTutorialButton(); }), operators_1.filter(function () { return !!_this.currentSection.steps && !!_this.currentSection.steps.length; }), operators_1.switchMap(function () {
+            var beforeStartDelay = _this.currentSection.steps[_this.currentSectionStepIdx].delayBeforeStart;
+            return rxjs_1.of(beforeStartDelay);
+        }), operators_1.tap(function (res) {
+            if (!res) {
+                _this.runSection(_this.currentSection);
+                return false;
+            }
+            return true;
+        }), operators_1.filter(function (applyDelay) { return !!applyDelay; }), operators_1.switchMap(function () {
+            _this.overlayRenderer.dispose();
+            _this.lightboxRenderer.dispose();
+            _this.lightboxRenderer.disposeTextualOverlay();
+            var message = _this.currentSection.steps[_this.currentSectionStepIdx].delayText;
+            var textColor = _this.currentSection.steps[_this.currentSectionStepIdx].delayTextColor;
+            return _this.overlayRenderer.placeWaitForDelayOverlay(message, textColor);
+        }), operators_1.switchMap(function () {
+            var timeoutPassed = new rxjs_1.Subject();
+            setTimeout(function () {
+                console.log('Removing wait overlay');
+                _this.overlayRenderer.removeWaitForDelayOverlay();
+                timeoutPassed.next(true);
+            }, _this.currentSection.steps[_this.currentSectionStepIdx].delayBeforeStart);
+            return timeoutPassed;
+        }), operators_1.tap(function () { return _this.runSection(_this.currentSection); })).subscribe();
         this.overlayRenderer.$premartureEndRequired()
             .pipe(operators_1.filter(function (res) { return !!res; }), operators_1.tap(function () {
             _this._$sectionStatus.next({
@@ -15805,6 +15941,9 @@ window.onload = function () {
                 }
             },
             {
+                delayBeforeStart: 5000,
+                delayText: 'Please wait',
+                delayTextColor: '#fff',
                 elementSelector: '#input-3',
                 text: 'Test me out in lightbox!',
             },
@@ -15816,7 +15955,7 @@ window.onload = function () {
     });
     setTimeout(function () {
         haze.runTutorial('test');
-    }, 2000);
+    }, 800);
 };
 
 

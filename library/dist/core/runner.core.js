@@ -10,6 +10,7 @@ var HazelineRunner = /** @class */ (function () {
         this._$sectionStatus = new rxjs_1.BehaviorSubject(null);
         this.previousSectionStepIdx = 0;
         this.currentSectionStepIdx = 0;
+        this._$runWhenSectionStepsArePopulated = new rxjs_1.Subject();
         this.windowResizeEvtListener = function () {
             var wrapElementsDimensions = _this.elementManager.getWrappingElementsDimensions(_this.currentSection.steps[_this.currentSectionStepIdx].elementSelector);
             if (_this.currentSection.steps[_this.currentSectionStepIdx].useOverlayInsteadOfLightbox) {
@@ -33,8 +34,11 @@ var HazelineRunner = /** @class */ (function () {
         this.lightboxRenderer = lightbox;
         this.overlayRenderer = renderer;
         this.elementManager = elementManager;
-        this.startNextPrevButtonClicks();
-        this.startResponsiveListeners();
+        this._$runWhenSectionStepsArePopulated
+            .pipe(operators_1.take(1), operators_1.tap(function () {
+            _this.startNextPrevButtonClicks();
+            _this.startResponsiveListeners();
+        })).subscribe();
     }
     HazelineRunner.prototype.endTutorial = function () {
         this.lightboxRenderer.dispose(true);
@@ -46,6 +50,7 @@ var HazelineRunner = /** @class */ (function () {
     HazelineRunner.prototype.runSection = function (section) {
         var _this = this;
         this.currentSection = section;
+        this._$runWhenSectionStepsArePopulated.next(true);
         if (!this.currentSection) {
             this._$sectionStatus.next({
                 status: tutorial_section_statuses_enum_1.HazelineTutorialSectionStatuses.errored,
@@ -66,12 +71,7 @@ var HazelineRunner = /** @class */ (function () {
             .getWrappingElementsDimensions(section.steps[this.currentSectionStepIdx].elementSelector);
         if (!isFirstStep && !thisStepUsesTextualOverlay) {
             this.lightboxRenderer.disposeTextualOverlay();
-            if (previousStepUsedTextualOverlay) {
-                this.overlayRenderer.wrapElement(wrapElementsDimensions);
-            }
-            else {
-                this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
-            }
+            this.overlayRenderer.wrapElement(wrapElementsDimensions);
         }
         if (thisStepUsesTextualOverlay) {
             if (!previousStepUsedTextualOverlay) {
@@ -133,9 +133,57 @@ var HazelineRunner = /** @class */ (function () {
                 return false;
             }
             return true;
-        }), operators_1.tap(function () { return _this.currentSectionStepIdx++; }), operators_1.tap(function () { return _this.overlayRenderer.removeEndTutorialButton(); }), operators_1.tap(function () { return _this.runSection(_this.currentSection); })).subscribe();
+        }), operators_1.tap(function () { return _this.currentSectionStepIdx++; }), operators_1.tap(function () { return _this.overlayRenderer.removeEndTutorialButton(); }), operators_1.filter(function () { return !!_this.currentSection.steps && !!_this.currentSection.steps.length; }), operators_1.switchMap(function () {
+            var beforeStartDelay = _this.currentSection.steps[_this.currentSectionStepIdx].delayBeforeStart;
+            return rxjs_1.of(beforeStartDelay);
+        }), operators_1.tap(function (res) {
+            if (!res) {
+                _this.runSection(_this.currentSection);
+                return false;
+            }
+            return true;
+        }), operators_1.filter(function (applyDelay) { return !!applyDelay; }), operators_1.switchMap(function () {
+            _this.overlayRenderer.dispose();
+            _this.lightboxRenderer.dispose();
+            _this.lightboxRenderer.disposeTextualOverlay();
+            var message = _this.currentSection.steps[_this.currentSectionStepIdx].delayText;
+            var textColor = _this.currentSection.steps[_this.currentSectionStepIdx].delayTextColor;
+            return _this.overlayRenderer.placeWaitForDelayOverlay(message, textColor);
+        }), operators_1.switchMap(function () {
+            var timeoutPassed = new rxjs_1.Subject();
+            setTimeout(function () {
+                console.log('Removing wait overlay');
+                _this.overlayRenderer.removeWaitForDelayOverlay();
+                timeoutPassed.next(true);
+            }, _this.currentSection.steps[_this.currentSectionStepIdx].delayBeforeStart);
+            return timeoutPassed;
+        }), operators_1.tap(function () { return _this.runSection(_this.currentSection); })).subscribe();
         this.lightboxRenderer.$prevStepRequired()
-            .pipe(operators_1.filter(function (res) { return !!res; }), operators_1.filter(function () { return _this.currentSectionStepIdx === 0 ? false : true; }), operators_1.tap(function () { return _this.currentSectionStepIdx--; }), operators_1.tap(function () { return _this.overlayRenderer.removeEndTutorialButton(); }), operators_1.tap(function () { return _this.runSection(_this.currentSection); })).subscribe();
+            .pipe(operators_1.filter(function (res) { return !!res; }), operators_1.filter(function () { return _this.currentSectionStepIdx === 0 ? false : true; }), operators_1.tap(function () { return _this.currentSectionStepIdx--; }), operators_1.tap(function () { return _this.overlayRenderer.removeEndTutorialButton(); }), operators_1.filter(function () { return !!_this.currentSection.steps && !!_this.currentSection.steps.length; }), operators_1.switchMap(function () {
+            var beforeStartDelay = _this.currentSection.steps[_this.currentSectionStepIdx].delayBeforeStart;
+            return rxjs_1.of(beforeStartDelay);
+        }), operators_1.tap(function (res) {
+            if (!res) {
+                _this.runSection(_this.currentSection);
+                return false;
+            }
+            return true;
+        }), operators_1.filter(function (applyDelay) { return !!applyDelay; }), operators_1.switchMap(function () {
+            _this.overlayRenderer.dispose();
+            _this.lightboxRenderer.dispose();
+            _this.lightboxRenderer.disposeTextualOverlay();
+            var message = _this.currentSection.steps[_this.currentSectionStepIdx].delayText;
+            var textColor = _this.currentSection.steps[_this.currentSectionStepIdx].delayTextColor;
+            return _this.overlayRenderer.placeWaitForDelayOverlay(message, textColor);
+        }), operators_1.switchMap(function () {
+            var timeoutPassed = new rxjs_1.Subject();
+            setTimeout(function () {
+                console.log('Removing wait overlay');
+                _this.overlayRenderer.removeWaitForDelayOverlay();
+                timeoutPassed.next(true);
+            }, _this.currentSection.steps[_this.currentSectionStepIdx].delayBeforeStart);
+            return timeoutPassed;
+        }), operators_1.tap(function () { return _this.runSection(_this.currentSection); })).subscribe();
         this.overlayRenderer.$premartureEndRequired()
             .pipe(operators_1.filter(function (res) { return !!res; }), operators_1.tap(function () {
             _this._$sectionStatus.next({

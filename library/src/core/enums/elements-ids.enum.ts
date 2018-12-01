@@ -12,4 +12,6 @@ export enum HazelineElementsIds {
     lightboxNextButton = 'hazeline-lightbox-next-btn',
     lightboxPrevButton = 'hazeline-lightbox-prev-btn',
     lightboxTextualOverlay = 'hazeline-lightbox-textual-overlay',
+
+    waitForDelayOverlay = 'hazeline-wait-for-delay-overlay'
 }

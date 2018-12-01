@@ -13,5 +13,6 @@ var HazelineElementsIds;
     HazelineElementsIds["lightboxNextButton"] = "hazeline-lightbox-next-btn";
     HazelineElementsIds["lightboxPrevButton"] = "hazeline-lightbox-prev-btn";
     HazelineElementsIds["lightboxTextualOverlay"] = "hazeline-lightbox-textual-overlay";
+    HazelineElementsIds["waitForDelayOverlay"] = "hazeline-wait-for-delay-overlay";
 })(HazelineElementsIds = exports.HazelineElementsIds || (exports.HazelineElementsIds = {}));
 //# sourceMappingURL=elements-ids.enum.js.map
