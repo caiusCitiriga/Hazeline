@@ -7,15 +7,16 @@ export const HazelineElementsDefaults: HazelineOptions = {
         prevBtnText: 'Previous',
         lastStepNextBtnText: 'Finish',
         positioning: {
-            attachment: 'top center',
-            targetAttachment: 'bottom center',
+            offset: '',
+            targetOffset: '',
+            attachment: 'top right',
+            targetAttachment: 'bottom left',
             constraints: [
                 {
                     to: 'scrollParent',
                     attachment: 'together'
                 }
-            ],
-            offset: '-20px 0'
+            ]
         },
 
         lightboxWrapperCSS: {

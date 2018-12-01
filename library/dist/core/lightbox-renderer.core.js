@@ -11,14 +11,15 @@ var styles_manager_core_1 = require("./styles-manager.core");
 var HazelineLightboxRenderer = /** @class */ (function () {
     function HazelineLightboxRenderer() {
         var _this = this;
-        this._$nextStepRequired = new rxjs_1.Subject();
-        this._$prevStepRequired = new rxjs_1.Subject();
+        this._$eventTrigger = new rxjs_1.Subject();
         this.ligthboxOptions = elements_defaults_const_1.HazelineElementsDefaults.lightbox;
         this.textualOverlayOptions = elements_defaults_const_1.HazelineElementsDefaults.textualOverlay;
-        this.prevBtnClickEvtListener = function () {
-            return _this._$prevStepRequired.next(true);
+        this.nextBtnClickEvtListener = function () {
+            return _this._$eventTrigger.next({ type: HazelineEventTrigger.next });
         };
-        this.nextBtnClickEvtListener = function () { console.log('Next step required'); _this._$nextStepRequired.next(true); };
+        this.prevBtnClickEvtListener = function () {
+            _this._$eventTrigger.next({ type: HazelineEventTrigger.previous });
+        };
         this.prevBtnMouseLeaveEvtListener = function () {
             return styles_manager_core_1.HazelineStylesManager.styleElement(_this.lightboxPrevBtn, _this.ligthboxOptions.lightboxPrevBtnCSS || elements_defaults_const_1.HazelineElementsDefaults.lightbox.lightboxPrevBtnCSS);
         };
@@ -32,8 +33,7 @@ var HazelineLightboxRenderer = /** @class */ (function () {
             return styles_manager_core_1.HazelineStylesManager.styleElement(_this.lightboxNextBtn, _this.ligthboxOptions.lightboxNextBtnHoverCSS || elements_defaults_const_1.HazelineElementsDefaults.lightbox.lightboxNextBtnHoverCSS);
         };
     }
-    HazelineLightboxRenderer.prototype.$nextStepRequired = function () { return this._$nextStepRequired; };
-    HazelineLightboxRenderer.prototype.$prevStepRequired = function () { return this._$prevStepRequired; };
+    HazelineLightboxRenderer.prototype.$eventTriggered = function () { return this._$eventTrigger; };
     HazelineLightboxRenderer.prototype.dispose = function (detachListeners) {
         if (detachListeners === void 0) { detachListeners = false; }
         if (document.getElementById(elements_ids_enum_1.HazelineElementsIds.lightbox)) {
@@ -331,4 +331,9 @@ var HazelineLightboxRenderer = /** @class */ (function () {
     return HazelineLightboxRenderer;
 }());
 exports.HazelineLightboxRenderer = HazelineLightboxRenderer;
+var HazelineEventTrigger;
+(function (HazelineEventTrigger) {
+    HazelineEventTrigger[HazelineEventTrigger["next"] = 0] = "next";
+    HazelineEventTrigger[HazelineEventTrigger["previous"] = 1] = "previous";
+})(HazelineEventTrigger = exports.HazelineEventTrigger || (exports.HazelineEventTrigger = {}));
 //# sourceMappingURL=lightbox-renderer.core.js.map

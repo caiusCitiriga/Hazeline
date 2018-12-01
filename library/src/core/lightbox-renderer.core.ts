@@ -10,8 +10,7 @@ import { HazelineLightboxOptions, HazelineTextualOverlayOptions } from './interf
 
 export class HazelineLightboxRenderer {
 
-    private _$nextStepRequired = new Subject<boolean>();
-    private _$prevStepRequired = new Subject<boolean>();
+    private _$eventTrigger = new Subject<{ type: HazelineEventTrigger }>();
 
     private tether: Tether;
 
@@ -27,9 +26,11 @@ export class HazelineLightboxRenderer {
     private ligthboxOptions: HazelineLightboxOptions = HazelineElementsDefaults.lightbox;
     private textualOverlayOptions: HazelineTextualOverlayOptions = HazelineElementsDefaults.textualOverlay;
 
-    private prevBtnClickEvtListener = () =>
-        this._$prevStepRequired.next(true);
-    private nextBtnClickEvtListener = () => { console.log('Next step required'); this._$nextStepRequired.next(true); }
+    private nextBtnClickEvtListener = () =>
+        this._$eventTrigger.next({ type: HazelineEventTrigger.next });
+    private prevBtnClickEvtListener = () => {
+        this._$eventTrigger.next({ type: HazelineEventTrigger.previous });
+    };
 
     private prevBtnMouseLeaveEvtListener = () =>
         HazelineStylesManager.styleElement<HTMLButtonElement>(this.lightboxPrevBtn, this.ligthboxOptions.lightboxPrevBtnCSS || HazelineElementsDefaults.lightbox.lightboxPrevBtnCSS);
@@ -41,8 +42,7 @@ export class HazelineLightboxRenderer {
     private nextBtnMouseEnterEvtListener = () =>
         HazelineStylesManager.styleElement<HTMLButtonElement>(this.lightboxNextBtn, this.ligthboxOptions.lightboxNextBtnHoverCSS || HazelineElementsDefaults.lightbox.lightboxNextBtnHoverCSS);
 
-    public $nextStepRequired(): Observable<boolean> { return this._$nextStepRequired; }
-    public $prevStepRequired(): Observable<boolean> { return this._$prevStepRequired; }
+    public $eventTriggered(): Observable<{ type: HazelineEventTrigger }> { return this._$eventTrigger; }
 
     public dispose(detachListeners = false): void {
         if (document.getElementById(HazelineElementsIds.lightbox)) {
@@ -380,4 +380,9 @@ export class HazelineLightboxRenderer {
         HazelineStylesManager.styleElement<HTMLDivElement>(this.lightboxTextWrp, this.ligthboxOptions.lightboxTextWrapperCSS);
         HazelineStylesManager.styleElement<HTMLDivElement>(this.lightboxControlsWrp, this.ligthboxOptions.lightboxControlsWrapperCSS);
     }
+}
+
+export enum HazelineEventTrigger {
+    next,
+    previous
 }
