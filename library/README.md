@@ -154,7 +154,7 @@ Instead, you could use the **Textual Overlay**. When defining the step required 
 
 As the lightbox, and all the other Hazeline's components, even this one is designed to work out of the box, but still you can customize it like the others. For more detailed information about the Textual Overlay see its specific [configuration](#Textual-overlay) 
 
-## Step BeforeStartDelay
+## Step before start delay
 
 It might happen that you have something asyncronus running that must be completed before the next step can begin. This might be a navigation to another page, on wich the element that the step about to start uses is present. 
 
@@ -172,6 +172,7 @@ In these kind of situations the section step offers another type of configuratio
 ---
 
 These are the `HazelineTutorialStep` specific properties:
+
 Property name | Description | Accepted values
 --------------|-------------|-----------------
 text| The text for this specific step. It will appear in the lightbox or textual wrapper | `string`
