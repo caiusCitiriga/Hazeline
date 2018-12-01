@@ -274,7 +274,6 @@ export class HazelineLightboxRenderer {
             return;
         }
         if (!this.lightboxWrp) {
-            console.log('No lightbox here!');
             this.placeLightbox(target, step, isLastStep);
             return;
         }

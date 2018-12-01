@@ -182,12 +182,10 @@ export class HazelineRunner {
     }
 
     private startNextPrevButtonClicks(): void {
-        console.log('NEXT PREV evts listeners started');
         let isNextStepRequired = undefined;
         this.lightboxRenderer.$eventTriggered()
             .pipe(
                 tap(eventTrigger => {
-                    console.log('Event triggered!');
                     isNextStepRequired = eventTrigger.type === HazelineEventTrigger.next ? true : false;
                     return eventTrigger;
                 }),
@@ -270,7 +268,6 @@ export class HazelineRunner {
     }
 
     private startResponsiveListeners(): void {
-        console.log('listeners started');
         window.addEventListener('resize', this.windowResizeEvtListener);
         window.addEventListener('scroll', this.windowScrollEventThrottler);
     }
