@@ -26,8 +26,9 @@ export class HazelineLightboxRenderer {
     private ligthboxOptions: HazelineLightboxOptions = HazelineElementsDefaults.lightbox;
     private textualOverlayOptions: HazelineTextualOverlayOptions = HazelineElementsDefaults.textualOverlay;
 
-    private nextBtnClickEvtListener = () =>
+    private nextBtnClickEvtListener = () => {
         this._$eventTrigger.next({ type: HazelineEventTrigger.next });
+    }
     private prevBtnClickEvtListener = () => {
         this._$eventTrigger.next({ type: HazelineEventTrigger.previous });
     };
@@ -103,6 +104,14 @@ export class HazelineLightboxRenderer {
 
         timer(10).subscribe(() => elementRemoved.next(true));
         return elementRemoved;
+    }
+
+    public hideLightbox(): void {
+        this.lightboxWrp.style.opacity = '0';
+    }
+
+    public showLightbox(): void {
+        this.lightboxWrp.style.opacity = '1';
     }
 
     public placeLightbox(target: HTMLElement, sectionStep: HazelineTutorialStep, isLastStep = false): void {

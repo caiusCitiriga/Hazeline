@@ -430,7 +430,7 @@ var HazelineLightboxRenderer = /** @class */ (function () {
         this.ligthboxOptions = elements_defaults_const_1.HazelineElementsDefaults.lightbox;
         this.textualOverlayOptions = elements_defaults_const_1.HazelineElementsDefaults.textualOverlay;
         this.nextBtnClickEvtListener = function () {
-            return _this._$eventTrigger.next({ type: HazelineEventTrigger.next });
+            _this._$eventTrigger.next({ type: HazelineEventTrigger.next });
         };
         this.prevBtnClickEvtListener = function () {
             _this._$eventTrigger.next({ type: HazelineEventTrigger.previous });
@@ -506,6 +506,12 @@ var HazelineLightboxRenderer = /** @class */ (function () {
         }
         rxjs_1.timer(10).subscribe(function () { return elementRemoved.next(true); });
         return elementRemoved;
+    };
+    HazelineLightboxRenderer.prototype.hideLightbox = function () {
+        this.lightboxWrp.style.opacity = '0';
+    };
+    HazelineLightboxRenderer.prototype.showLightbox = function () {
+        this.lightboxWrp.style.opacity = '1';
     };
     HazelineLightboxRenderer.prototype.placeLightbox = function (target, sectionStep, isLastStep) {
         if (isLastStep === void 0) { isLastStep = false; }
@@ -908,6 +914,7 @@ var HazelineOverlayRenderer = /** @class */ (function () {
         this.bottomBox = document.getElementById(elements_ids_enum_1.HazelineElementsIds.bottomBox);
         if (!this.topBox) {
             this.wrapElement(dimensions);
+            this.backupPropertiesOfOverlayBoxes();
         }
         if (this.topBox.style.opacity === '0') {
             this.showCurrentOverlays();
@@ -1080,6 +1087,7 @@ var lightbox_renderer_core_1 = __webpack_require__(/*! ./lightbox-renderer.core 
 var HazelineRunner = /** @class */ (function () {
     function HazelineRunner(lightbox, renderer, elementManager) {
         var _this = this;
+        this._$onScrollEventsStream = new rxjs_1.Subject();
         this._$runWhenSectionStepsArePopulated = new rxjs_1.Subject();
         this._$sectionStatus = new rxjs_1.BehaviorSubject(null);
         this.currentSectionStepIdx = 0;
@@ -1100,34 +1108,17 @@ var HazelineRunner = /** @class */ (function () {
                 ;
             }
         };
-        this.windowScrollEvtListener = function () {
-            // const wrapElementsDimensions = this.elementManager.getWrappingElementsDimensions(this.currentSection.steps[this.currentSectionStepIdx].elementSelector);
-            // if (this.currentSection.steps[this.currentSectionStepIdx].useOverlayInsteadOfLightbox) {
-            //     this.lightboxRenderer.updateTextualOverlayPlacement();
-            // } else {
-            //     this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
-            //     this.lightboxRenderer.updateLightboxPlacement(
-            //         HazelineElementManager.getElementBySelector(this.currentSection.steps[this.currentSectionStepIdx].elementSelector),
-            //         this.currentSection.steps[this.currentSectionStepIdx],
-            //         this.isLastStep
-            //     );
-            // }
+        this.windowScrollEventThrottler = function () {
+            _this._$onScrollEventsStream.next(true);
         };
         this.lightboxRenderer = lightbox;
         this.overlayRenderer = renderer;
         this.elementManager = elementManager;
         this._$runWhenSectionStepsArePopulated
             .pipe(operators_1.take(1), operators_1.tap(function () {
-            _this.startNextPrevButtonClicks();
             _this.startResponsiveListeners();
-            _this.bodyOverflowsBackup = {
-                x: document.body.style.overflowX,
-                y: document.body.style.overflowY,
-                overflow: document.body.style.overflow,
-            };
-            document.querySelector('body').style.overflow = 'hidden';
-            document.querySelector('body').style.overflowX = 'hidden';
-            document.querySelector('body').style.overflowY = 'hidden';
+            _this.startNextPrevButtonClicks();
+            _this.actualWindowScrollEvtListener();
         })).subscribe();
     }
     HazelineRunner.prototype.endTutorial = function () {
@@ -1135,10 +1126,7 @@ var HazelineRunner = /** @class */ (function () {
         this.lightboxRenderer.dispose(true);
         this.lightboxRenderer.disposeTextualOverlay(true);
         window.removeEventListener('resize', this.windowResizeEvtListener);
-        window.removeEventListener('scroll', this.windowScrollEvtListener);
-        document.querySelector('body').style.overflowX = this.bodyOverflowsBackup.x;
-        document.querySelector('body').style.overflowY = this.bodyOverflowsBackup.y;
-        document.querySelector('body').style.overflow = this.bodyOverflowsBackup.overflow;
+        window.removeEventListener('scroll', this.windowScrollEventThrottler);
     };
     HazelineRunner.prototype.runSection = function (section) {
         var _this = this;
@@ -1193,6 +1181,21 @@ var HazelineRunner = /** @class */ (function () {
         this.previousSectionStepIdx = this.currentSectionStepIdx;
         return this._$sectionStatus;
     };
+    HazelineRunner.prototype.actualWindowScrollEvtListener = function () {
+        var _this = this;
+        this._$onScrollEventsStream
+            .pipe(operators_1.filter(function () {
+            if (_this.currentSection.steps[_this.currentSectionStepIdx].useOverlayInsteadOfLightbox) {
+                _this.lightboxRenderer.updateTextualOverlayPlacement();
+                return false;
+            }
+            return true;
+        }), operators_1.tap(function () { return _this.lightboxRenderer.hideLightbox(); }), operators_1.tap(function () { return _this.overlayRenderer.hideCurrentOverlays(); }), operators_1.delay(500), operators_1.tap(function () { return _this.overlayRenderer.dispose(); }), operators_1.tap(function () {
+            var wrapElementsDimensions = _this.elementManager.getWrappingElementsDimensions(_this.currentSection.steps[_this.currentSectionStepIdx].elementSelector);
+            _this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
+        }), operators_1.tap(function () { return _this.lightboxRenderer.updateLightboxPlacement(element_manager_core_1.HazelineElementManager.getElementBySelector(_this.currentSection.steps[_this.currentSectionStepIdx].elementSelector), _this.currentSection.steps[_this.currentSectionStepIdx], _this.isLastStep); }), operators_1.tap(function () { return _this.lightboxRenderer.showLightbox(); })).subscribe();
+    };
+    ;
     HazelineRunner.prototype.applyCustomOptionsIfAny = function (options, isDynamicOptions) {
         if (isDynamicOptions === void 0) { isDynamicOptions = false; }
         if (!options) {
@@ -1219,9 +1222,11 @@ var HazelineRunner = /** @class */ (function () {
     };
     HazelineRunner.prototype.startNextPrevButtonClicks = function () {
         var _this = this;
+        console.log('NEXT PREV evts listeners started');
         var isNextStepRequired = undefined;
         this.lightboxRenderer.$eventTriggered()
             .pipe(operators_1.tap(function (eventTrigger) {
+            console.log('Event triggered!');
             isNextStepRequired = eventTrigger.type === lightbox_renderer_core_1.HazelineEventTrigger.next ? true : false;
             return eventTrigger;
         }), operators_1.filter(function (res) { return !!res; }), operators_1.filter(function () {
@@ -1281,8 +1286,9 @@ var HazelineRunner = /** @class */ (function () {
         return true;
     };
     HazelineRunner.prototype.startResponsiveListeners = function () {
+        console.log('listeners started');
         window.addEventListener('resize', this.windowResizeEvtListener);
-        window.addEventListener('scroll', this.windowScrollEvtListener);
+        window.addEventListener('scroll', this.windowScrollEventThrottler);
     };
     return HazelineRunner;
 }());

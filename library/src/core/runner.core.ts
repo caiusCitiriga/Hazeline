@@ -1,4 +1,4 @@
-import { filter, tap, switchMap, take } from 'rxjs/operators';
+import { filter, tap, switchMap, take, debounceTime, delay } from 'rxjs/operators';
 import { Observable, BehaviorSubject, of, Subject } from 'rxjs';
 
 import { HazelineOptions } from './interfaces/hazeline-options.interface';
@@ -12,6 +12,7 @@ import { HazelineLightboxRenderer, HazelineEventTrigger } from './lightbox-rende
 
 export class HazelineRunner {
 
+    private _$onScrollEventsStream = new Subject<boolean>();
     private _$runWhenSectionStepsArePopulated = new Subject<boolean>();
     private _$sectionStatus = new BehaviorSubject<HazelineTutorialSectionStatus>(null);
 
@@ -47,18 +48,9 @@ export class HazelineRunner {
             .pipe(
                 take(1),
                 tap(() => {
-                    this.startNextPrevButtonClicks();
                     this.startResponsiveListeners();
-
-                    this.bodyOverflowsBackup = {
-                        x: document.body.style.overflowX,
-                        y: document.body.style.overflowY,
-                        overflow: document.body.style.overflow,
-                    };
-
-                    document.querySelector('body').style.overflow = 'hidden';
-                    document.querySelector('body').style.overflowX = 'hidden';
-                    document.querySelector('body').style.overflowY = 'hidden';
+                    this.startNextPrevButtonClicks();
+                    this.actualWindowScrollEvtListener();
                 })
             ).subscribe();
     }
@@ -68,11 +60,7 @@ export class HazelineRunner {
         this.lightboxRenderer.dispose(true);
         this.lightboxRenderer.disposeTextualOverlay(true);
         window.removeEventListener('resize', this.windowResizeEvtListener);
-        window.removeEventListener('scroll', this.windowScrollEvtListener);
-
-        document.querySelector('body').style.overflowX = this.bodyOverflowsBackup.x;
-        document.querySelector('body').style.overflowY = this.bodyOverflowsBackup.y;
-        document.querySelector('body').style.overflow = this.bodyOverflowsBackup.overflow;
+        window.removeEventListener('scroll', this.windowScrollEventThrottler);
     }
 
     public runSection(section: HazelineTutorialSection): Observable<HazelineTutorialSectionStatus> {
@@ -140,6 +128,34 @@ export class HazelineRunner {
         return this._$sectionStatus;
     }
 
+    private actualWindowScrollEvtListener(): void {
+        this._$onScrollEventsStream
+            .pipe(
+                filter(() => {
+                    if (this.currentSection.steps[this.currentSectionStepIdx].useOverlayInsteadOfLightbox) {
+                        this.lightboxRenderer.updateTextualOverlayPlacement();
+                        return false;
+                    }
+
+                    return true;
+                }),
+                tap(() => this.lightboxRenderer.hideLightbox()),
+                tap(() => this.overlayRenderer.hideCurrentOverlays()),
+                delay(500),
+                tap(() => this.overlayRenderer.dispose()),
+                tap(() => {
+                    const wrapElementsDimensions = this.elementManager.getWrappingElementsDimensions(this.currentSection.steps[this.currentSectionStepIdx].elementSelector);
+                    this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
+                }),
+                tap(() => this.lightboxRenderer.updateLightboxPlacement(
+                    HazelineElementManager.getElementBySelector(this.currentSection.steps[this.currentSectionStepIdx].elementSelector),
+                    this.currentSection.steps[this.currentSectionStepIdx],
+                    this.isLastStep
+                )),
+                tap(() => this.lightboxRenderer.showLightbox()),
+            ).subscribe();
+    };
+
     private applyCustomOptionsIfAny(options: HazelineOptions, isDynamicOptions = false): void {
         if (!options) {
             return;
@@ -166,11 +182,13 @@ export class HazelineRunner {
     }
 
     private startNextPrevButtonClicks(): void {
+        console.log('NEXT PREV evts listeners started');
         let isNextStepRequired = undefined;
         this.lightboxRenderer.$eventTriggered()
             .pipe(
                 tap(eventTrigger => {
-                    isNextStepRequired = eventTrigger.type === HazelineEventTrigger.next ? true : false
+                    console.log('Event triggered!');
+                    isNextStepRequired = eventTrigger.type === HazelineEventTrigger.next ? true : false;
                     return eventTrigger;
                 }),
                 filter(res => !!res),
@@ -252,8 +270,9 @@ export class HazelineRunner {
     }
 
     private startResponsiveListeners(): void {
+        console.log('listeners started');
         window.addEventListener('resize', this.windowResizeEvtListener);
-        window.addEventListener('scroll', this.windowScrollEvtListener);
+        window.addEventListener('scroll', this.windowScrollEventThrottler);
     }
 
     private windowResizeEvtListener = () => {
@@ -270,18 +289,8 @@ export class HazelineRunner {
         }
     };
 
-    private windowScrollEvtListener = () => {
-        // const wrapElementsDimensions = this.elementManager.getWrappingElementsDimensions(this.currentSection.steps[this.currentSectionStepIdx].elementSelector);
-        // if (this.currentSection.steps[this.currentSectionStepIdx].useOverlayInsteadOfLightbox) {
-        //     this.lightboxRenderer.updateTextualOverlayPlacement();
-        // } else {
-        //     this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
-        //     this.lightboxRenderer.updateLightboxPlacement(
-        //         HazelineElementManager.getElementBySelector(this.currentSection.steps[this.currentSectionStepIdx].elementSelector),
-        //         this.currentSection.steps[this.currentSectionStepIdx],
-        //         this.isLastStep
-        //     );
-        // }
-    };
+    private windowScrollEventThrottler = () => {
+        this._$onScrollEventsStream.next(true);
+    }
 
 }

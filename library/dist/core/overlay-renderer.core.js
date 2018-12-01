@@ -132,6 +132,7 @@ var HazelineOverlayRenderer = /** @class */ (function () {
         this.bottomBox = document.getElementById(elements_ids_enum_1.HazelineElementsIds.bottomBox);
         if (!this.topBox) {
             this.wrapElement(dimensions);
+            this.backupPropertiesOfOverlayBoxes();
         }
         if (this.topBox.style.opacity === '0') {
             this.showCurrentOverlays();

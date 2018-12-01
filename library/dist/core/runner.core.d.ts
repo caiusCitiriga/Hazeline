@@ -5,6 +5,7 @@ import { HazelineElementManager } from './element-manager.core';
 import { HazelineOverlayRenderer } from './overlay-renderer.core';
 import { HazelineLightboxRenderer } from './lightbox-renderer.core';
 export declare class HazelineRunner {
+    private _$onScrollEventsStream;
     private _$runWhenSectionStepsArePopulated;
     private _$sectionStatus;
     private elementManager;
@@ -21,11 +22,12 @@ export declare class HazelineRunner {
     constructor(lightbox: HazelineLightboxRenderer, renderer: HazelineOverlayRenderer, elementManager: HazelineElementManager);
     endTutorial(): void;
     runSection(section: HazelineTutorialSection): Observable<HazelineTutorialSectionStatus>;
+    private actualWindowScrollEvtListener;
     private applyCustomOptionsIfAny;
     private startNextPrevButtonClicks;
     private sectionCanBeRan;
     private startResponsiveListeners;
     private windowResizeEvtListener;
-    private windowScrollEvtListener;
+    private windowScrollEventThrottler;
 }
 //# sourceMappingURL=runner.core.d.ts.map

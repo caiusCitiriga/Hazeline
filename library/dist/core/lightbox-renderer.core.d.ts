@@ -24,6 +24,8 @@ export declare class HazelineLightboxRenderer {
     }>;
     dispose(detachListeners?: boolean): void;
     disposeTextualOverlay(detachListeners?: boolean, fadeOutBeforeRemoving?: boolean): Observable<boolean>;
+    hideLightbox(): void;
+    showLightbox(): void;
     placeLightbox(target: HTMLElement, sectionStep: HazelineTutorialStep, isLastStep?: boolean): void;
     placeTextOverlay(sectionStep: HazelineTutorialStep, isLastStep?: boolean): Observable<boolean>;
     setLightboxDynamicOptions(opts: HazelineLightboxOptions): void;

@@ -160,6 +160,7 @@ export class HazelineOverlayRenderer {
 
         if (!this.topBox) {
             this.wrapElement(dimensions);
+            this.backupPropertiesOfOverlayBoxes();
         }
 
         if (this.topBox.style.opacity === '0') {

@@ -15,7 +15,7 @@ var HazelineLightboxRenderer = /** @class */ (function () {
         this.ligthboxOptions = elements_defaults_const_1.HazelineElementsDefaults.lightbox;
         this.textualOverlayOptions = elements_defaults_const_1.HazelineElementsDefaults.textualOverlay;
         this.nextBtnClickEvtListener = function () {
-            return _this._$eventTrigger.next({ type: HazelineEventTrigger.next });
+            _this._$eventTrigger.next({ type: HazelineEventTrigger.next });
         };
         this.prevBtnClickEvtListener = function () {
             _this._$eventTrigger.next({ type: HazelineEventTrigger.previous });
@@ -91,6 +91,12 @@ var HazelineLightboxRenderer = /** @class */ (function () {
         }
         rxjs_1.timer(10).subscribe(function () { return elementRemoved.next(true); });
         return elementRemoved;
+    };
+    HazelineLightboxRenderer.prototype.hideLightbox = function () {
+        this.lightboxWrp.style.opacity = '0';
+    };
+    HazelineLightboxRenderer.prototype.showLightbox = function () {
+        this.lightboxWrp.style.opacity = '1';
     };
     HazelineLightboxRenderer.prototype.placeLightbox = function (target, sectionStep, isLastStep) {
         if (isLastStep === void 0) { isLastStep = false; }
