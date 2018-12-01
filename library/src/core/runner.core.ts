@@ -23,6 +23,12 @@ export class HazelineRunner {
     private previousSectionStepIdx = 0;
     private currentSection: HazelineTutorialSection;
 
+    private bodyOverflowsBackup = {
+        x: undefined,
+        y: undefined,
+        overflow: undefined
+    };
+
     private isFirstStep: boolean;
     private isLastStep: boolean;
     private thisStepUsesTextualOverlay: boolean;
@@ -43,6 +49,16 @@ export class HazelineRunner {
                 tap(() => {
                     this.startNextPrevButtonClicks();
                     this.startResponsiveListeners();
+
+                    this.bodyOverflowsBackup = {
+                        x: document.body.style.overflowX,
+                        y: document.body.style.overflowY,
+                        overflow: document.body.style.overflow,
+                    };
+
+                    document.querySelector('body').style.overflow = 'hidden';
+                    document.querySelector('body').style.overflowX = 'hidden';
+                    document.querySelector('body').style.overflowY = 'hidden';
                 })
             ).subscribe();
     }
@@ -53,6 +69,10 @@ export class HazelineRunner {
         this.lightboxRenderer.disposeTextualOverlay(true);
         window.removeEventListener('resize', this.windowResizeEvtListener);
         window.removeEventListener('scroll', this.windowScrollEvtListener);
+
+        document.querySelector('body').style.overflowX = this.bodyOverflowsBackup.x;
+        document.querySelector('body').style.overflowY = this.bodyOverflowsBackup.y;
+        document.querySelector('body').style.overflow = this.bodyOverflowsBackup.overflow;
     }
 
     public runSection(section: HazelineTutorialSection): Observable<HazelineTutorialSectionStatus> {
@@ -250,11 +270,7 @@ export class HazelineRunner {
         }
     };
 
-    private windowScrollEvtListener = (evt: UIEvent) => {
-        evt.preventDefault();
-        evt.stopPropagation();
-        evt.stopImmediatePropagation();
-
+    private windowScrollEvtListener = () => {
         // const wrapElementsDimensions = this.elementManager.getWrappingElementsDimensions(this.currentSection.steps[this.currentSectionStepIdx].elementSelector);
         // if (this.currentSection.steps[this.currentSectionStepIdx].useOverlayInsteadOfLightbox) {
         //     this.lightboxRenderer.updateTextualOverlayPlacement();

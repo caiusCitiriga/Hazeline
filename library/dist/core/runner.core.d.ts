@@ -13,6 +13,7 @@ export declare class HazelineRunner {
     private currentSectionStepIdx;
     private previousSectionStepIdx;
     private currentSection;
+    private bodyOverflowsBackup;
     private isFirstStep;
     private isLastStep;
     private thisStepUsesTextualOverlay;

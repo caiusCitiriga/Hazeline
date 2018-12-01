@@ -12,6 +12,11 @@ var HazelineRunner = /** @class */ (function () {
         this._$sectionStatus = new rxjs_1.BehaviorSubject(null);
         this.currentSectionStepIdx = 0;
         this.previousSectionStepIdx = 0;
+        this.bodyOverflowsBackup = {
+            x: undefined,
+            y: undefined,
+            overflow: undefined
+        };
         this.windowResizeEvtListener = function () {
             var wrapElementsDimensions = _this.elementManager.getWrappingElementsDimensions(_this.currentSection.steps[_this.currentSectionStepIdx].elementSelector);
             if (_this.currentSection.steps[_this.currentSectionStepIdx].useOverlayInsteadOfLightbox) {
@@ -24,14 +29,17 @@ var HazelineRunner = /** @class */ (function () {
             }
         };
         this.windowScrollEvtListener = function () {
-            var wrapElementsDimensions = _this.elementManager.getWrappingElementsDimensions(_this.currentSection.steps[_this.currentSectionStepIdx].elementSelector);
-            if (_this.currentSection.steps[_this.currentSectionStepIdx].useOverlayInsteadOfLightbox) {
-                _this.lightboxRenderer.updateTextualOverlayPlacement();
-            }
-            else {
-                _this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
-                _this.lightboxRenderer.updateLightboxPlacement(element_manager_core_1.HazelineElementManager.getElementBySelector(_this.currentSection.steps[_this.currentSectionStepIdx].elementSelector), _this.currentSection.steps[_this.currentSectionStepIdx], _this.isLastStep);
-            }
+            // const wrapElementsDimensions = this.elementManager.getWrappingElementsDimensions(this.currentSection.steps[this.currentSectionStepIdx].elementSelector);
+            // if (this.currentSection.steps[this.currentSectionStepIdx].useOverlayInsteadOfLightbox) {
+            //     this.lightboxRenderer.updateTextualOverlayPlacement();
+            // } else {
+            //     this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
+            //     this.lightboxRenderer.updateLightboxPlacement(
+            //         HazelineElementManager.getElementBySelector(this.currentSection.steps[this.currentSectionStepIdx].elementSelector),
+            //         this.currentSection.steps[this.currentSectionStepIdx],
+            //         this.isLastStep
+            //     );
+            // }
         };
         this.lightboxRenderer = lightbox;
         this.overlayRenderer = renderer;
@@ -40,6 +48,14 @@ var HazelineRunner = /** @class */ (function () {
             .pipe(operators_1.take(1), operators_1.tap(function () {
             _this.startNextPrevButtonClicks();
             _this.startResponsiveListeners();
+            _this.bodyOverflowsBackup = {
+                x: document.body.style.overflowX,
+                y: document.body.style.overflowY,
+                overflow: document.body.style.overflow,
+            };
+            document.querySelector('body').style.overflow = 'hidden';
+            document.querySelector('body').style.overflowX = 'hidden';
+            document.querySelector('body').style.overflowY = 'hidden';
         })).subscribe();
     }
     HazelineRunner.prototype.endTutorial = function () {
@@ -48,6 +64,9 @@ var HazelineRunner = /** @class */ (function () {
         this.lightboxRenderer.disposeTextualOverlay(true);
         window.removeEventListener('resize', this.windowResizeEvtListener);
         window.removeEventListener('scroll', this.windowScrollEvtListener);
+        document.querySelector('body').style.overflowX = this.bodyOverflowsBackup.x;
+        document.querySelector('body').style.overflowY = this.bodyOverflowsBackup.y;
+        document.querySelector('body').style.overflow = this.bodyOverflowsBackup.overflow;
     };
     HazelineRunner.prototype.runSection = function (section) {
         var _this = this;
