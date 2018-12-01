@@ -406,7 +406,13 @@ interface HazelineTextualOverlayOptions {
 interface HazelineTutorialStep {
     text: string;
     elementSelector: string;
+    
+    delayText?: string;
+    delayTextColor?: string;
+    delayBeforeStart?: number;
+
     dynamicOptions?: HazelineOptions;
+    useOverlayInsteadOfLightbox?: boolean;
 }
 ```
 
