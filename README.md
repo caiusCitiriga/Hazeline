@@ -420,7 +420,6 @@ interface HazelineTutorialStep {
 ## Upcoming features
 
 + Margin offset on highlighted item
-+ Ability to add delay between a step and another
 + Ability to attach events on:
     + `onStepEnd()`
     + `onStepStart()`
