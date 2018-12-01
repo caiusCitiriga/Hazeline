@@ -10,7 +10,7 @@ export const HazelineElementsDefaults: HazelineOptions = {
             targetAttachment: 'bottom center',
             constraints: [
                 {
-                    to: 'scrollParent',
+                    to: 'window',
                     attachment: 'together'
                 }
             ],
