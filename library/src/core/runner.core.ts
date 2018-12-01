@@ -250,18 +250,22 @@ export class HazelineRunner {
         }
     };
 
-    private windowScrollEvtListener = () => {
-        const wrapElementsDimensions = this.elementManager.getWrappingElementsDimensions(this.currentSection.steps[this.currentSectionStepIdx].elementSelector);
-        if (this.currentSection.steps[this.currentSectionStepIdx].useOverlayInsteadOfLightbox) {
-            this.lightboxRenderer.updateTextualOverlayPlacement();
-        } else {
-            this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
-            this.lightboxRenderer.updateLightboxPlacement(
-                HazelineElementManager.getElementBySelector(this.currentSection.steps[this.currentSectionStepIdx].elementSelector),
-                this.currentSection.steps[this.currentSectionStepIdx],
-                this.isLastStep
-            );
-        }
+    private windowScrollEvtListener = (evt: UIEvent) => {
+        evt.preventDefault();
+        evt.stopPropagation();
+        evt.stopImmediatePropagation();
+
+        // const wrapElementsDimensions = this.elementManager.getWrappingElementsDimensions(this.currentSection.steps[this.currentSectionStepIdx].elementSelector);
+        // if (this.currentSection.steps[this.currentSectionStepIdx].useOverlayInsteadOfLightbox) {
+        //     this.lightboxRenderer.updateTextualOverlayPlacement();
+        // } else {
+        //     this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
+        //     this.lightboxRenderer.updateLightboxPlacement(
+        //         HazelineElementManager.getElementBySelector(this.currentSection.steps[this.currentSectionStepIdx].elementSelector),
+        //         this.currentSection.steps[this.currentSectionStepIdx],
+        //         this.isLastStep
+        //     );
+        // }
     };
 
 }
