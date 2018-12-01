@@ -23,6 +23,11 @@ export class HazelineRunner {
     private previousSectionStepIdx = 0;
     private currentSection: HazelineTutorialSection;
 
+    private isFirstStep: boolean;
+    private isLastStep: boolean;
+    private thisStepUsesTextualOverlay: boolean;
+    private previousStepUsedTextualOverlay: boolean;
+
     public constructor(
         lightbox: HazelineLightboxRenderer,
         renderer: HazelineOverlayRenderer,
@@ -43,8 +48,8 @@ export class HazelineRunner {
     }
 
     public endTutorial(): void {
-        this.lightboxRenderer.dispose(true);
         this.overlayRenderer.dispose();
+        this.lightboxRenderer.dispose(true);
         this.lightboxRenderer.disposeTextualOverlay(true);
         window.removeEventListener('resize', this.windowResizeEvtListener);
         window.removeEventListener('scroll', this.windowScrollEvtListener);
@@ -55,10 +60,10 @@ export class HazelineRunner {
             return this._$sectionStatus;
         }
 
-        const isFirstStep = this.currentSectionStepIdx === 0;
-        const isLastStep = (section.steps.length - 1) === this.currentSectionStepIdx;
-        const thisStepUsesTextualOverlay = this.currentSection.steps[this.currentSectionStepIdx].useOverlayInsteadOfLightbox;
-        const previousStepUsedTextualOverlay = this.currentSectionStepIdx === 0
+        this.isFirstStep = this.currentSectionStepIdx === 0;
+        this.isLastStep = (section.steps.length - 1) === this.currentSectionStepIdx;
+        this.thisStepUsesTextualOverlay = this.currentSection.steps[this.currentSectionStepIdx].useOverlayInsteadOfLightbox;
+        this.previousStepUsedTextualOverlay = this.currentSectionStepIdx === 0
             ? false
             : this.currentSection.steps[this.previousSectionStepIdx].useOverlayInsteadOfLightbox
 
@@ -68,27 +73,40 @@ export class HazelineRunner {
         const wrapElementsDimensions = this.elementManager
             .getWrappingElementsDimensions(section.steps[this.currentSectionStepIdx].elementSelector);
 
-        if (!isFirstStep && !thisStepUsesTextualOverlay) {
+        if (!this.isFirstStep && !this.thisStepUsesTextualOverlay) {
             this.lightboxRenderer.disposeTextualOverlay();
-            this.overlayRenderer.wrapElement(wrapElementsDimensions);
+            try {
+                this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
+
+            } catch (e) {
+                this.overlayRenderer.wrapElement(wrapElementsDimensions);
+            }
         }
 
-        if (thisStepUsesTextualOverlay) {
-            if (!previousStepUsedTextualOverlay) {
-                this.overlayRenderer.dispose();
+        if (this.thisStepUsesTextualOverlay) {
+            if (!this.previousStepUsedTextualOverlay) {
                 this.lightboxRenderer.dispose();
+                this.overlayRenderer.hideCurrentOverlays();
                 this.overlayRenderer.removeEndTutorialButton();
             }
+
             const fadeOutBeforeRemoving = !this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions.textualOverlay.disableBgFadeIn;
             this.lightboxRenderer.disposeTextualOverlay(false, fadeOutBeforeRemoving)
                 .pipe(switchMap(() =>
-                    this.lightboxRenderer.placeTextOverlay(this.currentSection.steps[this.currentSectionStepIdx], isLastStep))
+                    this.lightboxRenderer.placeTextOverlay(this.currentSection.steps[this.currentSectionStepIdx], this.isLastStep))
                 ).subscribe();
         } else {
-            this.lightboxRenderer.placeLightbox(
-                HazelineElementManager.getElementBySelector(section.steps[this.currentSectionStepIdx].elementSelector),
-                section.steps[this.currentSectionStepIdx],
-                isLastStep);
+            try {
+                this.lightboxRenderer.updateLightboxPlacement(
+                    HazelineElementManager.getElementBySelector(section.steps[this.currentSectionStepIdx].elementSelector),
+                    section.steps[this.currentSectionStepIdx],
+                    this.isLastStep);
+            } catch {
+                this.lightboxRenderer.placeLightbox(
+                    HazelineElementManager.getElementBySelector(section.steps[this.currentSectionStepIdx].elementSelector),
+                    section.steps[this.currentSectionStepIdx],
+                    this.isLastStep);
+            }
         }
 
         this._$sectionStatus.next({
@@ -162,7 +180,7 @@ export class HazelineRunner {
                 }),
                 filter(applyDelay => !!applyDelay),
                 switchMap(() => {
-                    this.overlayRenderer.dispose();
+                    this.overlayRenderer.dispose(); // TODO try to hide instead
                     this.lightboxRenderer.dispose();
                     this.lightboxRenderer.disposeTextualOverlay();
 
@@ -174,6 +192,7 @@ export class HazelineRunner {
                     const timeoutPassed = new Subject<boolean>();
                     setTimeout(() => {
                         this.overlayRenderer.removeWaitForDelayOverlay();
+                        // TODO remember to show back
                         timeoutPassed.next(true);
                     }, this.currentSection.steps[this.currentSectionStepIdx].delayBeforeStart)
 
@@ -223,7 +242,11 @@ export class HazelineRunner {
             this.lightboxRenderer.updateTextualOverlayPlacement();
         } else {
             this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
-            this.lightboxRenderer.updateLightboxPlacement(HazelineElementManager.getElementBySelector(this.currentSection.steps[this.currentSectionStepIdx].elementSelector));
+            this.lightboxRenderer.updateLightboxPlacement(
+                HazelineElementManager.getElementBySelector(this.currentSection.steps[this.currentSectionStepIdx].elementSelector),
+                this.currentSection.steps[this.currentSectionStepIdx],
+                this.isLastStep
+            );;
         }
     };
 
@@ -233,7 +256,11 @@ export class HazelineRunner {
             this.lightboxRenderer.updateTextualOverlayPlacement();
         } else {
             this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
-            this.lightboxRenderer.updateLightboxPlacement(HazelineElementManager.getElementBySelector(this.currentSection.steps[this.currentSectionStepIdx].elementSelector));
+            this.lightboxRenderer.updateLightboxPlacement(
+                HazelineElementManager.getElementBySelector(this.currentSection.steps[this.currentSectionStepIdx].elementSelector),
+                this.currentSection.steps[this.currentSectionStepIdx],
+                this.isLastStep
+            );
         }
     };
 

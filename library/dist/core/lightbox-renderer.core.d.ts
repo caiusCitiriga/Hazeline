@@ -30,7 +30,7 @@ export declare class HazelineLightboxRenderer {
     setTextualOverlayDynamicOptions(opts: HazelineTextualOverlayOptions): void;
     setLightboxGlobalOptions(opts: HazelineLightboxOptions): void;
     setTextualOverlayGlobalOptions(opts: HazelineTextualOverlayOptions): void;
-    updateLightboxPlacement(target: HTMLElement): void;
+    updateLightboxPlacement(target: HTMLElement, step: HazelineTutorialStep, isLastStep?: boolean): void;
     updateTextualOverlayPlacement(): void;
     private applyTexts;
     private attachNextPrevEventsListeneres;

@@ -115,7 +115,7 @@ export class HazelineLightboxRenderer {
         this.applyTexts(sectionStep, isLastStep);
         this.styleWholeLigthboxElement();
 
-        this.updateLightboxPlacement(target);
+        this.updateLightboxPlacement(target, sectionStep, isLastStep);
     }
 
     public placeTextOverlay(sectionStep: HazelineTutorialStep, isLastStep = false): Observable<boolean> {
@@ -255,7 +255,7 @@ export class HazelineLightboxRenderer {
         });
     }
 
-    public updateLightboxPlacement(target: HTMLElement): void {
+    public updateLightboxPlacement(target: HTMLElement, step: HazelineTutorialStep, isLastStep = false): void {
         if (!!this.textualOverlay) {
             return;
         }
@@ -285,6 +285,7 @@ export class HazelineLightboxRenderer {
             });
         }
 
+        this.applyTexts(step, isLastStep);
         this.tether.position();
     }
 

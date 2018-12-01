@@ -6,16 +6,15 @@ exports.HazelineElementsDefaults = {
         prevBtnText: 'Previous',
         lastStepNextBtnText: 'Finish',
         positioning: {
-            offset: '',
-            targetOffset: '',
-            attachment: 'top right',
-            targetAttachment: 'bottom left',
+            attachment: 'top center',
+            targetAttachment: 'bottom center',
             constraints: [
                 {
                     to: 'scrollParent',
                     attachment: 'together'
                 }
-            ]
+            ],
+            offset: '-20px 0'
         },
         lightboxWrapperCSS: {
             padding: '8px',
@@ -83,6 +82,7 @@ exports.HazelineElementsDefaults = {
             zIndex: '99999',
             position: 'fixed',
             background: 'rgba(0,0,0,.8)',
+            transition: 'all 120ms ease-in-out',
         },
         endTutorialBtnHoverCSS: {
             color: '#fff',

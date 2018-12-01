@@ -13,6 +13,10 @@ export declare class HazelineRunner {
     private currentSectionStepIdx;
     private previousSectionStepIdx;
     private currentSection;
+    private isFirstStep;
+    private isLastStep;
+    private thisStepUsesTextualOverlay;
+    private previousStepUsedTextualOverlay;
     constructor(lightbox: HazelineLightboxRenderer, renderer: HazelineOverlayRenderer, elementManager: HazelineElementManager);
     endTutorial(): void;
     runSection(section: HazelineTutorialSection): Observable<HazelineTutorialSectionStatus>;

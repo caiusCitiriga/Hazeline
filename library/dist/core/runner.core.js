@@ -19,7 +19,8 @@ var HazelineRunner = /** @class */ (function () {
             }
             else {
                 _this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
-                _this.lightboxRenderer.updateLightboxPlacement(element_manager_core_1.HazelineElementManager.getElementBySelector(_this.currentSection.steps[_this.currentSectionStepIdx].elementSelector));
+                _this.lightboxRenderer.updateLightboxPlacement(element_manager_core_1.HazelineElementManager.getElementBySelector(_this.currentSection.steps[_this.currentSectionStepIdx].elementSelector), _this.currentSection.steps[_this.currentSectionStepIdx], _this.isLastStep);
+                ;
             }
         };
         this.windowScrollEvtListener = function () {
@@ -29,7 +30,7 @@ var HazelineRunner = /** @class */ (function () {
             }
             else {
                 _this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
-                _this.lightboxRenderer.updateLightboxPlacement(element_manager_core_1.HazelineElementManager.getElementBySelector(_this.currentSection.steps[_this.currentSectionStepIdx].elementSelector));
+                _this.lightboxRenderer.updateLightboxPlacement(element_manager_core_1.HazelineElementManager.getElementBySelector(_this.currentSection.steps[_this.currentSectionStepIdx].elementSelector), _this.currentSection.steps[_this.currentSectionStepIdx], _this.isLastStep);
             }
         };
         this.lightboxRenderer = lightbox;
@@ -42,8 +43,8 @@ var HazelineRunner = /** @class */ (function () {
         })).subscribe();
     }
     HazelineRunner.prototype.endTutorial = function () {
-        this.lightboxRenderer.dispose(true);
         this.overlayRenderer.dispose();
+        this.lightboxRenderer.dispose(true);
         this.lightboxRenderer.disposeTextualOverlay(true);
         window.removeEventListener('resize', this.windowResizeEvtListener);
         window.removeEventListener('scroll', this.windowScrollEvtListener);
@@ -53,34 +54,44 @@ var HazelineRunner = /** @class */ (function () {
         if (!this.sectionCanBeRan(section)) {
             return this._$sectionStatus;
         }
-        var isFirstStep = this.currentSectionStepIdx === 0;
-        var isLastStep = (section.steps.length - 1) === this.currentSectionStepIdx;
-        var thisStepUsesTextualOverlay = this.currentSection.steps[this.currentSectionStepIdx].useOverlayInsteadOfLightbox;
-        var previousStepUsedTextualOverlay = this.currentSectionStepIdx === 0
+        this.isFirstStep = this.currentSectionStepIdx === 0;
+        this.isLastStep = (section.steps.length - 1) === this.currentSectionStepIdx;
+        this.thisStepUsesTextualOverlay = this.currentSection.steps[this.currentSectionStepIdx].useOverlayInsteadOfLightbox;
+        this.previousStepUsedTextualOverlay = this.currentSectionStepIdx === 0
             ? false
             : this.currentSection.steps[this.previousSectionStepIdx].useOverlayInsteadOfLightbox;
         this.applyCustomOptionsIfAny(section.globalOptions);
         this.applyCustomOptionsIfAny(this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions, true);
         var wrapElementsDimensions = this.elementManager
             .getWrappingElementsDimensions(section.steps[this.currentSectionStepIdx].elementSelector);
-        if (!isFirstStep && !thisStepUsesTextualOverlay) {
+        if (!this.isFirstStep && !this.thisStepUsesTextualOverlay) {
             this.lightboxRenderer.disposeTextualOverlay();
-            this.overlayRenderer.wrapElement(wrapElementsDimensions);
+            try {
+                this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
+            }
+            catch (e) {
+                this.overlayRenderer.wrapElement(wrapElementsDimensions);
+            }
         }
-        if (thisStepUsesTextualOverlay) {
-            if (!previousStepUsedTextualOverlay) {
-                this.overlayRenderer.dispose();
+        if (this.thisStepUsesTextualOverlay) {
+            if (!this.previousStepUsedTextualOverlay) {
                 this.lightboxRenderer.dispose();
+                this.overlayRenderer.hideCurrentOverlays();
                 this.overlayRenderer.removeEndTutorialButton();
             }
             var fadeOutBeforeRemoving = !this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions.textualOverlay.disableBgFadeIn;
             this.lightboxRenderer.disposeTextualOverlay(false, fadeOutBeforeRemoving)
                 .pipe(operators_1.switchMap(function () {
-                return _this.lightboxRenderer.placeTextOverlay(_this.currentSection.steps[_this.currentSectionStepIdx], isLastStep);
+                return _this.lightboxRenderer.placeTextOverlay(_this.currentSection.steps[_this.currentSectionStepIdx], _this.isLastStep);
             })).subscribe();
         }
         else {
-            this.lightboxRenderer.placeLightbox(element_manager_core_1.HazelineElementManager.getElementBySelector(section.steps[this.currentSectionStepIdx].elementSelector), section.steps[this.currentSectionStepIdx], isLastStep);
+            try {
+                this.lightboxRenderer.updateLightboxPlacement(element_manager_core_1.HazelineElementManager.getElementBySelector(section.steps[this.currentSectionStepIdx].elementSelector), section.steps[this.currentSectionStepIdx], this.isLastStep);
+            }
+            catch (_a) {
+                this.lightboxRenderer.placeLightbox(element_manager_core_1.HazelineElementManager.getElementBySelector(section.steps[this.currentSectionStepIdx].elementSelector), section.steps[this.currentSectionStepIdx], this.isLastStep);
+            }
         }
         this._$sectionStatus.next({
             runningSection: section,
@@ -140,7 +151,7 @@ var HazelineRunner = /** @class */ (function () {
             }
             return true;
         }), operators_1.filter(function (applyDelay) { return !!applyDelay; }), operators_1.switchMap(function () {
-            _this.overlayRenderer.dispose();
+            _this.overlayRenderer.dispose(); // TODO try to hide instead
             _this.lightboxRenderer.dispose();
             _this.lightboxRenderer.disposeTextualOverlay();
             var message = _this.currentSection.steps[_this.currentSectionStepIdx].delayText;
@@ -150,6 +161,7 @@ var HazelineRunner = /** @class */ (function () {
             var timeoutPassed = new rxjs_1.Subject();
             setTimeout(function () {
                 _this.overlayRenderer.removeWaitForDelayOverlay();
+                // TODO remember to show back
                 timeoutPassed.next(true);
             }, _this.currentSection.steps[_this.currentSectionStepIdx].delayBeforeStart);
             return timeoutPassed;

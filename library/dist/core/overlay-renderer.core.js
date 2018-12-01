@@ -38,6 +38,13 @@ var HazelineOverlayRenderer = /** @class */ (function () {
         this.detachEndTutorialBtnEventListeners();
         this.destroyPreviousElementsIfAny();
     };
+    HazelineOverlayRenderer.prototype.hideCurrentOverlays = function () {
+        this.backupPropertiesOfOverlayBoxes();
+        this.fadeOutOverlayBoxes();
+    };
+    HazelineOverlayRenderer.prototype.showCurrentOverlays = function () {
+        this.restorePropertiesOfOverlayBoxes();
+    };
     HazelineOverlayRenderer.prototype.placeWaitForDelayOverlay = function (message, textColor) {
         var _this = this;
         var overlayShown = new rxjs_1.Subject();
@@ -58,6 +65,7 @@ var HazelineOverlayRenderer = /** @class */ (function () {
             transition: 'opacity 200ms ease-in-out',
             background: this.overlayOptions.overlayCSS.background,
         };
+        this.hideCurrentOverlays();
         this.delayInProgressOverlay = document.createElement('div');
         document.body.prepend(this.delayInProgressOverlay);
         this.delayInProgressOverlay = styles_manager_core_1.HazelineStylesManager.styleElement(this.delayInProgressOverlay, delayInProgressCSS);
@@ -74,6 +82,7 @@ var HazelineOverlayRenderer = /** @class */ (function () {
             return;
         }
         document.body.removeChild(document.getElementById(elements_ids_enum_1.HazelineElementsIds.waitForDelayOverlay));
+        this.showCurrentOverlays();
         this.delayInProgressOverlay = null;
     };
     HazelineOverlayRenderer.prototype.placeEndTutorialButton = function () {
@@ -202,6 +211,19 @@ var HazelineOverlayRenderer = /** @class */ (function () {
             this.bottomBox.style.opacity;
         this.backupProperties.bottomBox.opacity =
             this.bottomBox.style.transition;
+    };
+    HazelineOverlayRenderer.prototype.restorePropertiesOfOverlayBoxes = function () {
+        if (!this.topBox) {
+            return;
+        }
+        this.topBox.style.opacity = this.backupProperties.topBox.opacity;
+        this.topBox.style.transition = this.backupProperties.topBox.transition;
+        this.leftBox.style.opacity = this.backupProperties.leftBox.opacity;
+        this.leftBox.style.transition = this.backupProperties.leftBox.transition;
+        this.rightBox.style.opacity = this.backupProperties.rightBox.opacity;
+        this.rightBox.style.transition = this.backupProperties.rightBox.transition;
+        this.bottomBox.style.opacity = this.backupProperties.bottomBox.opacity;
+        this.bottomBox.style.transition = this.backupProperties.bottomBox.transition;
     };
     HazelineOverlayRenderer.prototype.createEndTutorialButton = function () {
         this.endTutorialBtn = document.createElement('button');

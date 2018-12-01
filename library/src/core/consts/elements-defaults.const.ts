@@ -1,5 +1,4 @@
-import { HazelineCSSRules } from '../interfaces/css-rules.interface';
-import { HazelineOptions, HazelineLightboxOptions } from '../interfaces/hazeline-options.interface';
+import { HazelineOptions } from '../interfaces/hazeline-options.interface';
 
 export const HazelineElementsDefaults: HazelineOptions = {
     lightbox: {
@@ -7,16 +6,15 @@ export const HazelineElementsDefaults: HazelineOptions = {
         prevBtnText: 'Previous',
         lastStepNextBtnText: 'Finish',
         positioning: {
-            offset: '',
-            targetOffset: '',
-            attachment: 'top right',
-            targetAttachment: 'bottom left',
+            attachment: 'top center',
+            targetAttachment: 'bottom center',
             constraints: [
                 {
                     to: 'scrollParent',
                     attachment: 'together'
                 }
-            ]
+            ],
+            offset: '-20px 0'
         },
 
         lightboxWrapperCSS: {
@@ -86,6 +84,7 @@ export const HazelineElementsDefaults: HazelineOptions = {
             zIndex: '99999',
             position: 'fixed',
             background: 'rgba(0,0,0,.8)',
+            transition: 'all 120ms ease-in-out',
         },
         endTutorialBtnHoverCSS: {
             color: '#fff',

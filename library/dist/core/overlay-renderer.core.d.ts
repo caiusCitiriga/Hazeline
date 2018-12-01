@@ -16,6 +16,8 @@ export declare class HazelineOverlayRenderer {
     private endTutorialBtnMouseEnterEvtListener;
     $premartureEndRequired(): Observable<boolean>;
     dispose(): void;
+    hideCurrentOverlays(): void;
+    showCurrentOverlays(): void;
     placeWaitForDelayOverlay(message: string, textColor: string): Observable<boolean>;
     removeWaitForDelayOverlay(): void;
     placeEndTutorialButton(): void;
@@ -30,6 +32,7 @@ export declare class HazelineOverlayRenderer {
     private attachEndTutorialButtonToBody;
     private attachEndTutorialBtnEventsListeners;
     private backupPropertiesOfOverlayBoxes;
+    private restorePropertiesOfOverlayBoxes;
     private createEndTutorialButton;
     private createWrappingElements;
     private destroyPreviousElementsIfAny;

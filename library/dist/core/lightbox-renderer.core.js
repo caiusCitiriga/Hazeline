@@ -100,7 +100,7 @@ var HazelineLightboxRenderer = /** @class */ (function () {
         }
         this.applyTexts(sectionStep, isLastStep);
         this.styleWholeLigthboxElement();
-        this.updateLightboxPlacement(target);
+        this.updateLightboxPlacement(target, sectionStep, isLastStep);
     };
     HazelineLightboxRenderer.prototype.placeTextOverlay = function (sectionStep, isLastStep) {
         var _this = this;
@@ -221,7 +221,8 @@ var HazelineLightboxRenderer = /** @class */ (function () {
             }
         });
     };
-    HazelineLightboxRenderer.prototype.updateLightboxPlacement = function (target) {
+    HazelineLightboxRenderer.prototype.updateLightboxPlacement = function (target, step, isLastStep) {
+        if (isLastStep === void 0) { isLastStep = false; }
         if (!!this.textualOverlay) {
             return;
         }
@@ -249,6 +250,7 @@ var HazelineLightboxRenderer = /** @class */ (function () {
                 targetAttachment: targetAttachment,
             });
         }
+        this.applyTexts(step, isLastStep);
         this.tether.position();
     };
     HazelineLightboxRenderer.prototype.updateTextualOverlayPlacement = function () {

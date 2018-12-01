@@ -52,6 +52,15 @@ export class HazelineOverlayRenderer {
         this.destroyPreviousElementsIfAny();
     }
 
+    public hideCurrentOverlays(): void {
+        this.backupPropertiesOfOverlayBoxes();
+        this.fadeOutOverlayBoxes();
+    }
+
+    public showCurrentOverlays(): void {
+        this.restorePropertiesOfOverlayBoxes();
+    }
+
     public placeWaitForDelayOverlay(message: string, textColor: string): Observable<boolean> {
         const overlayShown = new Subject<boolean>();
         const delayInProgressCSS = <HazelineCSSRules>{
@@ -72,6 +81,7 @@ export class HazelineOverlayRenderer {
             background: this.overlayOptions.overlayCSS.background,
         };
 
+        this.hideCurrentOverlays();
         this.delayInProgressOverlay = document.createElement('div');
         (document.body as any).prepend(this.delayInProgressOverlay);
         this.delayInProgressOverlay = HazelineStylesManager.styleElement(this.delayInProgressOverlay, delayInProgressCSS);
@@ -92,6 +102,7 @@ export class HazelineOverlayRenderer {
         }
 
         document.body.removeChild(document.getElementById(HazelineElementsIds.waitForDelayOverlay));
+        this.showCurrentOverlays();
         this.delayInProgressOverlay = null;
     }
 
@@ -244,6 +255,25 @@ export class HazelineOverlayRenderer {
             this.bottomBox.style.opacity;
         this.backupProperties.bottomBox.opacity =
             this.bottomBox.style.transition;
+    }
+
+    private restorePropertiesOfOverlayBoxes() {
+        if (!this.topBox) {
+            return;
+        }
+
+        this.topBox.style.opacity = this.backupProperties.topBox.opacity;
+        this.topBox.style.transition = this.backupProperties.topBox.transition;
+
+        this.leftBox.style.opacity = this.backupProperties.leftBox.opacity;
+        this.leftBox.style.transition = this.backupProperties.leftBox.transition;
+
+        this.rightBox.style.opacity = this.backupProperties.rightBox.opacity;
+        this.rightBox.style.transition = this.backupProperties.rightBox.transition;
+
+        this.bottomBox.style.opacity = this.backupProperties.bottomBox.opacity;
+        this.bottomBox.style.transition = this.backupProperties.bottomBox.transition;
+
     }
 
     private createEndTutorialButton(): void {
