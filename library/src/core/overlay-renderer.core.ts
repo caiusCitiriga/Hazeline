@@ -158,16 +158,20 @@ export class HazelineOverlayRenderer {
         this.rightBox = document.getElementById(HazelineElementsIds.rightBox) as HTMLDivElement;
         this.bottomBox = document.getElementById(HazelineElementsIds.bottomBox) as HTMLDivElement;
 
-        if (!!this.topBox) {
-            // If a box is null or undefined, we are using a textual overlay. So there's no need to 
-            // apply options on elements. Event because it would end in a error.
-            this.applyOptionsOnElements({
-                topBox: this.topBox,
-                leftBox: this.leftBox,
-                rightBox: this.rightBox,
-                bottomBox: this.bottomBox,
-            }, dimensions);
+        if (!this.topBox) {
+            this.wrapElement(dimensions);
         }
+
+        if (this.topBox.style.opacity === '0') {
+            this.showCurrentOverlays();
+        }
+
+        this.applyOptionsOnElements({
+            topBox: this.topBox,
+            leftBox: this.leftBox,
+            rightBox: this.rightBox,
+            bottomBox: this.bottomBox,
+        }, dimensions);
 
         this.applyEndTutorialBtnOptions();
     }
@@ -241,19 +245,19 @@ export class HazelineOverlayRenderer {
 
         this.backupProperties.topBox.opacity =
             this.topBox.style.opacity;
-        this.backupProperties.topBox.opacity =
+        this.backupProperties.topBox.transition =
             this.topBox.style.transition;
         this.backupProperties.leftBox.opacity =
             this.leftBox.style.opacity;
-        this.backupProperties.leftBox.opacity =
+        this.backupProperties.leftBox.transition =
             this.leftBox.style.transition;
         this.backupProperties.rightBox.opacity =
             this.rightBox.style.opacity;
-        this.backupProperties.rightBox.opacity =
+        this.backupProperties.rightBox.transition =
             this.rightBox.style.transition;
         this.backupProperties.bottomBox.opacity =
             this.bottomBox.style.opacity;
-        this.backupProperties.bottomBox.opacity =
+        this.backupProperties.bottomBox.transition =
             this.bottomBox.style.transition;
     }
 

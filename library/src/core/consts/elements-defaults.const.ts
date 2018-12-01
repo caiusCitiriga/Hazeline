@@ -14,7 +14,7 @@ export const HazelineElementsDefaults: HazelineOptions = {
                     attachment: 'together'
                 }
             ],
-            offset: '-20px 0'
+            offset: '0 0'
         },
 
         lightboxWrapperCSS: {
@@ -25,7 +25,7 @@ export const HazelineElementsDefaults: HazelineOptions = {
             zIndex: '999999',
             position: 'fixed',
             background: '#fff',
-            flexDirection: 'column'
+            flexDirection: 'column',
         },
         lightboxTextWrapperCSS: {
             width: '100%',

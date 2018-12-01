@@ -10,11 +10,11 @@ exports.HazelineElementsDefaults = {
             targetAttachment: 'bottom center',
             constraints: [
                 {
-                    to: 'scrollParent',
+                    to: 'window',
                     attachment: 'together'
                 }
             ],
-            offset: '-20px 0'
+            offset: '0 0'
         },
         lightboxWrapperCSS: {
             padding: '8px',
@@ -24,7 +24,7 @@ exports.HazelineElementsDefaults = {
             zIndex: '999999',
             position: 'fixed',
             background: '#fff',
-            flexDirection: 'column'
+            flexDirection: 'column',
         },
         lightboxTextWrapperCSS: {
             width: '100%',

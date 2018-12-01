@@ -56,6 +56,7 @@ export class HazelineLightboxRenderer {
             this.tether = null;
 
             document.body.removeChild(this.lightboxWrp);
+            this.lightboxWrp = null;
         }
     }
 
@@ -141,6 +142,10 @@ export class HazelineLightboxRenderer {
         this.textualOverlay = document.createElement('div');
         this.textualOverlay.id = HazelineElementsIds.lightboxTextualOverlay;
         this.textualOverlay = HazelineStylesManager.styleElement<HTMLDivElement>(this.textualOverlay, this.textualOverlayOptions.overlayCSS);
+
+        this.textualOverlay.style.width = '100%';
+        this.textualOverlay.style.height = '100%';
+        this.textualOverlay.style.zIndex = (+this.textualOverlay.style.zIndex + 1).toString();
 
         if (!this.textualOverlayOptions.disableBgFadeIn) {
             this.textualOverlay.style.transition = `all ${this.textualOverlayOptions.bgFadeInTimeInMs}ms ease-in-out`;
@@ -257,6 +262,11 @@ export class HazelineLightboxRenderer {
 
     public updateLightboxPlacement(target: HTMLElement, step: HazelineTutorialStep, isLastStep = false): void {
         if (!!this.textualOverlay) {
+            return;
+        }
+        if (!this.lightboxWrp) {
+            console.log('No lightbox here!');
+            this.placeLightbox(target, step, isLastStep);
             return;
         }
 

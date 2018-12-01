@@ -45,6 +45,7 @@ var HazelineLightboxRenderer = /** @class */ (function () {
             this.tether.destroy();
             this.tether = null;
             document.body.removeChild(this.lightboxWrp);
+            this.lightboxWrp = null;
         }
     };
     HazelineLightboxRenderer.prototype.disposeTextualOverlay = function (detachListeners, fadeOutBeforeRemoving) {
@@ -123,6 +124,9 @@ var HazelineLightboxRenderer = /** @class */ (function () {
         this.textualOverlay = document.createElement('div');
         this.textualOverlay.id = elements_ids_enum_1.HazelineElementsIds.lightboxTextualOverlay;
         this.textualOverlay = styles_manager_core_1.HazelineStylesManager.styleElement(this.textualOverlay, this.textualOverlayOptions.overlayCSS);
+        this.textualOverlay.style.width = '100%';
+        this.textualOverlay.style.height = '100%';
+        this.textualOverlay.style.zIndex = (+this.textualOverlay.style.zIndex + 1).toString();
         if (!this.textualOverlayOptions.disableBgFadeIn) {
             this.textualOverlay.style.transition = "all " + this.textualOverlayOptions.bgFadeInTimeInMs + "ms ease-in-out";
             this.textualOverlay.style.transitionProperty = this.textualOverlayOptions.overlayCSS.transitionProperty;
@@ -224,6 +228,11 @@ var HazelineLightboxRenderer = /** @class */ (function () {
     HazelineLightboxRenderer.prototype.updateLightboxPlacement = function (target, step, isLastStep) {
         if (isLastStep === void 0) { isLastStep = false; }
         if (!!this.textualOverlay) {
+            return;
+        }
+        if (!this.lightboxWrp) {
+            console.log('No lightbox here!');
+            this.placeLightbox(target, step, isLastStep);
             return;
         }
         var offset = this.ligthboxOptions.positioning.offset;
