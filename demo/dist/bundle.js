@@ -1125,6 +1125,7 @@ var tutorial_section_statuses_enum_1 = __webpack_require__(/*! ./enums/tutorial-
 var element_manager_core_1 = __webpack_require__(/*! ./element-manager.core */ "../library/dist/core/element-manager.core.js");
 var lightbox_renderer_core_1 = __webpack_require__(/*! ./lightbox-renderer.core */ "../library/dist/core/lightbox-renderer.core.js");
 var elements_defaults_const_1 = __webpack_require__(/*! ./consts/elements-defaults.const */ "../library/dist/core/consts/elements-defaults.const.js");
+var elements_ids_enum_1 = __webpack_require__(/*! ./enums/elements-ids.enum */ "../library/dist/core/enums/elements-ids.enum.js");
 var HazelineRunner = /** @class */ (function () {
     function HazelineRunner(lightbox, renderer, elementManager) {
         var _this = this;
@@ -1180,12 +1181,7 @@ var HazelineRunner = /** @class */ (function () {
         var wrapElementsDimensions = this.getWrappingDimensions();
         if (!this.isFirstStep && !this.thisStepUsesTextualOverlay) {
             this.lightboxRenderer.disposeTextualOverlay();
-            try {
-                this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
-            }
-            catch (e) {
-                this.overlayRenderer.wrapElement(wrapElementsDimensions);
-            }
+            this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
         }
         if (this.thisStepUsesTextualOverlay) {
             if (!this.previousStepUsedTextualOverlay) {
@@ -1218,17 +1214,30 @@ var HazelineRunner = /** @class */ (function () {
     };
     HazelineRunner.prototype.actualWindowScrollEvtListener = function () {
         var _this = this;
+        var lightboxObj = document.getElementById(elements_ids_enum_1.HazelineElementsIds.lightbox);
+        var lightboxTransitionPropsBackup;
+        if (!!lightboxObj) {
+            lightboxTransitionPropsBackup = lightboxObj.style.transition;
+        }
         this._$onScrollEventsStream
-            .pipe(operators_1.debounceTime(10), operators_1.filter(function () {
+            .pipe(operators_1.debounceTime(5), operators_1.filter(function () {
             if (_this.currentSection.steps[_this.currentSectionStepIdx].useOverlayInsteadOfLightbox) {
                 _this.lightboxRenderer.updateTextualOverlayPlacement();
                 return false;
             }
             return true;
+        }), operators_1.tap(function () {
+            if (!!lightboxObj) {
+                lightboxObj.style.transition = 'none';
+            }
         }), operators_1.tap(function () { return _this.overlayRenderer.dispose(); }), operators_1.tap(function () {
             var wrapElementsDimensions = _this.getWrappingDimensions();
             _this.overlayRenderer.wrapElement(wrapElementsDimensions);
-        }), operators_1.tap(function () { return _this.lightboxRenderer.updateLightboxPlacement(element_manager_core_1.HazelineElementManager.getElementBySelector(_this.currentSection.steps[_this.currentSectionStepIdx].elementSelector), _this.currentSection.steps[_this.currentSectionStepIdx], _this.isLastStep); })).subscribe();
+        }), operators_1.tap(function () { return _this.lightboxRenderer.updateLightboxPlacement(element_manager_core_1.HazelineElementManager.getElementBySelector(_this.currentSection.steps[_this.currentSectionStepIdx].elementSelector), _this.currentSection.steps[_this.currentSectionStepIdx], _this.isLastStep); }), operators_1.tap(function () { return _this.lightboxRenderer.showLightbox(); }), operators_1.delay(500), operators_1.tap(function () {
+            if (!!lightboxObj) {
+                lightboxObj.style.transition = lightboxTransitionPropsBackup;
+            }
+        })).subscribe();
     };
     ;
     HazelineRunner.prototype.applyCustomOptionsIfAny = function (options, isDynamicOptions) {
@@ -16045,6 +16054,9 @@ window.onload = function () {
             {
                 elementSelector: '#inputZip',
                 text: 'Third',
+                delayBeforeStart: 2000,
+                delayText: 'wait',
+                delayTextColor: '#fff',
                 dynamicOptions: {
                     lightbox: {
                         positioning: {
@@ -16063,14 +16075,6 @@ window.onload = function () {
                 text: 'Last',
             }
         ],
-        globalOptions: {
-            overlay: {
-                topSideWrapOffset: 20,
-                leftSideWrapOffset: 20,
-                rightSideWrapOffset: 20,
-                bottomSideWrapOffset: 20,
-            },
-        }
     });
     setTimeout(function () {
         haze.runTutorial('test');

@@ -41,6 +41,9 @@ window.onload = () => {
             {
                 elementSelector: '#inputZip',
                 text: 'Third',
+                delayBeforeStart: 2000,
+                delayText: 'wait',
+                delayTextColor: '#fff',
                 dynamicOptions: {
                     lightbox: {
                         positioning: {
@@ -59,14 +62,6 @@ window.onload = () => {
                 text: 'Last',
             }
         ],
-        globalOptions: {
-            overlay: {
-                topSideWrapOffset: 20,
-                leftSideWrapOffset: 20,
-                rightSideWrapOffset: 20,
-                bottomSideWrapOffset: 20,
-            },
-        }
     });
 
     setTimeout(() => {

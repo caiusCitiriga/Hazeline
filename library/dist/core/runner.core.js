@@ -6,6 +6,7 @@ var tutorial_section_statuses_enum_1 = require("./enums/tutorial-section-statuse
 var element_manager_core_1 = require("./element-manager.core");
 var lightbox_renderer_core_1 = require("./lightbox-renderer.core");
 var elements_defaults_const_1 = require("./consts/elements-defaults.const");
+var elements_ids_enum_1 = require("./enums/elements-ids.enum");
 var HazelineRunner = /** @class */ (function () {
     function HazelineRunner(lightbox, renderer, elementManager) {
         var _this = this;
@@ -61,12 +62,7 @@ var HazelineRunner = /** @class */ (function () {
         var wrapElementsDimensions = this.getWrappingDimensions();
         if (!this.isFirstStep && !this.thisStepUsesTextualOverlay) {
             this.lightboxRenderer.disposeTextualOverlay();
-            try {
-                this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
-            }
-            catch (e) {
-                this.overlayRenderer.wrapElement(wrapElementsDimensions);
-            }
+            this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
         }
         if (this.thisStepUsesTextualOverlay) {
             if (!this.previousStepUsedTextualOverlay) {
@@ -99,17 +95,30 @@ var HazelineRunner = /** @class */ (function () {
     };
     HazelineRunner.prototype.actualWindowScrollEvtListener = function () {
         var _this = this;
+        var lightboxObj = document.getElementById(elements_ids_enum_1.HazelineElementsIds.lightbox);
+        var lightboxTransitionPropsBackup;
+        if (!!lightboxObj) {
+            lightboxTransitionPropsBackup = lightboxObj.style.transition;
+        }
         this._$onScrollEventsStream
-            .pipe(operators_1.debounceTime(10), operators_1.filter(function () {
+            .pipe(operators_1.debounceTime(5), operators_1.filter(function () {
             if (_this.currentSection.steps[_this.currentSectionStepIdx].useOverlayInsteadOfLightbox) {
                 _this.lightboxRenderer.updateTextualOverlayPlacement();
                 return false;
             }
             return true;
+        }), operators_1.tap(function () {
+            if (!!lightboxObj) {
+                lightboxObj.style.transition = 'none';
+            }
         }), operators_1.tap(function () { return _this.overlayRenderer.dispose(); }), operators_1.tap(function () {
             var wrapElementsDimensions = _this.getWrappingDimensions();
             _this.overlayRenderer.wrapElement(wrapElementsDimensions);
-        }), operators_1.tap(function () { return _this.lightboxRenderer.updateLightboxPlacement(element_manager_core_1.HazelineElementManager.getElementBySelector(_this.currentSection.steps[_this.currentSectionStepIdx].elementSelector), _this.currentSection.steps[_this.currentSectionStepIdx], _this.isLastStep); })).subscribe();
+        }), operators_1.tap(function () { return _this.lightboxRenderer.updateLightboxPlacement(element_manager_core_1.HazelineElementManager.getElementBySelector(_this.currentSection.steps[_this.currentSectionStepIdx].elementSelector), _this.currentSection.steps[_this.currentSectionStepIdx], _this.isLastStep); }), operators_1.tap(function () { return _this.lightboxRenderer.showLightbox(); }), operators_1.delay(500), operators_1.tap(function () {
+            if (!!lightboxObj) {
+                lightboxObj.style.transition = lightboxTransitionPropsBackup;
+            }
+        })).subscribe();
     };
     ;
     HazelineRunner.prototype.applyCustomOptionsIfAny = function (options, isDynamicOptions) {

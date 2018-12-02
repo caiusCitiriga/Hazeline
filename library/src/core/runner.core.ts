@@ -1,5 +1,5 @@
 import { Observable, BehaviorSubject, of, Subject, merge } from 'rxjs';
-import { filter, tap, switchMap, take, debounceTime } from 'rxjs/operators';
+import { filter, tap, switchMap, take, debounceTime, delay } from 'rxjs/operators';
 
 import { HazelineOptions } from './interfaces/hazeline-options.interface';
 import { HazelineTutorialSection } from './interfaces/tutorial-section.interface';
@@ -11,6 +11,7 @@ import { HazelineOverlayRenderer } from './overlay-renderer.core';
 import { HazelineLightboxRenderer, HazelineEventTrigger } from './lightbox-renderer.core';
 import { HazelineWrappingElementsDimensions } from './interfaces/wrapping-elements-dimensions.interface';
 import { HazelineElementsDefaults } from './consts/elements-defaults.const';
+import { HazelineElementsIds } from './enums/elements-ids.enum';
 
 export class HazelineRunner {
 
@@ -78,12 +79,7 @@ export class HazelineRunner {
 
         if (!this.isFirstStep && !this.thisStepUsesTextualOverlay) {
             this.lightboxRenderer.disposeTextualOverlay();
-            try {
-                this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
-
-            } catch (e) {
-                this.overlayRenderer.wrapElement(wrapElementsDimensions);
-            }
+            this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
         }
 
         if (this.thisStepUsesTextualOverlay) {
@@ -124,9 +120,15 @@ export class HazelineRunner {
     }
 
     private actualWindowScrollEvtListener(): void {
+        const lightboxObj = document.getElementById(HazelineElementsIds.lightbox) as HTMLDivElement;
+        let lightboxTransitionPropsBackup;
+        if (!!lightboxObj) {
+            lightboxTransitionPropsBackup = lightboxObj.style.transition;
+        }
+
         this._$onScrollEventsStream
             .pipe(
-                debounceTime(10),
+                debounceTime(5),
                 filter(() => {
                     if (this.currentSection.steps[this.currentSectionStepIdx].useOverlayInsteadOfLightbox) {
                         this.lightboxRenderer.updateTextualOverlayPlacement();
@@ -134,6 +136,11 @@ export class HazelineRunner {
                     }
 
                     return true;
+                }),
+                tap(() => {
+                    if (!!lightboxObj) {
+                        lightboxObj.style.transition = 'none';
+                    }
                 }),
                 tap(() => this.overlayRenderer.dispose()),
                 tap(() => {
@@ -145,6 +152,13 @@ export class HazelineRunner {
                     this.currentSection.steps[this.currentSectionStepIdx],
                     this.isLastStep
                 )),
+                tap(() => this.lightboxRenderer.showLightbox()),
+                delay(500),
+                tap(() => {
+                    if (!!lightboxObj) {
+                        lightboxObj.style.transition = lightboxTransitionPropsBackup;
+                    }
+                })
             ).subscribe();
     };
 
