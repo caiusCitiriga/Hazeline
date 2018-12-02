@@ -183,13 +183,13 @@ They respectively apply offsets on the top, left, right and bottom wrappers. You
 **Note:** that when changing the lightbox placement, you will also have to modify its `offset`. Since Hazeline by default places the lightbox under the element and uses by defauly `-10px` of offset, if you don't change that value in `10px` or accordingly with your wrappers offsets, the lightbox may overlap by `10px` your hightlighted element when positioned on top of it.
 
 #### No offsets example
-![Hazeline input box wrapped with no offset](https://github.com/caiusCitiriga/Hazeline/blob/dev/docs/no_offset.png)
+![Hazeline input box wrapped with no offset](https://github.com/caiusCitiriga/Hazeline/raw/dev/docs/no_offset.png)
 
 #### Default offset example (`10px`)
-![Hazeline input box wrapped with default offset](https://github.com/caiusCitiriga/Hazeline/blob/dev/docs/default_offset.png)
+![Hazeline input box wrapped with default offset](https://github.com/caiusCitiriga/Hazeline/raw/dev/docs/default_offset.png)
 
 #### Custom offset example (`20px`)
-![Hazeline input box wrapped with custom offset](https://github.com/caiusCitiriga/Hazeline/blob/dev/docs/custom_offset.png)
+![Hazeline input box wrapped with custom offset](https://github.com/caiusCitiriga/Hazeline/raw/dev/docs/custom_offset.png)
 
 ## Hazeline section step specific properties
 ---
