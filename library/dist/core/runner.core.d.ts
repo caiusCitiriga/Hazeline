@@ -20,10 +20,10 @@ export declare class HazelineRunner {
     private previousStepUsedTextualOverlay;
     constructor(lightbox: HazelineLightboxRenderer, renderer: HazelineOverlayRenderer, elementManager: HazelineElementManager);
     endTutorial(): void;
-    private getWrappingDimensions;
     runSection(section: HazelineTutorialSection): Observable<HazelineTutorialSectionStatus>;
     private actualWindowScrollEvtListener;
     private applyCustomOptionsIfAny;
+    private getWrappingDimensions;
     private startNextPrevButtonClicks;
     private sectionCanBeRan;
     private startResponsiveListeners;
