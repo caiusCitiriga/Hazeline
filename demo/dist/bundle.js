@@ -1164,17 +1164,6 @@ var HazelineRunner = /** @class */ (function () {
         window.removeEventListener('resize', this.windowResizeEvtListener);
         window.removeEventListener('scroll', this.windowScrollEventThrottler);
     };
-    HazelineRunner.prototype.getWrappingDimensions = function () {
-        var dynamicOverlayOpts = this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions
-            ? !!this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions.overlay ? this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions.overlay : {}
-            : {};
-        var globalOverlayOpts = this.currentSection.globalOptions
-            ? !!this.currentSection.globalOptions.overlay ? this.currentSection.globalOptions.overlay : {}
-            : {};
-        var mergedOptions = Object.assign({}, elements_defaults_const_1.HazelineElementsDefaults.overlay, globalOverlayOpts, dynamicOverlayOpts);
-        return this.elementManager
-            .getWrappingElementsDimensions(this.currentSection.steps[this.currentSectionStepIdx].elementSelector, mergedOptions);
-    };
     HazelineRunner.prototype.runSection = function (section) {
         var _this = this;
         if (!this.sectionCanBeRan(section)) {
@@ -1265,6 +1254,17 @@ var HazelineRunner = /** @class */ (function () {
         if (options.textualOverlay && isDynamicOptions) {
             this.lightboxRenderer.setTextualOverlayDynamicOptions(options.textualOverlay);
         }
+    };
+    HazelineRunner.prototype.getWrappingDimensions = function () {
+        var dynamicOverlayOpts = this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions
+            ? !!this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions.overlay ? this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions.overlay : {}
+            : {};
+        var globalOverlayOpts = this.currentSection.globalOptions
+            ? !!this.currentSection.globalOptions.overlay ? this.currentSection.globalOptions.overlay : {}
+            : {};
+        var mergedOptions = Object.assign({}, elements_defaults_const_1.HazelineElementsDefaults.overlay, globalOverlayOpts, dynamicOverlayOpts);
+        return this.elementManager
+            .getWrappingElementsDimensions(this.currentSection.steps[this.currentSectionStepIdx].elementSelector, mergedOptions);
     };
     HazelineRunner.prototype.startNextPrevButtonClicks = function () {
         var _this = this;
@@ -16065,10 +16065,10 @@ window.onload = function () {
         ],
         globalOptions: {
             overlay: {
-                bottomSideWrapOffset: 30,
-                rightSideWrapOffset: 30,
-                leftSideWrapOffset: 30,
-                topSideWrapOffset: 30,
+                topSideWrapOffset: 20,
+                leftSideWrapOffset: 20,
+                rightSideWrapOffset: 20,
+                bottomSideWrapOffset: 20,
             },
         }
     });

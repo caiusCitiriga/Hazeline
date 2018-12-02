@@ -61,10 +61,10 @@ window.onload = () => {
         ],
         globalOptions: {
             overlay: {
-                bottomSideWrapOffset: 30,
-                rightSideWrapOffset: 30,
-                leftSideWrapOffset: 30,
-                topSideWrapOffset: 30,
+                topSideWrapOffset: 20,
+                leftSideWrapOffset: 20,
+                rightSideWrapOffset: 20,
+                bottomSideWrapOffset: 20,
             },
         }
     });
