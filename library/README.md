@@ -171,7 +171,7 @@ In these kind of situations the section step offers another type of configuratio
 ## Offsetting the highlighted element wrapping
 
 Hazeline by default applies a `10px` offset around the element that it wraps. And it offsets the vertical alignment of the lightbox by `-10px` too. 
-If you'd like to change this behaviour, you can override these offsets. On the `globalOptions.overlay` as well as the `dynamicOptions.overlay` you will these properties:
+If you'd like to change this behaviour, you can override these offsets. On the `globalOptions.overlay` as well as the `dynamicOptions.overlay` you will find these properties:
 
 + `topSideWrapOffset`
 + `leftSideWrapOffset`
