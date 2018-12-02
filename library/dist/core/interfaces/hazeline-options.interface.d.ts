@@ -7,6 +7,10 @@ export interface HazelineOptions {
 }
 export interface HazelineOverlayOptions {
     closeBtnText?: string;
+    topSideWrapOffset?: number;
+    leftSideWrapOffset?: number;
+    rightSideWrapOffset?: number;
+    bottomSideWrapOffset?: number;
     overlayCSS?: HazelineCSSRules;
     endTutorialBtnCSS?: HazelineCSSRules;
     endTutorialBtnHoverCSS?: HazelineCSSRules;

@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var operators_1 = require("rxjs/operators");
 var rxjs_1 = require("rxjs");
+var operators_1 = require("rxjs/operators");
 var tutorial_section_statuses_enum_1 = require("./enums/tutorial-section-statuses.enum");
 var element_manager_core_1 = require("./element-manager.core");
 var lightbox_renderer_core_1 = require("./lightbox-renderer.core");
@@ -13,11 +13,6 @@ var HazelineRunner = /** @class */ (function () {
         this._$sectionStatus = new rxjs_1.BehaviorSubject(null);
         this.currentSectionStepIdx = 0;
         this.previousSectionStepIdx = 0;
-        this.bodyOverflowsBackup = {
-            x: undefined,
-            y: undefined,
-            overflow: undefined
-        };
         this.windowResizeEvtListener = function () {
             var wrapElementsDimensions = _this.elementManager.getWrappingElementsDimensions(_this.currentSection.steps[_this.currentSectionStepIdx].elementSelector);
             if (_this.currentSection.steps[_this.currentSectionStepIdx].useOverlayInsteadOfLightbox) {

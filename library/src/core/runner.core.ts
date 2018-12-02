@@ -1,5 +1,5 @@
-import { filter, tap, switchMap, take, debounceTime } from 'rxjs/operators';
 import { Observable, BehaviorSubject, of, Subject } from 'rxjs';
+import { filter, tap, switchMap, take, debounceTime } from 'rxjs/operators';
 
 import { HazelineOptions } from './interfaces/hazeline-options.interface';
 import { HazelineTutorialSection } from './interfaces/tutorial-section.interface';

@@ -1,4 +1,6 @@
 import { HazelineWrappingElementsDimensions } from './interfaces/wrapping-elements-dimensions.interface';
+import { HazelineOverlayOptions } from './interfaces/hazeline-options.interface';
+import { HazelineElementsDefaults } from './consts/elements-defaults.const';
 
 export class HazelineElementManager {
 

@@ -167,6 +167,9 @@ var HazelineOverlayRenderer = /** @class */ (function () {
         elements.topBox.style.width = dimensions.topBox.width + "px";
         elements.topBox.style.height = dimensions.topBox.height + "px";
         elements.topBox.style.left = dimensions.topBox.offsetLeft + "px";
+        if (this.overlayOptions.topSideWrapOffset) {
+            elements.topBox.style.top = "-" + this.overlayOptions.topSideWrapOffset + "px";
+        }
         elements.leftBox.style.width = dimensions.leftBox.width + "px";
         elements.leftBox.style.height = dimensions.leftBox.height + "px";
         elements.rightBox.style.width = dimensions.rightBox.width + "px";
@@ -176,6 +179,9 @@ var HazelineOverlayRenderer = /** @class */ (function () {
         elements.bottomBox.style.height = dimensions.bottomBox.height + "px";
         elements.bottomBox.style.top = dimensions.bottomBox.offsetTop + "px";
         elements.bottomBox.style.left = dimensions.bottomBox.offsetLeft + "px";
+        if (this.overlayOptions.bottomSideWrapOffset) {
+            elements.bottomBox.style.bottom = "-" + this.overlayOptions.bottomSideWrapOffset + "px";
+        }
         return elements;
     };
     HazelineOverlayRenderer.prototype.attachElementsToBody = function (elements) {
