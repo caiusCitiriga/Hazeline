@@ -52,6 +52,15 @@ export class HazelineOverlayRenderer {
         this.destroyPreviousElementsIfAny();
     }
 
+    public hideCurrentOverlays(): void {
+        this.backupPropertiesOfOverlayBoxes();
+        this.fadeOutOverlayBoxes();
+    }
+
+    public showCurrentOverlays(): void {
+        this.restorePropertiesOfOverlayBoxes();
+    }
+
     public placeWaitForDelayOverlay(message: string, textColor: string): Observable<boolean> {
         const overlayShown = new Subject<boolean>();
         const delayInProgressCSS = <HazelineCSSRules>{
@@ -72,6 +81,7 @@ export class HazelineOverlayRenderer {
             background: this.overlayOptions.overlayCSS.background,
         };
 
+        this.hideCurrentOverlays();
         this.delayInProgressOverlay = document.createElement('div');
         (document.body as any).prepend(this.delayInProgressOverlay);
         this.delayInProgressOverlay = HazelineStylesManager.styleElement(this.delayInProgressOverlay, delayInProgressCSS);
@@ -92,6 +102,7 @@ export class HazelineOverlayRenderer {
         }
 
         document.body.removeChild(document.getElementById(HazelineElementsIds.waitForDelayOverlay));
+        this.showCurrentOverlays();
         this.delayInProgressOverlay = null;
     }
 
@@ -147,16 +158,21 @@ export class HazelineOverlayRenderer {
         this.rightBox = document.getElementById(HazelineElementsIds.rightBox) as HTMLDivElement;
         this.bottomBox = document.getElementById(HazelineElementsIds.bottomBox) as HTMLDivElement;
 
-        if (!!this.topBox) {
-            // If a box is null or undefined, we are using a textual overlay. So there's no need to 
-            // apply options on elements. Event because it would end in a error.
-            this.applyOptionsOnElements({
-                topBox: this.topBox,
-                leftBox: this.leftBox,
-                rightBox: this.rightBox,
-                bottomBox: this.bottomBox,
-            }, dimensions);
+        if (!this.topBox) {
+            this.wrapElement(dimensions);
+            this.backupPropertiesOfOverlayBoxes();
         }
+
+        if (this.topBox.style.opacity === '0') {
+            this.showCurrentOverlays();
+        }
+
+        this.applyOptionsOnElements({
+            topBox: this.topBox,
+            leftBox: this.leftBox,
+            rightBox: this.rightBox,
+            bottomBox: this.bottomBox,
+        }, dimensions);
 
         this.applyEndTutorialBtnOptions();
     }
@@ -183,7 +199,6 @@ export class HazelineOverlayRenderer {
             HazelineStylesManager.styleElement(elements[el], this.overlayOptions.overlayCSS);
         });
 
-
         elements.topBox.style.width = `${dimensions.topBox.width}px`;
         elements.topBox.style.height = `${dimensions.topBox.height}px`;
         elements.topBox.style.left = `${dimensions.topBox.offsetLeft}px`;
@@ -199,6 +214,22 @@ export class HazelineOverlayRenderer {
         elements.bottomBox.style.height = `${dimensions.bottomBox.height}px`;
         elements.bottomBox.style.top = `${dimensions.bottomBox.offsetTop}px`;
         elements.bottomBox.style.left = `${dimensions.bottomBox.offsetLeft}px`;
+
+        // if (this.overlayOptions.topSideWrapOffset) {
+        //     elements.topBox.style.top = `-${this.overlayOptions.topSideWrapOffset}px`;
+        // }
+
+        // if (this.overlayOptions.rightSideWrapOffset) {
+        //     elements.rightBox.style.left = `unset`;
+        //     elements.rightBox.style.right = `-${this.overlayOptions.rightSideWrapOffset}px`;
+        //     elements.topBox.style.width = `${dimensions.topBox.width + this.overlayOptions.rightSideWrapOffset}px`;
+        //     elements.bottomBox.style.width = `${dimensions.bottomBox.width + this.overlayOptions.rightSideWrapOffset}px`;
+        // }
+
+        // if (this.overlayOptions.bottomSideWrapOffset) {
+        //     elements.bottomBox.style.top = `unset`;
+        //     elements.bottomBox.style.bottom = `-${this.overlayOptions.bottomSideWrapOffset}px`;
+        // }
 
         return elements;
     }
@@ -230,20 +261,39 @@ export class HazelineOverlayRenderer {
 
         this.backupProperties.topBox.opacity =
             this.topBox.style.opacity;
-        this.backupProperties.topBox.opacity =
+        this.backupProperties.topBox.transition =
             this.topBox.style.transition;
         this.backupProperties.leftBox.opacity =
             this.leftBox.style.opacity;
-        this.backupProperties.leftBox.opacity =
+        this.backupProperties.leftBox.transition =
             this.leftBox.style.transition;
         this.backupProperties.rightBox.opacity =
             this.rightBox.style.opacity;
-        this.backupProperties.rightBox.opacity =
+        this.backupProperties.rightBox.transition =
             this.rightBox.style.transition;
         this.backupProperties.bottomBox.opacity =
             this.bottomBox.style.opacity;
-        this.backupProperties.bottomBox.opacity =
+        this.backupProperties.bottomBox.transition =
             this.bottomBox.style.transition;
+    }
+
+    private restorePropertiesOfOverlayBoxes() {
+        if (!this.topBox) {
+            return;
+        }
+
+        this.topBox.style.opacity = this.backupProperties.topBox.opacity;
+        this.topBox.style.transition = this.backupProperties.topBox.transition;
+
+        this.leftBox.style.opacity = this.backupProperties.leftBox.opacity;
+        this.leftBox.style.transition = this.backupProperties.leftBox.transition;
+
+        this.rightBox.style.opacity = this.backupProperties.rightBox.opacity;
+        this.rightBox.style.transition = this.backupProperties.rightBox.transition;
+
+        this.bottomBox.style.opacity = this.backupProperties.bottomBox.opacity;
+        this.bottomBox.style.transition = this.backupProperties.bottomBox.transition;
+
     }
 
     private createEndTutorialButton(): void {

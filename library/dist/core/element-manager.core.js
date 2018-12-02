@@ -1,20 +1,21 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+var elements_defaults_const_1 = require("./consts/elements-defaults.const");
 var HazelineElementManager = /** @class */ (function () {
     function HazelineElementManager() {
     }
-    HazelineElementManager.prototype.getWrappingElementsDimensions = function (elementSelector) {
+    HazelineElementManager.prototype.getWrappingElementsDimensions = function (elementSelector, overlayOpts) {
         var element = document.querySelector(elementSelector);
         if (!element) {
             return null;
         }
-        var wrappingElementsDimensions = this.computeWrappingElements(element);
+        var wrappingElementsDimensions = this.computeWrappingElements(element, overlayOpts ? overlayOpts : elements_defaults_const_1.HazelineElementsDefaults.overlay);
         return wrappingElementsDimensions;
     };
     HazelineElementManager.getElementBySelector = function (selector) {
         return document.querySelector(selector);
     };
-    HazelineElementManager.prototype.computeWrappingElements = function (elementToWrap) {
+    HazelineElementManager.prototype.computeWrappingElements = function (elementToWrap, overlayOpts) {
         var dimensions = {
             element: {
                 width: null,
@@ -68,6 +69,26 @@ var HazelineElementManager = /** @class */ (function () {
         dimensions.rightBox.height = window.innerHeight;
         dimensions.rightBox.offsetLeft = dimensions.element.offsetLeft + dimensions.element.width;
         dimensions.rightBox.width = window.innerWidth - (dimensions.element.offsetLeft + dimensions.element.width);
+        //  Compute user custom offsets
+        if (overlayOpts.topSideWrapOffset) {
+            dimensions.topBox.height -= overlayOpts.topSideWrapOffset;
+        }
+        if (overlayOpts.bottomSideWrapOffset) {
+            dimensions.bottomBox.height -= overlayOpts.bottomSideWrapOffset;
+            dimensions.bottomBox.offsetTop += overlayOpts.bottomSideWrapOffset;
+        }
+        if (overlayOpts.rightSideWrapOffset) {
+            dimensions.topBox.width += overlayOpts.rightSideWrapOffset;
+            dimensions.bottomBox.width += overlayOpts.rightSideWrapOffset;
+            dimensions.rightBox.offsetLeft += overlayOpts.rightSideWrapOffset;
+        }
+        if (overlayOpts.leftSideWrapOffset) {
+            dimensions.topBox.width += overlayOpts.leftSideWrapOffset;
+            dimensions.leftBox.width -= overlayOpts.leftSideWrapOffset;
+            dimensions.bottomBox.width += overlayOpts.leftSideWrapOffset;
+            dimensions.topBox.offsetLeft -= overlayOpts.leftSideWrapOffset;
+            dimensions.bottomBox.offsetLeft -= overlayOpts.leftSideWrapOffset;
+        }
         return dimensions;
     };
     return HazelineElementManager;

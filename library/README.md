@@ -154,7 +154,7 @@ Instead, you could use the **Textual Overlay**. When defining the step required 
 
 As the lightbox, and all the other Hazeline's components, even this one is designed to work out of the box, but still you can customize it like the others. For more detailed information about the Textual Overlay see its specific [configuration](#Textual-overlay) 
 
-## Step before start delay
+## Delaying the start of a specific step
 
 It might happen that you have something asyncronus running that must be completed before the next step can begin. This might be a navigation to another page, on wich the element that the step about to start uses is present. 
 
@@ -167,6 +167,29 @@ In these kind of situations the section step offers another type of configuratio
 **2)** When activating the `delayBeforeStart` you **must** specify the `delayText`, which will be the text that will appear in the middle of the overlay. This text can be a simple 'Please wait...'. It also accepts HTML. Note that if you don't specify this information, the overlay will result empty and the tutorial might look like stuck to the user.
 
 **3)** Lastly, when activating the `delayBeforeStart`, you also **must** provide a text color for the overlay text. Since the normal overlay that wraps around the highlighted element doesn't contain any text, there's nothig that ensures that the property isn't `undefined`.
+
+## Offsetting the highlited element wrapping
+
+Hazeline by default applies a `10px` of offset around the element that it wraps. And if offsets the vertical alignment of the lightbox by `-10px` too. 
+If you'd like to change this behaviour, you can override these offsets. On the `globalOptions.overlay` as well as the `dynamicOptions.overlay` you will these properties:
+
++ `topSideWrapOffset`
++ `leftSideWrapOffset`
++ `rightSideWrapOffset`
++ `bottomSideWrapOffset`
+
+They respectively apply offsets on the top, left, right and bottom wrappers. You can valorize them all, or just the ones you need to. 
+
+**Note:** that when changing the lightbox placement, you will also have to modify its `offset`. Since Hazeline by default places the lightbox under the element and uses by defauly `-10px` of offset, if you don't change that value in `10px` or accordingly with your wrappers offsets, the lightbox may overlap by `10px` your hightlighted element when positioned on top of it.
+
+#### No offsets example
+![Hazeline input box wrapped with no offset](https://github.com/caiusCitiriga/Hazeline/blob/dev/docs/no_offset.png)
+
+#### Default offset example (`10px`)
+![Hazeline input box wrapped with default offset](https://github.com/caiusCitiriga/Hazeline/blob/dev/docs/default_offset.png)
+
+#### Custom offset example (`20px`)
+![Hazeline input box wrapped with custom offset](https://github.com/caiusCitiriga/Hazeline/blob/dev/docs/custom_offset.png)
 
 ## Hazeline section step specific properties
 ---
@@ -193,7 +216,11 @@ Property name | Description | Accepted values
 `closeBtnText`  | The text inside the button to end the tutorial | `string`
 `overlayCSS` | The CSS for the overlay | `HazelineCSSRules`
 `endTutorialBtnCSS` | The CSS for the end tutorial btn | `HazelineCSSRules`
-`endTutorialBtnHoverCSS` | The CSS for the end tutorial btn when in hover mode| `HazelineCSSRules`<br>
+`endTutorialBtnHoverCSS` | The CSS for the end tutorial btn when in hover mode| `HazelineCSSRules`
+`topSideWrapOffset` | The amount of the top offset to apply on the wrapper that wraps the element | `number`
+`leftSideWrapOffset` | The amount of the left offset to apply on the wrapper that wraps the element | `number`
+`rightSideWrapOffset` | The amount of the right offset to apply on the wrapper that wraps the element | `number`
+`bottomSideWrapOffset` | The amount of the bottom offset to apply on the wrapper that wraps the element | `number`<br>
 
 ### Lightbox
 
@@ -342,6 +369,12 @@ interface HazelineOptions {
 ```ts
 interface HazelineOverlayOptions {
     closeBtnText?: string;
+
+    topSideWrapOffset?: number;
+    leftSideWrapOffset?: number;
+    rightSideWrapOffset?: number;
+    bottomSideWrapOffset?: number;
+
     overlayCSS?: HazelineCSSRules;
     endTutorialBtnCSS?: HazelineCSSRules;
     endTutorialBtnHoverCSS?: HazelineCSSRules;
@@ -419,7 +452,7 @@ interface HazelineTutorialStep {
 
 ## Upcoming features
 
-+ Margin offset on highlighted item
++ Custom event triggers. (attach an event to the element, that when fired may execute a custom callback and then trigger the next step automatically)
 + Ability to attach events on:
     + `onStepEnd()`
     + `onStepStart()`

@@ -4,14 +4,13 @@ import { Observable, Subject, BehaviorSubject, timer } from 'rxjs';
 import { HazelineElementsIds } from './enums/elements-ids.enum';
 import { HazelineTutorialStep } from './interfaces/tutorial-step.interface';
 import { HazelineElementsDefaults } from './consts/elements-defaults.const';
+import { HazelineLightboxOptions, HazelineTextualOverlayOptions } from './interfaces/hazeline-options.interface';
 
 import { HazelineStylesManager } from './styles-manager.core';
-import { HazelineLightboxOptions, HazelineTextualOverlayOptions } from './interfaces/hazeline-options.interface';
 
 export class HazelineLightboxRenderer {
 
-    private _$nextStepRequired = new Subject<boolean>();
-    private _$prevStepRequired = new Subject<boolean>();
+    private _$eventTrigger = new Subject<{ type: HazelineEventTrigger }>();
 
     private tether: Tether;
 
@@ -27,9 +26,12 @@ export class HazelineLightboxRenderer {
     private ligthboxOptions: HazelineLightboxOptions = HazelineElementsDefaults.lightbox;
     private textualOverlayOptions: HazelineTextualOverlayOptions = HazelineElementsDefaults.textualOverlay;
 
-    private prevBtnClickEvtListener = () =>
-        this._$prevStepRequired.next(true);
-    private nextBtnClickEvtListener = () => { console.log('Next step required'); this._$nextStepRequired.next(true); }
+    private nextBtnClickEvtListener = () => {
+        this._$eventTrigger.next({ type: HazelineEventTrigger.next });
+    }
+    private prevBtnClickEvtListener = () => {
+        this._$eventTrigger.next({ type: HazelineEventTrigger.previous });
+    };
 
     private prevBtnMouseLeaveEvtListener = () =>
         HazelineStylesManager.styleElement<HTMLButtonElement>(this.lightboxPrevBtn, this.ligthboxOptions.lightboxPrevBtnCSS || HazelineElementsDefaults.lightbox.lightboxPrevBtnCSS);
@@ -41,8 +43,7 @@ export class HazelineLightboxRenderer {
     private nextBtnMouseEnterEvtListener = () =>
         HazelineStylesManager.styleElement<HTMLButtonElement>(this.lightboxNextBtn, this.ligthboxOptions.lightboxNextBtnHoverCSS || HazelineElementsDefaults.lightbox.lightboxNextBtnHoverCSS);
 
-    public $nextStepRequired(): Observable<boolean> { return this._$nextStepRequired; }
-    public $prevStepRequired(): Observable<boolean> { return this._$prevStepRequired; }
+    public $eventTriggered(): Observable<{ type: HazelineEventTrigger }> { return this._$eventTrigger; }
 
     public dispose(detachListeners = false): void {
         if (document.getElementById(HazelineElementsIds.lightbox)) {
@@ -56,6 +57,7 @@ export class HazelineLightboxRenderer {
             this.tether = null;
 
             document.body.removeChild(this.lightboxWrp);
+            this.lightboxWrp = null;
         }
     }
 
@@ -104,6 +106,14 @@ export class HazelineLightboxRenderer {
         return elementRemoved;
     }
 
+    public hideLightbox(): void {
+        this.lightboxWrp.style.opacity = '0';
+    }
+
+    public showLightbox(): void {
+        this.lightboxWrp.style.opacity = '1';
+    }
+
     public placeLightbox(target: HTMLElement, sectionStep: HazelineTutorialStep, isLastStep = false): void {
         this.lightboxWrp = document.getElementById(HazelineElementsIds.lightbox) as HTMLDivElement;
 
@@ -115,7 +125,7 @@ export class HazelineLightboxRenderer {
         this.applyTexts(sectionStep, isLastStep);
         this.styleWholeLigthboxElement();
 
-        this.updateLightboxPlacement(target);
+        this.updateLightboxPlacement(target, sectionStep, isLastStep);
     }
 
     public placeTextOverlay(sectionStep: HazelineTutorialStep, isLastStep = false): Observable<boolean> {
@@ -141,6 +151,10 @@ export class HazelineLightboxRenderer {
         this.textualOverlay = document.createElement('div');
         this.textualOverlay.id = HazelineElementsIds.lightboxTextualOverlay;
         this.textualOverlay = HazelineStylesManager.styleElement<HTMLDivElement>(this.textualOverlay, this.textualOverlayOptions.overlayCSS);
+
+        this.textualOverlay.style.width = '100%';
+        this.textualOverlay.style.height = '100%';
+        this.textualOverlay.style.zIndex = (+this.textualOverlay.style.zIndex + 1).toString();
 
         if (!this.textualOverlayOptions.disableBgFadeIn) {
             this.textualOverlay.style.transition = `all ${this.textualOverlayOptions.bgFadeInTimeInMs}ms ease-in-out`;
@@ -255,8 +269,12 @@ export class HazelineLightboxRenderer {
         });
     }
 
-    public updateLightboxPlacement(target: HTMLElement): void {
+    public updateLightboxPlacement(target: HTMLElement, step: HazelineTutorialStep, isLastStep = false): void {
         if (!!this.textualOverlay) {
+            return;
+        }
+        if (!this.lightboxWrp) {
+            this.placeLightbox(target, step, isLastStep);
             return;
         }
 
@@ -285,10 +303,15 @@ export class HazelineLightboxRenderer {
             });
         }
 
+        this.applyTexts(step, isLastStep);
         this.tether.position();
     }
 
     public updateTextualOverlayPlacement(): void {
+        if (!this.textualOverlay) {
+            return;
+        }
+
         this.textualOverlay.style.width = `${window.innerWidth}px`;
         this.textualOverlay.style.height = `${window.innerHeight}px`;
     }
@@ -380,4 +403,9 @@ export class HazelineLightboxRenderer {
         HazelineStylesManager.styleElement<HTMLDivElement>(this.lightboxTextWrp, this.ligthboxOptions.lightboxTextWrapperCSS);
         HazelineStylesManager.styleElement<HTMLDivElement>(this.lightboxControlsWrp, this.ligthboxOptions.lightboxControlsWrapperCSS);
     }
+}
+
+export enum HazelineEventTrigger {
+    next,
+    previous
 }

@@ -7,7 +7,7 @@ window.onload = () => {
         steps: [
             {
                 elementSelector: '#input-1',
-                text: 'Test <strong>me</strong> out!<br><small style="color: #fff">Premi ovunque per continuare</small>',
+                text: 'First',
                 useOverlayInsteadOfLightbox: true,
                 dynamicOptions: {
                     textualOverlay: {
@@ -21,7 +21,7 @@ window.onload = () => {
             },
             {
                 elementSelector: '#input-2',
-                text: 'Test me out in lightbox!',
+                text: 'Second',
                 useOverlayInsteadOfLightbox: true,
                 dynamicOptions: {
                     textualOverlay: {
@@ -30,7 +30,6 @@ window.onload = () => {
                         hideButtons: true,
                         overlayCSS: {
                             opacity: '0',
-                            background: 'rgba(113, 223, 172, .9)',
                             justifyContent: 'center'
                         },
                         paragraphCSS: {
@@ -40,17 +39,34 @@ window.onload = () => {
                 }
             },
             {
-                delayBeforeStart: 5000,
-                delayText: 'Please wait',
-                delayTextColor: '#fff',
-                elementSelector: '#input-3',
-                text: 'Test me out in lightbox!',
+                elementSelector: '#inputZip',
+                text: 'Third',
+                dynamicOptions: {
+                    lightbox: {
+                        positioning: {
+                            attachment: 'left top',
+                            targetAttachment: 'bottom left',
+                        }
+                    }
+                }
             },
             {
                 elementSelector: '#input-4',
-                text: 'Test me out in lightbox!',
+                text: 'Last',
+            },
+            {
+                elementSelector: '#input-6',
+                text: 'Last',
             }
         ],
+        globalOptions: {
+            overlay: {
+                topSideWrapOffset: 20,
+                leftSideWrapOffset: 20,
+                rightSideWrapOffset: 20,
+                bottomSideWrapOffset: 20,
+            },
+        }
     });
 
     setTimeout(() => {

@@ -38,6 +38,13 @@ var HazelineOverlayRenderer = /** @class */ (function () {
         this.detachEndTutorialBtnEventListeners();
         this.destroyPreviousElementsIfAny();
     };
+    HazelineOverlayRenderer.prototype.hideCurrentOverlays = function () {
+        this.backupPropertiesOfOverlayBoxes();
+        this.fadeOutOverlayBoxes();
+    };
+    HazelineOverlayRenderer.prototype.showCurrentOverlays = function () {
+        this.restorePropertiesOfOverlayBoxes();
+    };
     HazelineOverlayRenderer.prototype.placeWaitForDelayOverlay = function (message, textColor) {
         var _this = this;
         var overlayShown = new rxjs_1.Subject();
@@ -58,6 +65,7 @@ var HazelineOverlayRenderer = /** @class */ (function () {
             transition: 'opacity 200ms ease-in-out',
             background: this.overlayOptions.overlayCSS.background,
         };
+        this.hideCurrentOverlays();
         this.delayInProgressOverlay = document.createElement('div');
         document.body.prepend(this.delayInProgressOverlay);
         this.delayInProgressOverlay = styles_manager_core_1.HazelineStylesManager.styleElement(this.delayInProgressOverlay, delayInProgressCSS);
@@ -74,6 +82,7 @@ var HazelineOverlayRenderer = /** @class */ (function () {
             return;
         }
         document.body.removeChild(document.getElementById(elements_ids_enum_1.HazelineElementsIds.waitForDelayOverlay));
+        this.showCurrentOverlays();
         this.delayInProgressOverlay = null;
     };
     HazelineOverlayRenderer.prototype.placeEndTutorialButton = function () {
@@ -121,16 +130,19 @@ var HazelineOverlayRenderer = /** @class */ (function () {
         this.leftBox = document.getElementById(elements_ids_enum_1.HazelineElementsIds.leftBox);
         this.rightBox = document.getElementById(elements_ids_enum_1.HazelineElementsIds.rightBox);
         this.bottomBox = document.getElementById(elements_ids_enum_1.HazelineElementsIds.bottomBox);
-        if (!!this.topBox) {
-            // If a box is null or undefined, we are using a textual overlay. So there's no need to 
-            // apply options on elements. Event because it would end in a error.
-            this.applyOptionsOnElements({
-                topBox: this.topBox,
-                leftBox: this.leftBox,
-                rightBox: this.rightBox,
-                bottomBox: this.bottomBox,
-            }, dimensions);
+        if (!this.topBox) {
+            this.wrapElement(dimensions);
+            this.backupPropertiesOfOverlayBoxes();
         }
+        if (this.topBox.style.opacity === '0') {
+            this.showCurrentOverlays();
+        }
+        this.applyOptionsOnElements({
+            topBox: this.topBox,
+            leftBox: this.leftBox,
+            rightBox: this.rightBox,
+            bottomBox: this.bottomBox,
+        }, dimensions);
         this.applyEndTutorialBtnOptions();
     };
     HazelineOverlayRenderer.prototype.wrapElement = function (dimensions) {
@@ -164,6 +176,19 @@ var HazelineOverlayRenderer = /** @class */ (function () {
         elements.bottomBox.style.height = dimensions.bottomBox.height + "px";
         elements.bottomBox.style.top = dimensions.bottomBox.offsetTop + "px";
         elements.bottomBox.style.left = dimensions.bottomBox.offsetLeft + "px";
+        // if (this.overlayOptions.topSideWrapOffset) {
+        //     elements.topBox.style.top = `-${this.overlayOptions.topSideWrapOffset}px`;
+        // }
+        // if (this.overlayOptions.rightSideWrapOffset) {
+        //     elements.rightBox.style.left = `unset`;
+        //     elements.rightBox.style.right = `-${this.overlayOptions.rightSideWrapOffset}px`;
+        //     elements.topBox.style.width = `${dimensions.topBox.width + this.overlayOptions.rightSideWrapOffset}px`;
+        //     elements.bottomBox.style.width = `${dimensions.bottomBox.width + this.overlayOptions.rightSideWrapOffset}px`;
+        // }
+        // if (this.overlayOptions.bottomSideWrapOffset) {
+        //     elements.bottomBox.style.top = `unset`;
+        //     elements.bottomBox.style.bottom = `-${this.overlayOptions.bottomSideWrapOffset}px`;
+        // }
         return elements;
     };
     HazelineOverlayRenderer.prototype.attachElementsToBody = function (elements) {
@@ -188,20 +213,33 @@ var HazelineOverlayRenderer = /** @class */ (function () {
         }
         this.backupProperties.topBox.opacity =
             this.topBox.style.opacity;
-        this.backupProperties.topBox.opacity =
+        this.backupProperties.topBox.transition =
             this.topBox.style.transition;
         this.backupProperties.leftBox.opacity =
             this.leftBox.style.opacity;
-        this.backupProperties.leftBox.opacity =
+        this.backupProperties.leftBox.transition =
             this.leftBox.style.transition;
         this.backupProperties.rightBox.opacity =
             this.rightBox.style.opacity;
-        this.backupProperties.rightBox.opacity =
+        this.backupProperties.rightBox.transition =
             this.rightBox.style.transition;
         this.backupProperties.bottomBox.opacity =
             this.bottomBox.style.opacity;
-        this.backupProperties.bottomBox.opacity =
+        this.backupProperties.bottomBox.transition =
             this.bottomBox.style.transition;
+    };
+    HazelineOverlayRenderer.prototype.restorePropertiesOfOverlayBoxes = function () {
+        if (!this.topBox) {
+            return;
+        }
+        this.topBox.style.opacity = this.backupProperties.topBox.opacity;
+        this.topBox.style.transition = this.backupProperties.topBox.transition;
+        this.leftBox.style.opacity = this.backupProperties.leftBox.opacity;
+        this.leftBox.style.transition = this.backupProperties.leftBox.transition;
+        this.rightBox.style.opacity = this.backupProperties.rightBox.opacity;
+        this.rightBox.style.transition = this.backupProperties.rightBox.transition;
+        this.bottomBox.style.opacity = this.backupProperties.bottomBox.opacity;
+        this.bottomBox.style.transition = this.backupProperties.bottomBox.transition;
     };
     HazelineOverlayRenderer.prototype.createEndTutorialButton = function () {
         this.endTutorialBtn = document.createElement('button');
