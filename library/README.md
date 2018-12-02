@@ -193,7 +193,7 @@ They respectively apply offsets on the top, left, right and bottom wrappers. You
 
 ## Hazeline callbacks to events
 
-Hazeline allows you to specify two different callbacks to two different events. This logic applies both to the sections and to the steps:
+Hazeline allows you to specify two different callbacks for two types of events. This logic applies both to the sections and to the steps:
 
 + `onBeforeEnd`
 + `onBeforeStart`
