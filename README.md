@@ -168,10 +168,10 @@ In these kind of situations the section step offers another type of configuratio
 
 **3)** Lastly, when activating the `delayBeforeStart`, you also **must** provide a text color for the overlay text. Since the normal overlay that wraps around the highlighted element doesn't contain any text, there's nothig that ensures that the property isn't `undefined`.
 
-## Offsetting the highlited element wrapping
+## Offsetting the highlighted element wrapping
 
-Hazeline by default applies a `10px` of offset around the element that it wraps. And if offsets the vertical alignment of the lightbox by `-10px` too. 
-If you'd like to change this behaviour, you can override these offsets. On the `globalOptions.overlay` as well as the `dynamicOptions.overlay` you will these properties:
+Hazeline by default applies a `10px` offset around the element that it wraps. And it offsets the vertical alignment of the lightbox by `-10px` too. 
+If you'd like to change this behaviour, you can override these offsets. On the `globalOptions.overlay` as well as the `dynamicOptions.overlay` you will find these properties:
 
 + `topSideWrapOffset`
 + `leftSideWrapOffset`
@@ -191,6 +191,33 @@ They respectively apply offsets on the top, left, right and bottom wrappers. You
 #### Custom offset example (`20px`)
 ![Hazeline input box wrapped with custom offset](https://github.com/caiusCitiriga/Hazeline/raw/dev/docs/custom_offset.png)
 
+## Hazeline callbacks to events
+
+Hazeline allows you to specify two different callbacks for two types of events. This logic applies both to the sections and to the steps:
+
++ `onBeforeEnd`
++ `onBeforeStart`
+
+<br>
+
+**`onBeforeStart`**
+
+This callback will be executed right before the startup of the tutorial in case it's set at a **Section** level. If it's specified at a **Step** level, it will be executed right before the step startup.
+
+This callback will be converted into an `Observable`, and from it will start the pipeline of events inside Hazeline. If you don't specify a `onBeforeStart` a `Promise` that resolves immediatly will be used.
+
+**Note:** this is the first step of the pipeline, and if something asyncronus will be executed inside, the tutorial or the step **won't start** until the promise resolves, try to not clutter this too much as it may result is bad user experience.<br><br>
+
+**`onBeforeEnd`**
+
+This callback will be executed right before the tutorial definitive shutdown, or before the next step loading.
+
+This callback will be converted into an `Observable`, and it will be called right before the last event in the pipeline, the definitive shutdown of the tutorial in case it's placed at a **Section** level, or the loading of the next step in case it's placed at a **Step** level. If you don't specify a `onBeforeEnd` a `Promise` that resolves immediatly will be used.
+
+**Note:** this is the step before the last one in the pipeline, both for the **Sections** and the **Steps** pipelines, and if something asyncronus will be executed inside, the tutorial **won't quit** or the next step **won't load** until the promise resolves, but the quit button will be removed. Try to not clutter this too much as it may result is bad user experience.
+
+**Also remember to always resolve your promises.**
+
 ## Hazeline section step specific properties
 ---
 
@@ -198,12 +225,14 @@ These are the `HazelineTutorialStep` specific properties:
 
 Property name | Description | Accepted values
 --------------|-------------|-----------------
-text| The text for this specific step. It will appear in the lightbox or textual wrapper | `string`
-delayBeforeStart | If set it will delay the rendering of the step according to the milliseconds set. | `number`
-delayText| If `delayBeforeStart` is set, this is **required**. It will be the text that will be shown to the user while waiting for the delay to end. | `string`
-delayTextColor| The color for the `delayText`. | `string`
-dynamicOptions| Dynamic options for this step. Will override the global options for this step. | `HazelineOptions`
-useOverlayInsteadOfLightbox| If set to `true` no lightbox will be used for this step, and no element will be highligted. Instead an overlay will appear and it will contain the text of the lightbox.|`boolean`
+`text`| The text for this specific step. It will appear in the lightbox or textual wrapper | `string`
+`delayBeforeStart` | If set it will delay the rendering of the step according to the milliseconds set. | `number`
+`delayText`| If `delayBeforeStart` is set, this is **required**. It will be the text that will be shown to the user while waiting for the delay to end. | `string`
+`delayTextColor`| The color for the `delayText`. | `string`
+`dynamicOptions`| Dynamic options for this step. Will override the global options for this step. | `HazelineOptions`
+`useOverlayInsteadOfLightbox`| If set to `true` no lightbox will be used for this step, and no element will be highligted. Instead an overlay will appear and it will contain the text of the lightbox.|`boolean`
+`onBeforeEnd`| A function that returns a `Promise`. When the promise resolves the next step will be loaded.|`() => Promise<boolean>`
+`onBeforeStart`| A function that returns a `Promise`. When the promise resolves the step starts.|`() => Promise<boolean>`
 
 ## Hazeline section/step dynamic properties
 ---
@@ -348,7 +377,11 @@ enum HazelineTutorialStatuses {
 interface HazelineTutorialSection {
     id: string;
     steps: HazelineTutorialStep[];
+
     globalOptions?: HazelineOptions;
+
+    onBeforeEnd?: () => Promise<boolean>;
+    onBeforeStart?: () => Promise<boolean>;
 }
 ```
 
@@ -447,18 +480,15 @@ interface HazelineTutorialStep {
 
     dynamicOptions?: HazelineOptions;
     useOverlayInsteadOfLightbox?: boolean;
+
+    onBeforeEnd?: () => Promise<boolean>;
+    onBeforeStart?: () => Promise<boolean>;
 }
 ```
 
 ## Upcoming features
 
 + Custom event triggers. (attach an event to the element, that when fired may execute a custom callback and then trigger the next step automatically)
-+ Ability to attach events on:
-    + `onStepEnd()`
-    + `onStepStart()`
-    + `onSectionEnd()`
-    + `onSectionStart()`
-    + `onTutorialPrematureEnd()`
 
 ---
 
