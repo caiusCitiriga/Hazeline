@@ -107,7 +107,7 @@ exports.HazelineElementsDefaults = {
             constraints: [
                 {
                     to: 'window',
-                    attachment: 'together'
+                    pin: true
                 }
             ],
             offset: '0 0'
@@ -652,7 +652,6 @@ var HazelineLightboxRenderer = /** @class */ (function () {
             return;
         }
         if (!this.lightboxWrp) {
-            console.log('No lightbox here!');
             this.placeLightbox(target, step, isLastStep);
             return;
         }
@@ -1222,11 +1221,9 @@ var HazelineRunner = /** @class */ (function () {
     };
     HazelineRunner.prototype.startNextPrevButtonClicks = function () {
         var _this = this;
-        console.log('NEXT PREV evts listeners started');
         var isNextStepRequired = undefined;
         this.lightboxRenderer.$eventTriggered()
             .pipe(operators_1.tap(function (eventTrigger) {
-            console.log('Event triggered!');
             isNextStepRequired = eventTrigger.type === lightbox_renderer_core_1.HazelineEventTrigger.next ? true : false;
             return eventTrigger;
         }), operators_1.filter(function (res) { return !!res; }), operators_1.filter(function () {
@@ -1286,7 +1283,6 @@ var HazelineRunner = /** @class */ (function () {
         return true;
     };
     HazelineRunner.prototype.startResponsiveListeners = function () {
-        console.log('listeners started');
         window.addEventListener('resize', this.windowResizeEvtListener);
         window.addEventListener('scroll', this.windowScrollEventThrottler);
     };

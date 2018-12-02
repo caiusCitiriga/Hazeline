@@ -4,9 +4,9 @@ import { Observable, Subject, BehaviorSubject, timer } from 'rxjs';
 import { HazelineElementsIds } from './enums/elements-ids.enum';
 import { HazelineTutorialStep } from './interfaces/tutorial-step.interface';
 import { HazelineElementsDefaults } from './consts/elements-defaults.const';
+import { HazelineLightboxOptions, HazelineTextualOverlayOptions } from './interfaces/hazeline-options.interface';
 
 import { HazelineStylesManager } from './styles-manager.core';
-import { HazelineLightboxOptions, HazelineTextualOverlayOptions } from './interfaces/hazeline-options.interface';
 
 export class HazelineLightboxRenderer {
 

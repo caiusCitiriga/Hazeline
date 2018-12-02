@@ -11,7 +11,7 @@ export const HazelineElementsDefaults: HazelineOptions = {
             constraints: [
                 {
                     to: 'window',
-                    attachment: 'together'
+                    pin: true
                 }
             ],
             offset: '0 0'
