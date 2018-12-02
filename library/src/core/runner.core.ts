@@ -129,7 +129,7 @@ export class HazelineRunner {
     }
 
     private actualWindowScrollEvtListener(): void {
-        const disableOverlayFading = this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions.overlay.disableOverlayFadingWhenScrolling;
+        let disableOverlayFading: boolean;
         this._$onScrollEventsStream
             .pipe(
                 filter(() => {
@@ -138,6 +138,7 @@ export class HazelineRunner {
                         return false;
                     }
 
+                    disableOverlayFading = this.overlayFadingShouldBePrevented(this.currentSection.globalOptions, this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions);
                     return true;
                 }),
                 tap(() => {
@@ -195,6 +196,13 @@ export class HazelineRunner {
         if (options.textualOverlay && isDynamicOptions) {
             this.lightboxRenderer.setTextualOverlayDynamicOptions(options.textualOverlay);
         }
+    }
+
+    private overlayFadingShouldBePrevented(globalOptions: HazelineOptions, dynamicOptions: HazelineOptions): boolean {
+        //  merge the options, so if both global and dynamic has the prop specifyied, the dynamic one will count
+        const options = Object.assign({}, globalOptions, dynamicOptions);
+
+        return options.overlay && options.overlay.disableOverlayFadingWhenScrolling;
     }
 
     private startNextPrevButtonClicks(): void {
