@@ -1,6 +1,6 @@
 {
     "name": "hazeline",
-    "version": "1.5.1-beta",
+    "version": "1.5.2-beta",
     "description": "An interactive walkthrough tutorial library for the web, done right.",
     "main": "dist/index.js",
     "scripts": {
