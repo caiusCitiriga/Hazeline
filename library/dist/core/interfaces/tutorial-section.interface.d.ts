@@ -4,5 +4,7 @@ export interface HazelineTutorialSection {
     id: string;
     steps: HazelineTutorialStep[];
     globalOptions?: HazelineOptions;
+    onBeforeEnd?: () => Promise<void>;
+    onBeforeStart?: () => Promise<void>;
 }
 //# sourceMappingURL=tutorial-section.interface.d.ts.map

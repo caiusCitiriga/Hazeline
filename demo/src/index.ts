@@ -4,6 +4,18 @@ window.onload = () => {
     const haze = new Hazeline();
     haze.addSection({
         id: 'test',
+        onBeforeStart: () => new Promise((res, rej) => {
+            setTimeout(() => {
+                console.log('Executed <code>onBeforeStart</code> event on Section');
+                res();
+            }, 1000);
+        }),
+        onBeforeEnd: () => new Promise((res, rej) => {
+            setTimeout(() => {
+                console.log('Executed <code>onBeforeEnd</code> event on Section');
+                res();
+            }, 1000);
+        }),
         steps: [
             {
                 elementSelector: '#input-1',
@@ -48,7 +60,19 @@ window.onload = () => {
                             targetAttachment: 'bottom left',
                         }
                     }
-                }
+                },
+                onBeforeStart: () => new Promise((res, rej) => {
+                    setTimeout(() => {
+                        console.log('Executed <code>onStart</code> event on Step');
+                        res();
+                    }, 1000);
+                }),
+                onBeforeEnd: () => new Promise((res, rej) => {
+                    setTimeout(() => {
+                        console.log('Executed <code>onEnd</code> event on Step');
+                        res();
+                    }, 1000);
+                }),
             },
             {
                 elementSelector: '#input-4',
@@ -59,14 +83,6 @@ window.onload = () => {
                 text: 'Last',
             }
         ],
-        globalOptions: {
-            overlay: {
-                topSideWrapOffset: 20,
-                leftSideWrapOffset: 20,
-                rightSideWrapOffset: 20,
-                bottomSideWrapOffset: 20,
-            },
-        }
     });
 
     setTimeout(() => {

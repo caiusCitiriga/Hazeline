@@ -7,5 +7,8 @@ export interface HazelineTutorialSection {
     steps: HazelineTutorialStep[];
 
     globalOptions?: HazelineOptions;
+
+    onBeforeEnd?: () => Promise<void>;
+    onBeforeStart?: () => Promise<void>;
 }
 

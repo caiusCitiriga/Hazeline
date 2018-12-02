@@ -26,6 +26,7 @@ export const HazelineElementsDefaults: HazelineOptions = {
             position: 'fixed',
             background: '#fff',
             flexDirection: 'column',
+            // transition: 'all 64ms ease-in-out',
         },
         lightboxTextWrapperCSS: {
             width: '100%',
