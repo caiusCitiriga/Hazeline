@@ -1,4 +1,4 @@
-import { Observable, BehaviorSubject, of, Subject, merge } from 'rxjs';
+import { Observable, BehaviorSubject, of, Subject, from } from 'rxjs';
 import { filter, tap, switchMap, take, debounceTime, delay } from 'rxjs/operators';
 
 import { HazelineOptions } from './interfaces/hazeline-options.interface';
@@ -72,50 +72,60 @@ export class HazelineRunner {
             ? false
             : this.currentSection.steps[this.previousSectionStepIdx].useOverlayInsteadOfLightbox
 
-        this.applyCustomOptionsIfAny(section.globalOptions);
-        this.applyCustomOptionsIfAny(this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions, true);
-
-        const wrapElementsDimensions = this.getWrappingDimensions();
-
-        if (!this.isFirstStep && !this.thisStepUsesTextualOverlay) {
-            this.lightboxRenderer.disposeTextualOverlay();
-            this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
+        if (!this.currentSection.steps[this.currentSectionStepIdx].onBeforeStart) {
+            this.currentSection.steps[this.currentSectionStepIdx].onBeforeStart = () => new Promise(res => res());
         }
 
-        if (this.thisStepUsesTextualOverlay) {
-            if (!this.previousStepUsedTextualOverlay) {
-                this.lightboxRenderer.dispose();
-                this.overlayRenderer.hideCurrentOverlays();
-                this.overlayRenderer.removeEndTutorialButton();
-            }
+        let wrapElementsDimensions: HazelineWrappingElementsDimensions;
+        from(this.currentSection.steps[this.currentSectionStepIdx].onBeforeStart())
+            .pipe(
+                tap(() => {
+                    this.applyCustomOptionsIfAny(section.globalOptions);
+                    this.applyCustomOptionsIfAny(this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions, true);
+                }),
+                tap(() => wrapElementsDimensions = this.getWrappingDimensions()),
+                tap(() => {
+                    if (!this.isFirstStep && !this.thisStepUsesTextualOverlay) {
+                        this.lightboxRenderer.disposeTextualOverlay();
+                        this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
+                    }
+                }),
+                tap(() => {
+                    if (this.thisStepUsesTextualOverlay) {
+                        if (!this.previousStepUsedTextualOverlay) {
+                            this.lightboxRenderer.dispose();
+                            this.overlayRenderer.hideCurrentOverlays();
+                            this.overlayRenderer.removeEndTutorialButton();
+                        }
 
-            const fadeOutBeforeRemoving = !this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions.textualOverlay.disableBgFadeIn;
-            this.lightboxRenderer.disposeTextualOverlay(false, fadeOutBeforeRemoving)
-                .pipe(switchMap(() =>
-                    this.lightboxRenderer.placeTextOverlay(this.currentSection.steps[this.currentSectionStepIdx], this.isLastStep))
-                ).subscribe();
-        } else {
-            try {
-                this.lightboxRenderer.updateLightboxPlacement(
-                    HazelineElementManager.getElementBySelector(section.steps[this.currentSectionStepIdx].elementSelector),
-                    section.steps[this.currentSectionStepIdx],
-                    this.isLastStep);
-            } catch {
-                this.lightboxRenderer.placeLightbox(
-                    HazelineElementManager.getElementBySelector(section.steps[this.currentSectionStepIdx].elementSelector),
-                    section.steps[this.currentSectionStepIdx],
-                    this.isLastStep);
-            }
-        }
+                        const fadeOutBeforeRemoving = !this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions.textualOverlay.disableBgFadeIn;
+                        this.lightboxRenderer.disposeTextualOverlay(false, fadeOutBeforeRemoving)
+                            .pipe(switchMap(() =>
+                                this.lightboxRenderer.placeTextOverlay(this.currentSection.steps[this.currentSectionStepIdx], this.isLastStep))
+                            ).subscribe();
+                    } else {
+                        try {
+                            this.lightboxRenderer.updateLightboxPlacement(
+                                HazelineElementManager.getElementBySelector(section.steps[this.currentSectionStepIdx].elementSelector),
+                                section.steps[this.currentSectionStepIdx],
+                                this.isLastStep);
+                        } catch {
+                            this.lightboxRenderer.placeLightbox(
+                                HazelineElementManager.getElementBySelector(section.steps[this.currentSectionStepIdx].elementSelector),
+                                section.steps[this.currentSectionStepIdx],
+                                this.isLastStep);
+                        }
+                    }
+                }),
+                tap(() => this._$sectionStatus.next({
+                    runningSection: section,
+                    status: HazelineTutorialSectionStatuses.started,
+                    runningStepInSection: section.steps[this.currentSectionStepIdx]
+                })),
+                tap(() => this.overlayRenderer.placeEndTutorialButton()),
+                tap(() => this.previousSectionStepIdx = this.currentSectionStepIdx)
+            ).subscribe();
 
-        this._$sectionStatus.next({
-            runningSection: section,
-            status: HazelineTutorialSectionStatuses.started,
-            runningStepInSection: section.steps[this.currentSectionStepIdx]
-        });
-
-        this.overlayRenderer.placeEndTutorialButton();
-        this.previousSectionStepIdx = this.currentSectionStepIdx;
         return this._$sectionStatus;
     }
 
@@ -211,6 +221,12 @@ export class HazelineRunner {
                     return eventTrigger;
                 }),
                 filter(res => !!res),
+                tap(() => {
+                    if (!this.currentSection.steps[this.currentSectionStepIdx].onBeforeEnd) {
+                        this.currentSection.steps[this.currentSectionStepIdx].onBeforeEnd = () => new Promise(res => res());
+                    }
+                }),
+                switchMap(() => from(this.currentSection.steps[this.currentSectionStepIdx].onBeforeEnd())),
                 filter(() => {
                     //  If we've reached the last step
                     if (isNextStepRequired && this.currentSectionStepIdx === (this.currentSection.steps.length - 1)) {

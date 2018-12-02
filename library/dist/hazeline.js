@@ -37,15 +37,19 @@ var Hazeline = /** @class */ (function () {
                 status: tutorial_statuses_enum_1.HazelineTutorialStatuses.errored,
             });
         }
-        this.runner.runSection(sectionToRun)
-            .pipe(operators_1.filter(function (status) { return !!status; }), operators_1.tap(function (status) {
+        if (!sectionToRun.onBeforeStart) {
+            sectionToRun.onBeforeStart = function () { return new Promise(function (res, rej) { return res(true); }); };
+        }
+        if (!sectionToRun.onBeforeEnd) {
+            sectionToRun.onBeforeEnd = function () { return new Promise(function (res, rej) { return res(true); }); };
+        }
+        rxjs_1.from(sectionToRun.onBeforeStart()).pipe(operators_1.switchMap(function () { return _this.runner.runSection(sectionToRun); }), operators_1.filter(function (status) { return !!status; }), operators_1.switchMap(function (status) {
             if (status.status === tutorial_section_statuses_enum_1.HazelineTutorialSectionStatuses.errored) {
                 _this._$tutorialStatus.next({
                     status: tutorial_statuses_enum_1.HazelineTutorialStatuses.errored,
                     runningSection: status.runningSection,
                     runningStepInSection: status.runningStepInSection
                 });
-                _this.runner.endTutorial();
             }
             if (status.status === tutorial_section_statuses_enum_1.HazelineTutorialSectionStatuses.started) {
                 _this._$tutorialStatus.next({
@@ -60,7 +64,11 @@ var Hazeline = /** @class */ (function () {
                     runningSection: status.runningSection,
                     runningStepInSection: status.runningStepInSection
                 });
-                _this.runner.endTutorial();
+            }
+            return rxjs_1.of(status);
+        }), operators_1.tap(function (status) {
+            if (status && status.status !== tutorial_section_statuses_enum_1.HazelineTutorialSectionStatuses.started) {
+                sectionToRun.onBeforeEnd().then(function () { return _this.runner.endTutorial(); });
             }
         })).subscribe();
         return this._$tutorialStatus;

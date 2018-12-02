@@ -4,6 +4,18 @@ window.onload = () => {
     const haze = new Hazeline();
     haze.addSection({
         id: 'test',
+        onBeforeStart: () => new Promise((res, rej) => {
+            setTimeout(() => {
+                console.log('Executed <code>onBeforeStart</code> event on Section');
+                res();
+            }, 1000);
+        }),
+        onBeforeEnd: () => new Promise((res, rej) => {
+            setTimeout(() => {
+                console.log('Executed <code>onBeforeEnd</code> event on Section');
+                res();
+            }, 1000);
+        }),
         steps: [
             {
                 elementSelector: '#input-1',
@@ -41,9 +53,6 @@ window.onload = () => {
             {
                 elementSelector: '#inputZip',
                 text: 'Third',
-                delayBeforeStart: 2000,
-                delayText: 'wait',
-                delayTextColor: '#fff',
                 dynamicOptions: {
                     lightbox: {
                         positioning: {
@@ -51,7 +60,19 @@ window.onload = () => {
                             targetAttachment: 'bottom left',
                         }
                     }
-                }
+                },
+                onStart: () => new Promise((res, rej) => {
+                    setTimeout(() => {
+                        console.log('Executed <code>onStart</code> event on Step');
+                        res();
+                    }, 1000);
+                }),
+                onEnd: () => new Promise((res, rej) => {
+                    setTimeout(() => {
+                        console.log('Executed <code>onEnd</code> event on Step');
+                        res();
+                    }, 1000);
+                }),
             },
             {
                 elementSelector: '#input-4',

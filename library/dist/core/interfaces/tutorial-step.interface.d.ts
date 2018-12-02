@@ -7,5 +7,7 @@ export interface HazelineTutorialStep {
     delayBeforeStart?: number;
     dynamicOptions?: HazelineOptions;
     useOverlayInsteadOfLightbox?: boolean;
+    onBeforeEnd?: () => Promise<boolean>;
+    onBeforeStart?: () => Promise<boolean>;
 }
 //# sourceMappingURL=tutorial-step.interface.d.ts.map

@@ -1,5 +1,5 @@
-import { tap, filter } from 'rxjs/operators';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { tap, filter, switchMap } from 'rxjs/operators';
+import { Observable, BehaviorSubject, of, from } from 'rxjs';
 
 import { HazelineTutorialStatus } from './core/interfaces/tutorial-status.interface';
 import { HazelineTutorialSection } from './core/interfaces/tutorial-section.interface';
@@ -10,6 +10,7 @@ import { HazelineOverlayRenderer } from './core/overlay-renderer.core';
 import { HazelineLightboxRenderer } from './core/lightbox-renderer.core';
 import { HazelineTutorialStatuses } from './core/enums/tutorial-statuses.enum';
 import { HazelineTutorialSectionStatuses } from './core/enums/tutorial-section-statuses.enum';
+import { HazelineTutorialSectionStatus } from './core/interfaces/tutorial-section-status.interface';
 
 export class Hazeline {
 
@@ -57,36 +58,46 @@ export class Hazeline {
             });
         }
 
-        this.runner.runSection(sectionToRun)
-            .pipe(
-                filter(status => !!status),
-                tap(status => {
-                    if (status.status === HazelineTutorialSectionStatuses.errored) {
-                        this._$tutorialStatus.next({
-                            status: HazelineTutorialStatuses.errored,
-                            runningSection: status.runningSection,
-                            runningStepInSection: status.runningStepInSection
-                        });
-                        this.runner.endTutorial();
-                    }
-                    if (status.status === HazelineTutorialSectionStatuses.started) {
-                        this._$tutorialStatus.next({
-                            status: HazelineTutorialStatuses.started,
-                            runningSection: status.runningSection,
-                            runningStepInSection: status.runningStepInSection
-                        });
-                    }
-                    if (status.status === HazelineTutorialSectionStatuses.ended) {
-                        this._$tutorialStatus.next({
-                            status: HazelineTutorialStatuses.stopped,
-                            runningSection: status.runningSection,
-                            runningStepInSection: status.runningStepInSection
-                        });
-                        this.runner.endTutorial();
+        if (!sectionToRun.onBeforeStart) {
+            sectionToRun.onBeforeStart = () => new Promise((res: any, rej: any) => res(true));
+        }
+        if (!sectionToRun.onBeforeEnd) {
+            sectionToRun.onBeforeEnd = () => new Promise((res: any, rej: any) => res(true));
+        }
 
-                    }
-                })
-            ).subscribe();
+        from(sectionToRun.onBeforeStart()).pipe(
+            switchMap(() => this.runner.runSection(sectionToRun)),
+            filter(status => !!status),
+            switchMap(status => {
+                if (status.status === HazelineTutorialSectionStatuses.errored) {
+                    this._$tutorialStatus.next({
+                        status: HazelineTutorialStatuses.errored,
+                        runningSection: status.runningSection,
+                        runningStepInSection: status.runningStepInSection
+                    });
+                }
+                if (status.status === HazelineTutorialSectionStatuses.started) {
+                    this._$tutorialStatus.next({
+                        status: HazelineTutorialStatuses.started,
+                        runningSection: status.runningSection,
+                        runningStepInSection: status.runningStepInSection
+                    });
+                }
+                if (status.status === HazelineTutorialSectionStatuses.ended) {
+                    this._$tutorialStatus.next({
+                        status: HazelineTutorialStatuses.stopped,
+                        runningSection: status.runningSection,
+                        runningStepInSection: status.runningStepInSection
+                    });
+                }
+                return of(status);
+            }),
+            tap((status: HazelineTutorialSectionStatus | undefined) => {
+                if (status && status.status !== HazelineTutorialSectionStatuses.started) {
+                    sectionToRun.onBeforeEnd().then(() => this.runner.endTutorial());
+                }
+            })
+        ).subscribe();
 
         return this._$tutorialStatus;
     }
