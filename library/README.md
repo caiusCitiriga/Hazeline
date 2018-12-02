@@ -168,9 +168,9 @@ In these kind of situations the section step offers another type of configuratio
 
 **3)** Lastly, when activating the `delayBeforeStart`, you also **must** provide a text color for the overlay text. Since the normal overlay that wraps around the highlighted element doesn't contain any text, there's nothig that ensures that the property isn't `undefined`.
 
-## Offsetting the highlited element wrapping
+## Offsetting the highlighted element wrapping
 
-Hazeline by default applies a `10px` of offset around the element that it wraps. And if offsets the vertical alignment of the lightbox by `-10px` too. 
+Hazeline by default applies a `10px` offset around the element that it wraps. And it offsets the vertical alignment of the lightbox by `-10px` too. 
 If you'd like to change this behaviour, you can override these offsets. On the `globalOptions.overlay` as well as the `dynamicOptions.overlay` you will these properties:
 
 + `topSideWrapOffset`
