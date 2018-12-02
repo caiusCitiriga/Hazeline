@@ -59,21 +59,6 @@ export class HazelineRunner {
         window.removeEventListener('scroll', this.windowScrollEventThrottler);
     }
 
-    private getWrappingDimensions(): HazelineWrappingElementsDimensions {
-        const dynamicOverlayOpts = this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions
-            ? !!this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions.overlay ? this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions.overlay : {}
-            : {};
-
-        const globalOverlayOpts = this.currentSection.globalOptions
-            ? !!this.currentSection.globalOptions.overlay ? this.currentSection.globalOptions.overlay : {}
-            : {};
-
-        const mergedOptions = Object.assign({}, HazelineElementsDefaults.overlay, globalOverlayOpts, dynamicOverlayOpts);
-
-        return this.elementManager
-            .getWrappingElementsDimensions(this.currentSection.steps[this.currentSectionStepIdx].elementSelector, mergedOptions);
-    }
-
     public runSection(section: HazelineTutorialSection): Observable<HazelineTutorialSectionStatus> {
         if (!this.sectionCanBeRan(section)) {
             return this._$sectionStatus;
@@ -186,6 +171,21 @@ export class HazelineRunner {
         if (options.textualOverlay && isDynamicOptions) {
             this.lightboxRenderer.setTextualOverlayDynamicOptions(options.textualOverlay);
         }
+    }
+
+    private getWrappingDimensions(): HazelineWrappingElementsDimensions {
+        const dynamicOverlayOpts = this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions
+            ? !!this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions.overlay ? this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions.overlay : {}
+            : {};
+
+        const globalOverlayOpts = this.currentSection.globalOptions
+            ? !!this.currentSection.globalOptions.overlay ? this.currentSection.globalOptions.overlay : {}
+            : {};
+
+        const mergedOptions = Object.assign({}, HazelineElementsDefaults.overlay, globalOverlayOpts, dynamicOverlayOpts);
+
+        return this.elementManager
+            .getWrappingElementsDimensions(this.currentSection.steps[this.currentSectionStepIdx].elementSelector, mergedOptions);
     }
 
     private startNextPrevButtonClicks(): void {

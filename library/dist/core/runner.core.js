@@ -5,6 +5,7 @@ var operators_1 = require("rxjs/operators");
 var tutorial_section_statuses_enum_1 = require("./enums/tutorial-section-statuses.enum");
 var element_manager_core_1 = require("./element-manager.core");
 var lightbox_renderer_core_1 = require("./lightbox-renderer.core");
+var elements_defaults_const_1 = require("./consts/elements-defaults.const");
 var HazelineRunner = /** @class */ (function () {
     function HazelineRunner(lightbox, renderer, elementManager) {
         var _this = this;
@@ -14,7 +15,7 @@ var HazelineRunner = /** @class */ (function () {
         this.currentSectionStepIdx = 0;
         this.previousSectionStepIdx = 0;
         this.windowResizeEvtListener = function () {
-            var wrapElementsDimensions = _this.elementManager.getWrappingElementsDimensions(_this.currentSection.steps[_this.currentSectionStepIdx].elementSelector);
+            var wrapElementsDimensions = _this.getWrappingDimensions();
             if (_this.currentSection.steps[_this.currentSectionStepIdx].useOverlayInsteadOfLightbox) {
                 _this.lightboxRenderer.updateTextualOverlayPlacement();
             }
@@ -44,6 +45,17 @@ var HazelineRunner = /** @class */ (function () {
         window.removeEventListener('resize', this.windowResizeEvtListener);
         window.removeEventListener('scroll', this.windowScrollEventThrottler);
     };
+    HazelineRunner.prototype.getWrappingDimensions = function () {
+        var dynamicOverlayOpts = this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions
+            ? !!this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions.overlay ? this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions.overlay : {}
+            : {};
+        var globalOverlayOpts = this.currentSection.globalOptions
+            ? !!this.currentSection.globalOptions.overlay ? this.currentSection.globalOptions.overlay : {}
+            : {};
+        var mergedOptions = Object.assign({}, elements_defaults_const_1.HazelineElementsDefaults.overlay, globalOverlayOpts, dynamicOverlayOpts);
+        return this.elementManager
+            .getWrappingElementsDimensions(this.currentSection.steps[this.currentSectionStepIdx].elementSelector, mergedOptions);
+    };
     HazelineRunner.prototype.runSection = function (section) {
         var _this = this;
         if (!this.sectionCanBeRan(section)) {
@@ -57,8 +69,7 @@ var HazelineRunner = /** @class */ (function () {
             : this.currentSection.steps[this.previousSectionStepIdx].useOverlayInsteadOfLightbox;
         this.applyCustomOptionsIfAny(section.globalOptions);
         this.applyCustomOptionsIfAny(this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions, true);
-        var wrapElementsDimensions = this.elementManager
-            .getWrappingElementsDimensions(section.steps[this.currentSectionStepIdx].elementSelector);
+        var wrapElementsDimensions = this.getWrappingDimensions();
         if (!this.isFirstStep && !this.thisStepUsesTextualOverlay) {
             this.lightboxRenderer.disposeTextualOverlay();
             try {
@@ -107,7 +118,7 @@ var HazelineRunner = /** @class */ (function () {
             }
             return true;
         }), operators_1.tap(function () { return _this.overlayRenderer.dispose(); }), operators_1.tap(function () {
-            var wrapElementsDimensions = _this.elementManager.getWrappingElementsDimensions(_this.currentSection.steps[_this.currentSectionStepIdx].elementSelector);
+            var wrapElementsDimensions = _this.getWrappingDimensions();
             _this.overlayRenderer.wrapElement(wrapElementsDimensions);
         }), operators_1.tap(function () { return _this.lightboxRenderer.updateLightboxPlacement(element_manager_core_1.HazelineElementManager.getElementBySelector(_this.currentSection.steps[_this.currentSectionStepIdx].elementSelector), _this.currentSection.steps[_this.currentSectionStepIdx], _this.isLastStep); })).subscribe();
     };

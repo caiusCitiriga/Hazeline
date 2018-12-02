@@ -60,7 +60,12 @@ window.onload = () => {
             }
         ],
         globalOptions: {
-
+            overlay: {
+                bottomSideWrapOffset: 30,
+                rightSideWrapOffset: 30,
+                leftSideWrapOffset: 30,
+                topSideWrapOffset: 30,
+            },
         }
     });
 
