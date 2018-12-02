@@ -78,6 +78,10 @@ exports.HazelineElementsDefaults = {
     },
     overlay: {
         closeBtnText: 'End tutorial',
+        topSideWrapOffset: 10,
+        leftSideWrapOffset: 0,
+        rightSideWrapOffset: 0,
+        bottomSideWrapOffset: 10,
         overlayCSS: {
             zIndex: '99999',
             position: 'fixed',

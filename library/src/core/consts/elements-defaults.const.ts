@@ -80,6 +80,12 @@ export const HazelineElementsDefaults: HazelineOptions = {
 
     overlay: {
         closeBtnText: 'End tutorial',
+
+        topSideWrapOffset: 10,
+        leftSideWrapOffset: 10,
+        rightSideWrapOffset: 10,
+        bottomSideWrapOffset: 10,
+
         overlayCSS: {
             zIndex: '99999',
             position: 'fixed',

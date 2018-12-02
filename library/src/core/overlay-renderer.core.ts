@@ -199,13 +199,9 @@ export class HazelineOverlayRenderer {
             HazelineStylesManager.styleElement(elements[el], this.overlayOptions.overlayCSS);
         });
 
-
         elements.topBox.style.width = `${dimensions.topBox.width}px`;
         elements.topBox.style.height = `${dimensions.topBox.height}px`;
         elements.topBox.style.left = `${dimensions.topBox.offsetLeft}px`;
-        if (this.overlayOptions.topSideWrapOffset) {
-            elements.topBox.style.top = `-${this.overlayOptions.topSideWrapOffset}px`;
-        }
 
         elements.leftBox.style.width = `${dimensions.leftBox.width}px`;
         elements.leftBox.style.height = `${dimensions.leftBox.height}px`;
@@ -218,10 +214,22 @@ export class HazelineOverlayRenderer {
         elements.bottomBox.style.height = `${dimensions.bottomBox.height}px`;
         elements.bottomBox.style.top = `${dimensions.bottomBox.offsetTop}px`;
         elements.bottomBox.style.left = `${dimensions.bottomBox.offsetLeft}px`;
-        if (this.overlayOptions.bottomSideWrapOffset) {
-            elements.bottomBox.style.top = `unset`;
-            elements.bottomBox.style.bottom = `-${this.overlayOptions.bottomSideWrapOffset}px`;
-        }
+
+        // if (this.overlayOptions.topSideWrapOffset) {
+        //     elements.topBox.style.top = `-${this.overlayOptions.topSideWrapOffset}px`;
+        // }
+
+        // if (this.overlayOptions.rightSideWrapOffset) {
+        //     elements.rightBox.style.left = `unset`;
+        //     elements.rightBox.style.right = `-${this.overlayOptions.rightSideWrapOffset}px`;
+        //     elements.topBox.style.width = `${dimensions.topBox.width + this.overlayOptions.rightSideWrapOffset}px`;
+        //     elements.bottomBox.style.width = `${dimensions.bottomBox.width + this.overlayOptions.rightSideWrapOffset}px`;
+        // }
+
+        // if (this.overlayOptions.bottomSideWrapOffset) {
+        //     elements.bottomBox.style.top = `unset`;
+        //     elements.bottomBox.style.bottom = `-${this.overlayOptions.bottomSideWrapOffset}px`;
+        // }
 
         return elements;
     }
