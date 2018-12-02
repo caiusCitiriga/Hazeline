@@ -61,13 +61,13 @@ window.onload = () => {
                         }
                     }
                 },
-                onStart: () => new Promise((res, rej) => {
+                onBeforeStart: () => new Promise((res, rej) => {
                     setTimeout(() => {
                         console.log('Executed <code>onStart</code> event on Step');
                         res();
                     }, 1000);
                 }),
-                onEnd: () => new Promise((res, rej) => {
+                onBeforeEnd: () => new Promise((res, rej) => {
                     setTimeout(() => {
                         console.log('Executed <code>onEnd</code> event on Step');
                         res();

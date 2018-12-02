@@ -16091,13 +16091,13 @@ window.onload = function () {
                         }
                     }
                 },
-                onStart: function () { return new Promise(function (res, rej) {
+                onBeforeStart: function () { return new Promise(function (res, rej) {
                     setTimeout(function () {
                         console.log('Executed <code>onStart</code> event on Step');
                         res();
                     }, 1000);
                 }); },
-                onEnd: function () { return new Promise(function (res, rej) {
+                onBeforeEnd: function () { return new Promise(function (res, rej) {
                     setTimeout(function () {
                         console.log('Executed <code>onEnd</code> event on Step');
                         res();
