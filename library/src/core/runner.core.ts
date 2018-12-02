@@ -1,4 +1,4 @@
-import { Observable, BehaviorSubject, of, Subject } from 'rxjs';
+import { Observable, BehaviorSubject, of, Subject, merge } from 'rxjs';
 import { filter, tap, switchMap, take, debounceTime } from 'rxjs/operators';
 
 import { HazelineOptions } from './interfaces/hazeline-options.interface';
@@ -9,6 +9,8 @@ import { HazelineTutorialSectionStatus } from './interfaces/tutorial-section-sta
 import { HazelineElementManager } from './element-manager.core';
 import { HazelineOverlayRenderer } from './overlay-renderer.core';
 import { HazelineLightboxRenderer, HazelineEventTrigger } from './lightbox-renderer.core';
+import { HazelineWrappingElementsDimensions } from './interfaces/wrapping-elements-dimensions.interface';
+import { HazelineElementsDefaults } from './consts/elements-defaults.const';
 
 export class HazelineRunner {
 
@@ -57,6 +59,21 @@ export class HazelineRunner {
         window.removeEventListener('scroll', this.windowScrollEventThrottler);
     }
 
+    private getWrappingDimensions(): HazelineWrappingElementsDimensions {
+        const dynamicOverlayOpts = this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions
+            ? !!this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions.overlay ? this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions.overlay : {}
+            : {};
+
+        const globalOverlayOpts = this.currentSection.globalOptions
+            ? !!this.currentSection.globalOptions.overlay ? this.currentSection.globalOptions.overlay : {}
+            : {};
+
+        const mergedOptions = Object.assign({}, HazelineElementsDefaults.overlay, globalOverlayOpts, dynamicOverlayOpts);
+
+        return this.elementManager
+            .getWrappingElementsDimensions(this.currentSection.steps[this.currentSectionStepIdx].elementSelector, mergedOptions);
+    }
+
     public runSection(section: HazelineTutorialSection): Observable<HazelineTutorialSectionStatus> {
         if (!this.sectionCanBeRan(section)) {
             return this._$sectionStatus;
@@ -72,8 +89,7 @@ export class HazelineRunner {
         this.applyCustomOptionsIfAny(section.globalOptions);
         this.applyCustomOptionsIfAny(this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions, true);
 
-        const wrapElementsDimensions = this.elementManager
-            .getWrappingElementsDimensions(section.steps[this.currentSectionStepIdx].elementSelector);
+        const wrapElementsDimensions = this.getWrappingDimensions();
 
         if (!this.isFirstStep && !this.thisStepUsesTextualOverlay) {
             this.lightboxRenderer.disposeTextualOverlay();
@@ -136,7 +152,7 @@ export class HazelineRunner {
                 }),
                 tap(() => this.overlayRenderer.dispose()),
                 tap(() => {
-                    const wrapElementsDimensions = this.elementManager.getWrappingElementsDimensions(this.currentSection.steps[this.currentSectionStepIdx].elementSelector);
+                    const wrapElementsDimensions = this.getWrappingDimensions();
                     this.overlayRenderer.wrapElement(wrapElementsDimensions);
                 }),
                 tap(() => this.lightboxRenderer.updateLightboxPlacement(
@@ -264,7 +280,7 @@ export class HazelineRunner {
     }
 
     private windowResizeEvtListener = () => {
-        const wrapElementsDimensions = this.elementManager.getWrappingElementsDimensions(this.currentSection.steps[this.currentSectionStepIdx].elementSelector);
+        const wrapElementsDimensions = this.getWrappingDimensions();
         if (this.currentSection.steps[this.currentSectionStepIdx].useOverlayInsteadOfLightbox) {
             this.lightboxRenderer.updateTextualOverlayPlacement();
         } else {
