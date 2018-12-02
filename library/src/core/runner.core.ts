@@ -129,6 +129,7 @@ export class HazelineRunner {
     }
 
     private actualWindowScrollEvtListener(): void {
+        const disableOverlayFading = this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions.overlay.disableOverlayFadingWhenScrolling;
         this._$onScrollEventsStream
             .pipe(
                 filter(() => {
@@ -139,9 +140,19 @@ export class HazelineRunner {
 
                     return true;
                 }),
-                tap(() => this.lightboxRenderer.hideLightbox()),
-                tap(() => this.overlayRenderer.hideCurrentOverlays()),
-                delay(500),
+                tap(() => {
+                    if (disableOverlayFading) {
+                        return;
+                    }
+                    this.lightboxRenderer.hideLightbox();
+                }),
+                tap(() => {
+                    if (disableOverlayFading) {
+                        return;
+                    }
+                    this.overlayRenderer.hideCurrentOverlays();
+                }),
+                delay(disableOverlayFading ? 0 : 500),
                 tap(() => this.overlayRenderer.dispose()),
                 tap(() => {
                     const wrapElementsDimensions = this.elementManager.getWrappingElementsDimensions(this.currentSection.steps[this.currentSectionStepIdx].elementSelector);
@@ -152,7 +163,12 @@ export class HazelineRunner {
                     this.currentSection.steps[this.currentSectionStepIdx],
                     this.isLastStep
                 )),
-                tap(() => this.lightboxRenderer.showLightbox()),
+                tap(() => {
+                    if (disableOverlayFading) {
+                        return;
+                    }
+                    this.lightboxRenderer.showLightbox();
+                }),
             ).subscribe();
     };
 
