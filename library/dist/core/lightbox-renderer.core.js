@@ -268,6 +268,9 @@ var HazelineLightboxRenderer = /** @class */ (function () {
         this.tether.position();
     };
     HazelineLightboxRenderer.prototype.updateTextualOverlayPlacement = function () {
+        if (!this.textualOverlay) {
+            return;
+        }
         this.textualOverlay.style.width = window.innerWidth + "px";
         this.textualOverlay.style.height = window.innerHeight + "px";
     };

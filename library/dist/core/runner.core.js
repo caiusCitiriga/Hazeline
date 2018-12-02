@@ -104,34 +104,17 @@ var HazelineRunner = /** @class */ (function () {
     };
     HazelineRunner.prototype.actualWindowScrollEvtListener = function () {
         var _this = this;
-        var disableOverlayFading = false;
         this._$onScrollEventsStream
-            .pipe(operators_1.filter(function () {
+            .pipe(operators_1.debounceTime(10), operators_1.filter(function () {
             if (_this.currentSection.steps[_this.currentSectionStepIdx].useOverlayInsteadOfLightbox) {
                 _this.lightboxRenderer.updateTextualOverlayPlacement();
                 return false;
             }
-            disableOverlayFading = _this.overlayFadingShouldBePrevented(_this.currentSection.globalOptions, _this.currentSection.steps[_this.currentSectionStepIdx].dynamicOptions);
             return true;
-        }), operators_1.tap(function () {
-            if (disableOverlayFading) {
-                return;
-            }
-            _this.lightboxRenderer.hideLightbox();
-        }), operators_1.tap(function () {
-            if (disableOverlayFading) {
-                return;
-            }
-            _this.overlayRenderer.hideCurrentOverlays();
-        }), operators_1.delay(disableOverlayFading ? 0 : 500), operators_1.tap(function () { return _this.overlayRenderer.dispose(); }), operators_1.tap(function () {
+        }), operators_1.tap(function () { return _this.overlayRenderer.dispose(); }), operators_1.tap(function () {
             var wrapElementsDimensions = _this.elementManager.getWrappingElementsDimensions(_this.currentSection.steps[_this.currentSectionStepIdx].elementSelector);
-            _this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
-        }), operators_1.tap(function () { return _this.lightboxRenderer.updateLightboxPlacement(element_manager_core_1.HazelineElementManager.getElementBySelector(_this.currentSection.steps[_this.currentSectionStepIdx].elementSelector), _this.currentSection.steps[_this.currentSectionStepIdx], _this.isLastStep); }), operators_1.tap(function () {
-            if (disableOverlayFading) {
-                return;
-            }
-            _this.lightboxRenderer.showLightbox();
-        })).subscribe();
+            _this.overlayRenderer.wrapElement(wrapElementsDimensions);
+        }), operators_1.tap(function () { return _this.lightboxRenderer.updateLightboxPlacement(element_manager_core_1.HazelineElementManager.getElementBySelector(_this.currentSection.steps[_this.currentSectionStepIdx].elementSelector), _this.currentSection.steps[_this.currentSectionStepIdx], _this.isLastStep); })).subscribe();
     };
     ;
     HazelineRunner.prototype.applyCustomOptionsIfAny = function (options, isDynamicOptions) {
@@ -157,11 +140,6 @@ var HazelineRunner = /** @class */ (function () {
         if (options.textualOverlay && isDynamicOptions) {
             this.lightboxRenderer.setTextualOverlayDynamicOptions(options.textualOverlay);
         }
-    };
-    HazelineRunner.prototype.overlayFadingShouldBePrevented = function (globalOptions, dynamicOptions) {
-        //  merge the options, so if both global and dynamic has the prop specifyied, the dynamic one will count
-        var options = Object.assign({}, globalOptions, dynamicOptions);
-        return options.overlay && options.overlay.disableOverlayFadingWhenScrolling;
     };
     HazelineRunner.prototype.startNextPrevButtonClicks = function () {
         var _this = this;

@@ -24,7 +24,6 @@ export declare class HazelineRunner {
     runSection(section: HazelineTutorialSection): Observable<HazelineTutorialSectionStatus>;
     private actualWindowScrollEvtListener;
     private applyCustomOptionsIfAny;
-    private overlayFadingShouldBePrevented;
     private startNextPrevButtonClicks;
     private sectionCanBeRan;
     private startResponsiveListeners;

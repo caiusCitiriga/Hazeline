@@ -10,7 +10,6 @@ export interface HazelineOverlayOptions {
     overlayCSS?: HazelineCSSRules;
     endTutorialBtnCSS?: HazelineCSSRules;
     endTutorialBtnHoverCSS?: HazelineCSSRules;
-    disableOverlayFadingWhenScrolling?: boolean;
 }
 export interface HazelineLightboxOptions {
     nextBtnText?: string;

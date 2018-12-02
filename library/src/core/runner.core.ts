@@ -24,12 +24,6 @@ export class HazelineRunner {
     private previousSectionStepIdx = 0;
     private currentSection: HazelineTutorialSection;
 
-    private bodyOverflowsBackup = {
-        x: undefined,
-        y: undefined,
-        overflow: undefined
-    };
-
     private isFirstStep: boolean;
     private isLastStep: boolean;
     private thisStepUsesTextualOverlay: boolean;
@@ -129,47 +123,27 @@ export class HazelineRunner {
     }
 
     private actualWindowScrollEvtListener(): void {
-        let disableOverlayFading: boolean;
         this._$onScrollEventsStream
             .pipe(
+                debounceTime(10),
                 filter(() => {
                     if (this.currentSection.steps[this.currentSectionStepIdx].useOverlayInsteadOfLightbox) {
                         this.lightboxRenderer.updateTextualOverlayPlacement();
                         return false;
                     }
 
-                    disableOverlayFading = this.overlayFadingShouldBePrevented(this.currentSection.globalOptions, this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions);
                     return true;
                 }),
-                tap(() => {
-                    if (disableOverlayFading) {
-                        return;
-                    }
-                    this.lightboxRenderer.hideLightbox();
-                }),
-                tap(() => {
-                    if (disableOverlayFading) {
-                        return;
-                    }
-                    this.overlayRenderer.hideCurrentOverlays();
-                }),
-                delay(disableOverlayFading ? 0 : 500),
                 tap(() => this.overlayRenderer.dispose()),
                 tap(() => {
                     const wrapElementsDimensions = this.elementManager.getWrappingElementsDimensions(this.currentSection.steps[this.currentSectionStepIdx].elementSelector);
-                    this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
+                    this.overlayRenderer.wrapElement(wrapElementsDimensions);
                 }),
                 tap(() => this.lightboxRenderer.updateLightboxPlacement(
                     HazelineElementManager.getElementBySelector(this.currentSection.steps[this.currentSectionStepIdx].elementSelector),
                     this.currentSection.steps[this.currentSectionStepIdx],
                     this.isLastStep
                 )),
-                tap(() => {
-                    if (disableOverlayFading) {
-                        return;
-                    }
-                    this.lightboxRenderer.showLightbox();
-                }),
             ).subscribe();
     };
 
@@ -196,13 +170,6 @@ export class HazelineRunner {
         if (options.textualOverlay && isDynamicOptions) {
             this.lightboxRenderer.setTextualOverlayDynamicOptions(options.textualOverlay);
         }
-    }
-
-    private overlayFadingShouldBePrevented(globalOptions: HazelineOptions, dynamicOptions: HazelineOptions): boolean {
-        //  merge the options, so if both global and dynamic has the prop specifyied, the dynamic one will count
-        const options = Object.assign({}, globalOptions, dynamicOptions);
-
-        return options.overlay && options.overlay.disableOverlayFadingWhenScrolling;
     }
 
     private startNextPrevButtonClicks(): void {

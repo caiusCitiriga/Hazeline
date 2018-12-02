@@ -308,6 +308,10 @@ export class HazelineLightboxRenderer {
     }
 
     public updateTextualOverlayPlacement(): void {
+        if (!this.textualOverlay) {
+            return;
+        }
+
         this.textualOverlay.style.width = `${window.innerWidth}px`;
         this.textualOverlay.style.height = `${window.innerHeight}px`;
     }

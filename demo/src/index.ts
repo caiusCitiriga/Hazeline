@@ -43,7 +43,6 @@ window.onload = () => {
                 text: 'Third',
                 dynamicOptions: {
                     lightbox: {
-                        lightboxWrapperCSS: { border: '1px solid red' },
                         positioning: {
                             attachment: 'left top',
                             targetAttachment: 'bottom left',
@@ -60,6 +59,9 @@ window.onload = () => {
                 text: 'Last',
             }
         ],
+        globalOptions: {
+
+        }
     });
 
     setTimeout(() => {

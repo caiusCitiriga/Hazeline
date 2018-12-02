@@ -683,6 +683,9 @@ var HazelineLightboxRenderer = /** @class */ (function () {
         this.tether.position();
     };
     HazelineLightboxRenderer.prototype.updateTextualOverlayPlacement = function () {
+        if (!this.textualOverlay) {
+            return;
+        }
         this.textualOverlay.style.width = window.innerWidth + "px";
         this.textualOverlay.style.height = window.innerHeight + "px";
     };
@@ -1183,16 +1186,16 @@ var HazelineRunner = /** @class */ (function () {
     HazelineRunner.prototype.actualWindowScrollEvtListener = function () {
         var _this = this;
         this._$onScrollEventsStream
-            .pipe(operators_1.filter(function () {
+            .pipe(operators_1.debounceTime(10), operators_1.filter(function () {
             if (_this.currentSection.steps[_this.currentSectionStepIdx].useOverlayInsteadOfLightbox) {
                 _this.lightboxRenderer.updateTextualOverlayPlacement();
                 return false;
             }
             return true;
-        }), operators_1.tap(function () { return _this.lightboxRenderer.hideLightbox(); }), operators_1.tap(function () { return _this.overlayRenderer.hideCurrentOverlays(); }), operators_1.delay(500), operators_1.tap(function () { return _this.overlayRenderer.dispose(); }), operators_1.tap(function () {
+        }), operators_1.tap(function () { return _this.overlayRenderer.dispose(); }), operators_1.tap(function () {
             var wrapElementsDimensions = _this.elementManager.getWrappingElementsDimensions(_this.currentSection.steps[_this.currentSectionStepIdx].elementSelector);
-            _this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
-        }), operators_1.tap(function () { return _this.lightboxRenderer.updateLightboxPlacement(element_manager_core_1.HazelineElementManager.getElementBySelector(_this.currentSection.steps[_this.currentSectionStepIdx].elementSelector), _this.currentSection.steps[_this.currentSectionStepIdx], _this.isLastStep); }), operators_1.tap(function () { return _this.lightboxRenderer.showLightbox(); })).subscribe();
+            _this.overlayRenderer.wrapElement(wrapElementsDimensions);
+        }), operators_1.tap(function () { return _this.lightboxRenderer.updateLightboxPlacement(element_manager_core_1.HazelineElementManager.getElementBySelector(_this.currentSection.steps[_this.currentSectionStepIdx].elementSelector), _this.currentSection.steps[_this.currentSectionStepIdx], _this.isLastStep); })).subscribe();
     };
     ;
     HazelineRunner.prototype.applyCustomOptionsIfAny = function (options, isDynamicOptions) {
@@ -16000,7 +16003,6 @@ window.onload = function () {
                 text: 'Third',
                 dynamicOptions: {
                     lightbox: {
-                        lightboxWrapperCSS: { border: '1px solid red' },
                         positioning: {
                             attachment: 'left top',
                             targetAttachment: 'bottom left',
@@ -16017,6 +16019,7 @@ window.onload = function () {
                 text: 'Last',
             }
         ],
+        globalOptions: {}
     });
     setTimeout(function () {
         haze.runTutorial('test');
