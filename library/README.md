@@ -20,6 +20,37 @@ It works great with <b style="color: #f44336">Angular</b>!
 npm install --save hazeline
 ```
 
+#### Include the Theter min file provided with Hazeline:
+<br>
+
+From `node_modules`
+```html
+<html>
+    <head>
+        <script src="~/node_modules/hazeline/dist/tether.min.js"></script>
+    </head>
+</html>
+```
+
+From `CDN`
+```html
+<html>
+    <head>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/tether/1.4.4/js/tether.min.js"></script>
+    </head>
+</html>
+```
+
+#### Angular way:
+Include the Theter min file provided with Hazeline via `angular.json`:
+```json
+"scripts": [
+    ...
+    "node_modules/hazeline/dist/tether.min.js"
+    ...
+]
+```
+
 ## Usage
 
 Hazeline is extremely configurable, but is also designed to work out of the box, providing its own graphical style.

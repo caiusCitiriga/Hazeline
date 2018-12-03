@@ -5,7 +5,7 @@
     "main": "dist/index.js",
     "scripts": {
         "update": "sh ./scripts/update.sh",
-        "build": "tsc"
+        "build": "npm run update"
     },
     "repository": {
         "type": "git",
