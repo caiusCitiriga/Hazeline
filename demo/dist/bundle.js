@@ -1199,18 +1199,19 @@ var HazelineRunner = /** @class */ (function () {
         if (!this.sectionCanBeRan(section)) {
             return this._$sectionStatus;
         }
-        this.isFirstStep = this.currentSectionStepIdx === 0;
-        this.isLastStep = (section.steps.length - 1) === this.currentSectionStepIdx;
-        this.thisStepUsesTextualOverlay = this.currentSection.steps[this.currentSectionStepIdx].useOverlayInsteadOfLightbox;
-        this.previousStepUsedTextualOverlay = this.currentSectionStepIdx === 0
-            ? false
-            : this.currentSection.steps[this.previousSectionStepIdx].useOverlayInsteadOfLightbox;
         if (!this.currentSection.steps[this.currentSectionStepIdx].onBeforeStart) {
             this.currentSection.steps[this.currentSectionStepIdx].onBeforeStart = function () { return new Promise(function (res) { return res(); }); };
         }
         var wrapElementsDimensions;
         rxjs_1.from(this.currentSection.steps[this.currentSectionStepIdx].onBeforeStart())
             .pipe(operators_1.tap(function () {
+            _this.isFirstStep = _this.currentSectionStepIdx === 0;
+            _this.isLastStep = (section.steps.length - 1) === _this.currentSectionStepIdx;
+            _this.thisStepUsesTextualOverlay = _this.currentSection.steps[_this.currentSectionStepIdx].useOverlayInsteadOfLightbox;
+            _this.previousStepUsedTextualOverlay = _this.currentSectionStepIdx === 0
+                ? false
+                : _this.currentSection.steps[_this.previousSectionStepIdx].useOverlayInsteadOfLightbox;
+        }), operators_1.tap(function () {
             _this.applyCustomOptionsIfAny(section.globalOptions);
             _this.applyCustomOptionsIfAny(_this.currentSection.steps[_this.currentSectionStepIdx].dynamicOptions, true);
         }), operators_1.tap(function () { return wrapElementsDimensions = _this.getWrappingDimensions(); }), operators_1.tap(function () {
@@ -1225,7 +1226,10 @@ var HazelineRunner = /** @class */ (function () {
                     _this.overlayRenderer.hideCurrentOverlays();
                     _this.overlayRenderer.removeEndTutorialButton();
                 }
-                var fadeOutBeforeRemoving = !_this.currentSection.steps[_this.currentSectionStepIdx].dynamicOptions.textualOverlay.disableBgFadeIn;
+                var fadeOutBeforeRemoving = true;
+                if (_this.currentSection.steps[_this.currentSectionStepIdx].dynamicOptions.textualOverlay) {
+                    fadeOutBeforeRemoving = !_this.currentSection.steps[_this.currentSectionStepIdx].dynamicOptions.textualOverlay.disableBgFadeIn;
+                }
                 _this.lightboxRenderer.disposeTextualOverlay(false, fadeOutBeforeRemoving)
                     .pipe(operators_1.switchMap(function () {
                     return _this.lightboxRenderer.placeTextOverlay(_this.currentSection.steps[_this.currentSectionStepIdx], _this.isLastStep);
@@ -16081,77 +16085,83 @@ function __importDefault(mod) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var hazeline_1 = __webpack_require__(/*! hazeline */ "../library/dist/index.js");
+var hazelineSection = {
+    id: 'test',
+    steps: [
+        {
+            elementSelector: '#input-1',
+            text: 'First',
+            useOverlayInsteadOfLightbox: true,
+            dynamicOptions: {
+                textualOverlay: {
+                    hideButtons: true,
+                    overlayCSS: {
+                        justifyContent: 'center'
+                    },
+                    overlayParagraphFadeInOpacity: 1,
+                }
+            }
+        },
+        {
+            elementSelector: '#input-2',
+            text: 'Second',
+            useOverlayInsteadOfLightbox: true,
+            dynamicOptions: {
+                textualOverlay: {
+                    overlayBgFadeInOpacity: 1,
+                    clickAnywhereForNextStep: true,
+                    hideButtons: true,
+                    overlayCSS: {
+                        opacity: '0',
+                        justifyContent: 'center'
+                    },
+                    paragraphCSS: {
+                        justifyContent: 'center'
+                    }
+                }
+            }
+        },
+        {
+            elementSelector: '#inputZip',
+            text: 'Third',
+            dynamicOptions: {
+                lightbox: {
+                    positioning: {
+                        attachment: 'left top',
+                        targetAttachment: 'bottom left',
+                    }
+                }
+            },
+            onBeforeStart: function () { return new Promise(function (res, rej) {
+                var stepIndex = hazelineSection.steps.findIndex(function (step) { return step.elementSelector === '#inputZip'; });
+                hazelineSection.steps[stepIndex].useOverlayInsteadOfLightbox = true;
+                res();
+            }); },
+            nextStepCustomTrigger: {
+                event: 'keyup',
+                disableDefaultNextPrevBtns: true,
+                callback: function (evt, step, el) { return new Promise(function (res, rej) {
+                    if (evt.keyCode === 13) {
+                        res();
+                        return;
+                    }
+                    rej();
+                }); }
+            }
+        },
+        {
+            elementSelector: '#input-4',
+            text: 'Last',
+        },
+        {
+            elementSelector: '#input-6',
+            text: 'Last',
+        }
+    ],
+};
 window.onload = function () {
     var haze = new hazeline_1.Hazeline();
-    haze.addSection({
-        id: 'test',
-        steps: [
-            {
-                elementSelector: '#input-1',
-                text: 'First',
-                useOverlayInsteadOfLightbox: true,
-                dynamicOptions: {
-                    textualOverlay: {
-                        hideButtons: true,
-                        overlayCSS: {
-                            justifyContent: 'center'
-                        },
-                        overlayParagraphFadeInOpacity: 1,
-                    }
-                }
-            },
-            {
-                elementSelector: '#input-2',
-                text: 'Second',
-                useOverlayInsteadOfLightbox: true,
-                dynamicOptions: {
-                    textualOverlay: {
-                        overlayBgFadeInOpacity: 1,
-                        clickAnywhereForNextStep: true,
-                        hideButtons: true,
-                        overlayCSS: {
-                            opacity: '0',
-                            justifyContent: 'center'
-                        },
-                        paragraphCSS: {
-                            justifyContent: 'center'
-                        }
-                    }
-                }
-            },
-            {
-                elementSelector: '#inputZip',
-                text: 'Third',
-                dynamicOptions: {
-                    lightbox: {
-                        positioning: {
-                            attachment: 'left top',
-                            targetAttachment: 'bottom left',
-                        }
-                    }
-                },
-                nextStepCustomTrigger: {
-                    event: 'keyup',
-                    disableDefaultNextPrevBtns: true,
-                    callback: function (evt, step, el) { return new Promise(function (res, rej) {
-                        if (evt.keyCode === 13) {
-                            res();
-                            return;
-                        }
-                        rej();
-                    }); }
-                }
-            },
-            {
-                elementSelector: '#input-4',
-                text: 'Last',
-            },
-            {
-                elementSelector: '#input-6',
-                text: 'Last',
-            }
-        ],
-    });
+    haze.addSection(hazelineSection);
     setTimeout(function () {
         haze.runTutorial('test');
     }, 800);

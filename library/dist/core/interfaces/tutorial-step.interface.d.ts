@@ -10,9 +10,9 @@ export interface HazelineTutorialStep {
     nextStepCustomTrigger?: {
         event: string;
         disableDefaultNextPrevBtns?: boolean;
-        callback: (evt: Event, step: HazelineTutorialStep, htmlElement: HTMLElement) => Promise<boolean>;
+        callback: (evt: Event, step: HazelineTutorialStep, htmlElement: HTMLElement) => Promise<void>;
     };
-    onBeforeEnd?: () => Promise<boolean>;
-    onBeforeStart?: () => Promise<boolean>;
+    onBeforeEnd?: () => Promise<void>;
+    onBeforeStart?: () => Promise<void>;
 }
 //# sourceMappingURL=tutorial-step.interface.d.ts.map

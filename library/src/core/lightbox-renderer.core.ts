@@ -453,7 +453,7 @@ export interface CustomEventListenerOpts {
     event: string,
     element: HTMLElement,
     step: HazelineTutorialStep,
-    listener: (evt: Event, step: HazelineTutorialStep, element: HTMLElement) => Promise<boolean>
+    listener: (evt: Event, step: HazelineTutorialStep, element: HTMLElement) => Promise<void>
 }
 
 export interface CustomEventListenerDetachOpts {

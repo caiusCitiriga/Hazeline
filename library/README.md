@@ -1,14 +1,20 @@
-# Hazeline
+<style>
+@import url('https://fonts.googleapis.com/css?family=Kalam:400,700');
+</style>
+# <span style="color: #ff7a00; font-style: italic; font-family: Kalam">Hazeline</span> <span style="font-style: italic; font-family: Kalam">, the definitive tutorial library</span>.
 
 <p align="center">
-A simple, lightweight, <b>framework agnostic</b> tutorial library for <b>any</b> web application.</p>
+A simple, fully customizable, <b>framework agnostic</b> tutorial library for <b>any</b> web application.</p>
 <p align="center">
-Made with love in <b>TypeScript</b>, but works like a charm even with vanilla <b>JS</b>.
+Made with :heart: in <b style="color: #1b7ecd">TypeScript</b>, and works like a charm with vanilla <b style="color: #ffc107">JavaScript</b>.
 </p>
 <p align="center">
-And yes, it works great with <b>Angular</b>!
+Oh yeah! Before you ask: <br>
+It works great with <b style="color: #f44336">Angular</b>!
 </p>
 <br>
+
+[![License: MIT](https://img.shields.io/github/license/mashape/apistatus.svg)](https://raw.githubusercontent.com/caiusCitiriga/nrg-cli/feature/templates/LICENSE)
 
 ![Hazeline GIF demo](https://github.com/caiusCitiriga/Hazeline/raw/dev/docs/hazeline-demo.gif)
 
@@ -160,7 +166,7 @@ It might happen that you have something asyncronus running that must be complete
 
 In these kind of situations the section step offers another type of configuration called `delayBeforeStart`. It is a number, and can set the milliseconds to wait before the step actually begin.
 
-**NOTE**: When you use the `delayBeforeStart` there are a few things to keep in mind:
+**<span style="color: #ff7a00">Note:</span>** When you use the `delayBeforeStart` there are a few things to keep in mind:
 
 **1)** The majority of the CSS customization is done internally and based on your global or dynamic configuration for the normal overlay
 
@@ -180,7 +186,7 @@ If you'd like to change this behaviour, you can override these offsets. On the `
 
 They respectively apply offsets on the top, left, right and bottom wrappers. You can valorize them all, or just the ones you need to. 
 
-**Note:** that when changing the lightbox placement, you will also have to modify its `offset`. Since Hazeline by default places the lightbox under the element and uses by defauly `-10px` of offset, if you don't change that value in `10px` or accordingly with your wrappers offsets, the lightbox may overlap by `10px` your hightlighted element when positioned on top of it.
+**<span style="color: #ff7a00">Note:</span>** that when changing the lightbox placement, you will also have to modify its `offset`. Since Hazeline by default places the lightbox under the element and uses by defauly `-10px` of offset, if you don't change that value in `10px` or accordingly with your wrappers offsets, the lightbox may overlap by `10px` your hightlighted element when positioned on top of it.
 
 #### No offsets example
 ![Hazeline input box wrapped with no offset](https://github.com/caiusCitiriga/Hazeline/raw/dev/docs/no_offset.png)
@@ -206,7 +212,7 @@ This callback will be executed right before the startup of the tutorial in case 
 
 This callback will be converted into an `Observable`, and from it will start the pipeline of events inside Hazeline. If you don't specify a `onBeforeStart` a `Promise` that resolves immediatly will be used.
 
-**Note:** this is the first step of the pipeline, and if something asyncronus will be executed inside, the tutorial or the step **won't start** until the promise resolves, try to not clutter this too much as it may result is bad user experience.<br><br>
+**<span style="color: #ff7a00">Note:</span>** this is the first step of the pipeline, and if something asyncronus will be executed inside, the tutorial or the step **won't start** until the promise resolves, try to not clutter this too much as it may result is bad user experience.<br><br>
 
 **`onBeforeEnd`**
 
@@ -214,9 +220,55 @@ This callback will be executed right before the tutorial definitive shutdown, or
 
 This callback will be converted into an `Observable`, and it will be called right before the last event in the pipeline, the definitive shutdown of the tutorial in case it's placed at a **Section** level, or the loading of the next step in case it's placed at a **Step** level. If you don't specify a `onBeforeEnd` a `Promise` that resolves immediatly will be used.
 
-**Note:** this is the step before the last one in the pipeline, both for the **Sections** and the **Steps** pipelines, and if something asyncronus will be executed inside, the tutorial **won't quit** or the next step **won't load** until the promise resolves, but the quit button will be removed. Try to not clutter this too much as it may result is bad user experience.
+**<span style="color: #ff7a00">Note:</span>** this is the step before the last one in the pipeline, both for the **Sections** and the **Steps** pipelines, and if something asyncronus will be executed inside, the tutorial **won't quit** or the next step **won't load** until the promise resolves, but the quit button will be removed. Try to not clutter this too much as it may result is bad user experience.
 
-**Also remember to always resolve your promises.**
+**<span style="color: #ff7a00">Also remember to always resolve your promises.</span>**
+
+## Attaching custom event listeners for next step triggering
+
+By default, Hazeline, has three ways of triggering the next step call. One made through the lightbox next button, one when in textual overlay mode, by clicking anywhere around the overlay. The last one, always when in textual overlay mode, by clicking on the overlay's next button (if present).
+
+But what if you'd like to trigger the next step when a certain event occours on the element highlighted? 
+
+You can use the `nextStepCustomTrigger` property, present on the **Step** options. When you enable this feature, **two** more properties are **required**, and optionally a third one can be specified:<br>
+
+#### `event`: 
+The event you want to listen for. It can be any valid JS events, like: `click`, `blur`, `dbclick`, `mouseenter`, `mouseleave`, `keyup` etc
+
+#### `callback`: 
+The actual callback that will be ran when that event occurs. This callback is a function that returns a `Promise`. If the promise is resolved, the next step will be triggered, if the promise rejects or does not resolve, nothing will happen.
+
+When the callback is executed, three arguments will be passed to it: 
+
++ `evt`: the actual `Event` fired (in case of `keyup` is useful to know which key was pressed)
++ `step`: the object of the current step in the tutorial. `HazelineTutorialStep`
++ `el`: the HTML object of the element that is currently being highlighted
+
+#### `disableDefaultNextPrevBtns`: 
+The third, optional property. If set to `true` it will remove the Next and Previous buttons from the lightbox for this step.
+
+**<span style="color: #ff7a00">Note:</span>** always remember to resolve your promises at some point. If you don't resolve the promise, the next event **won't** be triggered.
+
+#### Implementation example of `nextStepCustomTrigger`:
+```ts
+{
+    elementSelector: '#inputZip',
+    text: 'Third',
+    nextStepCustomTrigger: {
+        event: 'keyup',
+        disableDefaultNextPrevBtns: true,
+        callback: (evt: Event, step: HazelineTutorialStep, el: HTMLElement) => new Promise((res, rej) => {
+            //  If the key pressed is ENTER
+            if ((evt as KeyboardEvent).keyCode === 13) {
+                res();
+                return;
+            }
+
+            rej();
+        })
+    }
+},
+```
 
 ## Hazeline section step specific properties
 ---
@@ -288,12 +340,12 @@ The textual overlay is the overlay that appears instead of the lightbox when you
 
 Property name | Description | Accepted values
 --------------|-------------|-----------------
-`hideButtons` | Wheter to show or not the next/previous buttons. **Note**: if you hide the buttons, the `clickAnywhereForNextStep` is automatically activated, and there will be no way to go back to the previous step from there | `boolean` 
+`hideButtons` | Wheter to show or not the next/previous buttons.<br>**Note**: if you hide the buttons, the `clickAnywhereForNextStep` is automatically activated, and there will be no way to go back to the previous step from there | `boolean` 
 `disableBgFadeIn` | By default, the bg of the textual overlay fades in and out when appearing and disappearing. You can disable this behaviour | `boolean`
 `disableTextFadeIn` | By default, the text of the textual overlay paragraph fades in and out when appearing and disappearing. You can disable this behaviour | `boolean`
 `clickAnywhereForNextStep` | You can enable the next step triggering by clicking anywhere on the textual overlay | `boolean`
-`bgFadeInTimeInMs` | The time that the fade transition will take to complete on the overlay. **Note**: the `ease-in-out` method is used for easing | `number`
-`textFadeInTimeInMs` | The time that the fade transition will take to complete on the paragraph. **Note**: the `ease-in-out` method is used for easing | `number`
+`bgFadeInTimeInMs` | The time that the fade transition will take to complete on the overlay.<br>**Note**: the `ease-in-out` method is used for easing | `number`
+`textFadeInTimeInMs` | The time that the fade transition will take to complete on the paragraph.<br>**Note**: the `ease-in-out` method is used for easing | `number`
 `overlayBgFadeInOpacity` | The final opacity to set on the overlay. | `number`
 `overlayParagraphFadeInOpacity` | The final opacity to set on the paragraph. | `number`
 `overlayCSS` | The CSS for the textual overlay | `HazelineCSSRules`
@@ -481,29 +533,32 @@ interface HazelineTutorialStep {
     dynamicOptions?: HazelineOptions;
     useOverlayInsteadOfLightbox?: boolean;
 
+    nextStepCustomTrigger?: {
+        event: string;
+        disableDefaultNextPrevBtns?: boolean;
+        callback: (evt: Event, step: HazelineTutorialStep, htmlElement: HTMLElement) => Promise<void>,
+    };
+
     onBeforeEnd?: () => Promise<boolean>;
     onBeforeStart?: () => Promise<boolean>;
 }
 ```
 
-## Upcoming features
-
-+ Custom event triggers. (attach an event to the element, that when fired may execute a custom callback and then trigger the next step automatically)
-
 ---
+### Built With
+* [Rxjs](https://rxjs-dev.firebaseapp.com/) - Reactive extensions library for javascript
+* [Tether](http://tether.io/) - A client-side library to make absolutely positioned elements attach to elements in the page efficiently.
+* [TypeScript](https://github.com/Microsoft/TypeScript) - TypeScript is a superset of JavaScript that compiles to clean JavaScript output.
+* **Love and passion. For coding, and beautiful code**
 
-### Dependencies
-+ rxjs: `v6.3.3`
-+ tether: `v1.4.5`
-
-## Help Hazeline grow
+### Help Hazeline grow
 If you like this project please help me with your feedback, leave a star :) Found a bug? Want a feature? Want some help? Feel free to open a [Issue on GitHub](https://github.com/caiuscitiriga/hazeline/issues).
 
-## Versioning
+### Versioning
 We use [SemVer](http://semver.org/) for versioning. 
 
-## Authors
+### Authors
 * [**Caius Citiriga**](https://github.com/caiuscitiriga)
 
-## License
+### License
 This project is licensed under the MIT License.

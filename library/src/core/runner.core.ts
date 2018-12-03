@@ -67,13 +67,6 @@ export class HazelineRunner {
             return this._$sectionStatus;
         }
 
-        this.isFirstStep = this.currentSectionStepIdx === 0;
-        this.isLastStep = (section.steps.length - 1) === this.currentSectionStepIdx;
-        this.thisStepUsesTextualOverlay = this.currentSection.steps[this.currentSectionStepIdx].useOverlayInsteadOfLightbox;
-        this.previousStepUsedTextualOverlay = this.currentSectionStepIdx === 0
-            ? false
-            : this.currentSection.steps[this.previousSectionStepIdx].useOverlayInsteadOfLightbox
-
         if (!this.currentSection.steps[this.currentSectionStepIdx].onBeforeStart) {
             this.currentSection.steps[this.currentSectionStepIdx].onBeforeStart = () => new Promise(res => res());
         }
@@ -81,6 +74,15 @@ export class HazelineRunner {
         let wrapElementsDimensions: HazelineWrappingElementsDimensions;
         from(this.currentSection.steps[this.currentSectionStepIdx].onBeforeStart())
             .pipe(
+                tap(() => {
+                    this.isFirstStep = this.currentSectionStepIdx === 0;
+                    this.isLastStep = (section.steps.length - 1) === this.currentSectionStepIdx;
+                    this.thisStepUsesTextualOverlay = this.currentSection.steps[this.currentSectionStepIdx].useOverlayInsteadOfLightbox;
+                    this.previousStepUsedTextualOverlay = this.currentSectionStepIdx === 0
+                        ? false
+                        : this.currentSection.steps[this.previousSectionStepIdx].useOverlayInsteadOfLightbox
+
+                }),
                 tap(() => {
                     this.applyCustomOptionsIfAny(section.globalOptions);
                     this.applyCustomOptionsIfAny(this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions, true);
@@ -100,7 +102,11 @@ export class HazelineRunner {
                             this.overlayRenderer.removeEndTutorialButton();
                         }
 
-                        const fadeOutBeforeRemoving = !this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions.textualOverlay.disableBgFadeIn;
+                        let fadeOutBeforeRemoving = true;
+                        if (this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions.textualOverlay) {
+                            fadeOutBeforeRemoving = !this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions.textualOverlay.disableBgFadeIn;
+                        }
+
                         this.lightboxRenderer.disposeTextualOverlay(false, fadeOutBeforeRemoving)
                             .pipe(switchMap(() =>
                                 this.lightboxRenderer.placeTextOverlay(this.currentSection.steps[this.currentSectionStepIdx], this.isLastStep))
