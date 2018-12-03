@@ -3,7 +3,7 @@
 <p align="center">
 A simple, fully customizable, <b>framework agnostic</b> tutorial library for <b>any</b> web application.</p>
 <p align="center">
-Made with :heart: in <b style="color: #1b7ecd">TypeScript</b>, and works like a charm with vanilla <b style="color: #ffc107">JavaScript</b>.
+Made with ❤️ in <b style="color: #1b7ecd">TypeScript</b>, and works like a charm with vanilla <b style="color: #ffc107">JavaScript</b>.
 </p>
 <p align="center">
 Oh yeah! Before you ask: <br>
