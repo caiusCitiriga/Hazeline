@@ -88,13 +88,13 @@ export class HazelineRunner {
                     this.applyCustomOptionsIfAny(section.globalOptions);
                     this.applyCustomOptionsIfAny(this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions, true);
                 }),
+                tap(() => this.overlayRenderer.placeEndTutorialButton()),
                 tap(() => wrapElementsDimensions = this.getWrappingDimensions()),
                 tap(() => {
-                    if (!this.isFirstStep && !this.thisStepUsesTextualOverlay) {
+                    if (!this.thisStepUsesTextualOverlay) {
                         this.lightboxRenderer.disposeTextualOverlay();
-                        this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
-                    } else {
-                        this.overlayRenderer.placeEndTutorialButton();
+                    }
+                    if (!!wrapElementsDimensions) {
                         this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
                     }
                 }),
@@ -148,7 +148,6 @@ export class HazelineRunner {
                     status: HazelineTutorialSectionStatuses.started,
                     runningStepInSection: section.steps[this.currentSectionStepIdx]
                 })),
-                tap(() => this.overlayRenderer.placeEndTutorialButton()),
                 tap(() => this.previousSectionStepIdx = this.currentSectionStepIdx)
             ).subscribe();
 

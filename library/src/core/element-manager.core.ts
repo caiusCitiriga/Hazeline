@@ -20,36 +20,7 @@ export class HazelineElementManager {
     }
 
     private computeWrappingElements(elementToWrap: HTMLElement, overlayOpts: HazelineOverlayOptions): HazelineWrappingElementsDimensions {
-        const dimensions: HazelineWrappingElementsDimensions = {
-            element: {
-                width: null,
-                height: null,
-                offsetTop: null,
-                offsetLeft: null,
-                offsetRight: null,
-                offsetBottom: null,
-            },
-            leftBox: {
-                width: null,
-                height: null,
-            },
-            topBox: {
-                width: null,
-                height: null,
-                offsetLeft: null,
-            },
-            bottomBox: {
-                width: null,
-                height: null,
-                offsetTop: null,
-                offsetLeft: null,
-            },
-            rightBox: {
-                width: null,
-                height: null,
-                offsetLeft: null,
-            }
-        };
+        const dimensions: HazelineWrappingElementsDimensions = NullDimensions;
 
         //  Element
         dimensions.element.width = elementToWrap.getBoundingClientRect().width;
@@ -108,3 +79,34 @@ export class HazelineElementManager {
     }
 
 }
+
+export const NullDimensions: HazelineWrappingElementsDimensions = {
+    element: {
+        width: null,
+        height: null,
+        offsetTop: null,
+        offsetLeft: null,
+        offsetRight: null,
+        offsetBottom: null,
+    },
+    leftBox: {
+        width: null,
+        height: null,
+    },
+    topBox: {
+        width: null,
+        height: null,
+        offsetLeft: null,
+    },
+    bottomBox: {
+        width: null,
+        height: null,
+        offsetTop: null,
+        offsetLeft: null,
+    },
+    rightBox: {
+        width: null,
+        height: null,
+        offsetLeft: null,
+    }
+};

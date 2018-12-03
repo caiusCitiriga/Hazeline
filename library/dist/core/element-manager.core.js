@@ -16,36 +16,7 @@ var HazelineElementManager = /** @class */ (function () {
         return document.querySelector(selector);
     };
     HazelineElementManager.prototype.computeWrappingElements = function (elementToWrap, overlayOpts) {
-        var dimensions = {
-            element: {
-                width: null,
-                height: null,
-                offsetTop: null,
-                offsetLeft: null,
-                offsetRight: null,
-                offsetBottom: null,
-            },
-            leftBox: {
-                width: null,
-                height: null,
-            },
-            topBox: {
-                width: null,
-                height: null,
-                offsetLeft: null,
-            },
-            bottomBox: {
-                width: null,
-                height: null,
-                offsetTop: null,
-                offsetLeft: null,
-            },
-            rightBox: {
-                width: null,
-                height: null,
-                offsetLeft: null,
-            }
-        };
+        var dimensions = exports.NullDimensions;
         //  Element
         dimensions.element.width = elementToWrap.getBoundingClientRect().width;
         dimensions.element.height = elementToWrap.getBoundingClientRect().height;
@@ -94,4 +65,34 @@ var HazelineElementManager = /** @class */ (function () {
     return HazelineElementManager;
 }());
 exports.HazelineElementManager = HazelineElementManager;
+exports.NullDimensions = {
+    element: {
+        width: null,
+        height: null,
+        offsetTop: null,
+        offsetLeft: null,
+        offsetRight: null,
+        offsetBottom: null,
+    },
+    leftBox: {
+        width: null,
+        height: null,
+    },
+    topBox: {
+        width: null,
+        height: null,
+        offsetLeft: null,
+    },
+    bottomBox: {
+        width: null,
+        height: null,
+        offsetTop: null,
+        offsetLeft: null,
+    },
+    rightBox: {
+        width: null,
+        height: null,
+        offsetLeft: null,
+    }
+};
 //# sourceMappingURL=element-manager.core.js.map

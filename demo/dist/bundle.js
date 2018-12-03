@@ -280,36 +280,7 @@ var HazelineElementManager = /** @class */ (function () {
         return document.querySelector(selector);
     };
     HazelineElementManager.prototype.computeWrappingElements = function (elementToWrap, overlayOpts) {
-        var dimensions = {
-            element: {
-                width: null,
-                height: null,
-                offsetTop: null,
-                offsetLeft: null,
-                offsetRight: null,
-                offsetBottom: null,
-            },
-            leftBox: {
-                width: null,
-                height: null,
-            },
-            topBox: {
-                width: null,
-                height: null,
-                offsetLeft: null,
-            },
-            bottomBox: {
-                width: null,
-                height: null,
-                offsetTop: null,
-                offsetLeft: null,
-            },
-            rightBox: {
-                width: null,
-                height: null,
-                offsetLeft: null,
-            }
-        };
+        var dimensions = exports.NullDimensions;
         //  Element
         dimensions.element.width = elementToWrap.getBoundingClientRect().width;
         dimensions.element.height = elementToWrap.getBoundingClientRect().height;
@@ -358,6 +329,36 @@ var HazelineElementManager = /** @class */ (function () {
     return HazelineElementManager;
 }());
 exports.HazelineElementManager = HazelineElementManager;
+exports.NullDimensions = {
+    element: {
+        width: null,
+        height: null,
+        offsetTop: null,
+        offsetLeft: null,
+        offsetRight: null,
+        offsetBottom: null,
+    },
+    leftBox: {
+        width: null,
+        height: null,
+    },
+    topBox: {
+        width: null,
+        height: null,
+        offsetLeft: null,
+    },
+    bottomBox: {
+        width: null,
+        height: null,
+        offsetTop: null,
+        offsetLeft: null,
+    },
+    rightBox: {
+        width: null,
+        height: null,
+        offsetLeft: null,
+    }
+};
 //# sourceMappingURL=element-manager.core.js.map
 
 /***/ }),
@@ -1001,10 +1002,7 @@ var HazelineOverlayRenderer = /** @class */ (function () {
         elements.rightBox.id = elements_ids_enum_1.HazelineElementsIds.rightBox;
         elements.bottomBox.id = elements_ids_enum_1.HazelineElementsIds.bottomBox;
         elements.bottomBox.id = elements_ids_enum_1.HazelineElementsIds.bottomBox;
-        Object.keys(elements).forEach(function (el) {
-            debugger;
-            styles_manager_core_1.HazelineStylesManager.styleElement(elements[el], _this.overlayOptions.overlayCSS);
-        });
+        Object.keys(elements).forEach(function (el) { return styles_manager_core_1.HazelineStylesManager.styleElement(elements[el], _this.overlayOptions.overlayCSS); });
         elements.topBox.style.width = dimensions.topBox.width + "px";
         elements.topBox.style.height = dimensions.topBox.height + "px";
         elements.topBox.style.left = dimensions.topBox.offsetLeft + "px";
@@ -1205,13 +1203,11 @@ var HazelineRunner = /** @class */ (function () {
             _this.applyCustomOptionsIfAny(elements_defaults_const_1.HazelineElementsDefaults);
             _this.applyCustomOptionsIfAny(section.globalOptions);
             _this.applyCustomOptionsIfAny(_this.currentSection.steps[_this.currentSectionStepIdx].dynamicOptions, true);
-        }), operators_1.tap(function () { return wrapElementsDimensions = _this.getWrappingDimensions(); }), operators_1.tap(function () {
-            if (!_this.isFirstStep && !_this.thisStepUsesTextualOverlay) {
+        }), operators_1.tap(function () { return _this.overlayRenderer.placeEndTutorialButton(); }), operators_1.tap(function () { return wrapElementsDimensions = _this.getWrappingDimensions(); }), operators_1.tap(function () {
+            if (!_this.thisStepUsesTextualOverlay) {
                 _this.lightboxRenderer.disposeTextualOverlay();
-                _this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
             }
-            else {
-                _this.overlayRenderer.placeEndTutorialButton();
+            if (!!wrapElementsDimensions) {
                 _this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
             }
         }), operators_1.tap(function () {
@@ -1254,7 +1250,7 @@ var HazelineRunner = /** @class */ (function () {
             runningSection: section,
             status: tutorial_section_statuses_enum_1.HazelineTutorialSectionStatuses.started,
             runningStepInSection: section.steps[_this.currentSectionStepIdx]
-        }); }), operators_1.tap(function () { return _this.overlayRenderer.placeEndTutorialButton(); }), operators_1.tap(function () { return _this.previousSectionStepIdx = _this.currentSectionStepIdx; })).subscribe();
+        }); }), operators_1.tap(function () { return _this.previousSectionStepIdx = _this.currentSectionStepIdx; })).subscribe();
         return this._$sectionStatus;
     };
     HazelineRunner.prototype.actualWindowScrollEvtListener = function () {
@@ -16098,12 +16094,12 @@ var hazelineSection = {
             text: 'Amaze your users by guiding them across the application that you\'ve build. Step by step, explaining them how each part works by making them try each feature one by one.',
         },
         {
-            elementSelector: '#start-haze',
+            elementSelector: 'none',
             text: 'Introducing Hazeline, the definitive tutorial library',
             useOverlayInsteadOfLightbox: true,
         },
         {
-            elementSelector: '#start-haze',
+            elementSelector: 'none',
             text: '<div style="text-align: center">Hazeline is meant to be:</div><br><ul style="list-style: none; margin: 0; padding: 0"><li>Simple</li><li>Nice to see</li><li>Customizable</li><li>Framework agnostic</li></ul>',
             useOverlayInsteadOfLightbox: true,
         },
@@ -16112,15 +16108,15 @@ var hazelineSection = {
             text: 'Amaze your users by guiding them across the application that you\'ve build. Step by step, explaining them how each part works by making them try each feature one by one.',
         },
         {
-            elementSelector: '#start-haze',
+            elementSelector: 'none',
             text: 'You can even wait for a certain event to happen, by delaying the start of a specific step, like the next one.',
             useOverlayInsteadOfLightbox: true,
         },
         {
             delayBeforeStart: 3000,
             delayTextColor: '#fff',
+            elementSelector: 'none',
             text: 'The answer is 42',
-            elementSelector: '#input-2',
             useOverlayInsteadOfLightbox: true,
             delayText: 'Hazeline is calculating the meaning of life. <br>Please wait.',
         },
@@ -16163,7 +16159,7 @@ var hazelineSection = {
         },
         {
             text: '<strong class="haze-font">Hazeline</strong>',
-            elementSelector: '#input-2',
+            elementSelector: 'none',
             dynamicOptions: {
                 textualOverlay: {
                     hideButtons: true,

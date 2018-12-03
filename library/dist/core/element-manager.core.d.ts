@@ -5,4 +5,5 @@ export declare class HazelineElementManager {
     static getElementBySelector<T>(selector: string): T;
     private computeWrappingElements;
 }
+export declare const NullDimensions: HazelineWrappingElementsDimensions;
 //# sourceMappingURL=element-manager.core.d.ts.map
