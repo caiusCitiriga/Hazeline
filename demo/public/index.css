@@ -25,3 +25,7 @@ strong.haze-font {
     font-style: italic;
     line-height: 0;
 }
+
+strong.haze-font{
+    font-size: unset !important;
+}

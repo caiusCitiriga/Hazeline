@@ -84,6 +84,8 @@ export class HazelineRunner {
 
                 }),
                 tap(() => {
+                    debugger;
+                    this.applyCustomOptionsIfAny(HazelineElementsDefaults);
                     this.applyCustomOptionsIfAny(section.globalOptions);
                     this.applyCustomOptionsIfAny(this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions, true);
                 }),
@@ -103,7 +105,7 @@ export class HazelineRunner {
                         }
 
                         let fadeOutBeforeRemoving = true;
-                        if (this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions.textualOverlay) {
+                        if (this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions && this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions.textualOverlay) {
                             fadeOutBeforeRemoving = !this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions.textualOverlay.disableBgFadeIn;
                         }
 
@@ -257,6 +259,10 @@ export class HazelineRunner {
                             runningStepInSection: null,
                             status: HazelineTutorialSectionStatuses.ended
                         });
+
+                        this.currentSection = null;
+                        this.currentSectionStepIdx = 0;
+                        this.previousSectionStepIdx = 0;
                         return false;
                     }
 
@@ -287,7 +293,7 @@ export class HazelineRunner {
                 }),
                 filter(applyDelay => !!applyDelay),
                 switchMap(() => {
-                    this.overlayRenderer.dispose(); // TODO try to hide instead
+                    this.overlayRenderer.dispose();
                     this.lightboxRenderer.dispose();
                     this.lightboxRenderer.disposeTextualOverlay();
 

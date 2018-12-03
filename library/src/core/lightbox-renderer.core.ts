@@ -26,8 +26,8 @@ export class HazelineLightboxRenderer {
     private textualOverlay: HTMLDivElement;
     private textualOverlayParagraph: HTMLDivElement;
 
-    private ligthboxOptions: HazelineLightboxOptions = HazelineElementsDefaults.lightbox;
-    private textualOverlayOptions: HazelineTextualOverlayOptions = HazelineElementsDefaults.textualOverlay;
+    private ligthboxOptions: HazelineLightboxOptions = Object.assign({}, HazelineElementsDefaults.lightbox);
+    private textualOverlayOptions: HazelineTextualOverlayOptions = Object.assign({}, HazelineElementsDefaults.textualOverlay);
 
     //  User defined events listeners for this step
     private customNextBtnClickEvtListener: (evt: any) => void = undefined;
@@ -321,6 +321,8 @@ export class HazelineLightboxRenderer {
         const attachment = this.ligthboxOptions.positioning.attachment;
         const constraints = this.ligthboxOptions.positioning.constraints;
         const targetAttachment = this.ligthboxOptions.positioning.targetAttachment;
+
+        this.styleWholeLigthboxElement();
 
         if (!this.tether) {
             this.tether = new Tether({

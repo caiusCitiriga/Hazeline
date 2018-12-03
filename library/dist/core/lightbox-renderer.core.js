@@ -12,8 +12,8 @@ var HazelineLightboxRenderer = /** @class */ (function () {
     function HazelineLightboxRenderer() {
         var _this = this;
         this._$eventTrigger = new rxjs_1.Subject();
-        this.ligthboxOptions = elements_defaults_const_1.HazelineElementsDefaults.lightbox;
-        this.textualOverlayOptions = elements_defaults_const_1.HazelineElementsDefaults.textualOverlay;
+        this.ligthboxOptions = Object.assign({}, elements_defaults_const_1.HazelineElementsDefaults.lightbox);
+        this.textualOverlayOptions = Object.assign({}, elements_defaults_const_1.HazelineElementsDefaults.textualOverlay);
         //  User defined events listeners for this step
         this.customNextBtnClickEvtListener = undefined;
         this.customPrevBtnClickEvtListener = undefined;
@@ -273,6 +273,7 @@ var HazelineLightboxRenderer = /** @class */ (function () {
         var attachment = this.ligthboxOptions.positioning.attachment;
         var constraints = this.ligthboxOptions.positioning.constraints;
         var targetAttachment = this.ligthboxOptions.positioning.targetAttachment;
+        this.styleWholeLigthboxElement();
         if (!this.tether) {
             this.tether = new tether_1.default({
                 target: target,

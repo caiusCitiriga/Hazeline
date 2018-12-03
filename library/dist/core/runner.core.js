@@ -64,6 +64,8 @@ var HazelineRunner = /** @class */ (function () {
                 ? false
                 : _this.currentSection.steps[_this.previousSectionStepIdx].useOverlayInsteadOfLightbox;
         }), operators_1.tap(function () {
+            debugger;
+            _this.applyCustomOptionsIfAny(elements_defaults_const_1.HazelineElementsDefaults);
             _this.applyCustomOptionsIfAny(section.globalOptions);
             _this.applyCustomOptionsIfAny(_this.currentSection.steps[_this.currentSectionStepIdx].dynamicOptions, true);
         }), operators_1.tap(function () { return wrapElementsDimensions = _this.getWrappingDimensions(); }), operators_1.tap(function () {
@@ -79,7 +81,7 @@ var HazelineRunner = /** @class */ (function () {
                     _this.overlayRenderer.removeEndTutorialButton();
                 }
                 var fadeOutBeforeRemoving = true;
-                if (_this.currentSection.steps[_this.currentSectionStepIdx].dynamicOptions.textualOverlay) {
+                if (_this.currentSection.steps[_this.currentSectionStepIdx].dynamicOptions && _this.currentSection.steps[_this.currentSectionStepIdx].dynamicOptions.textualOverlay) {
                     fadeOutBeforeRemoving = !_this.currentSection.steps[_this.currentSectionStepIdx].dynamicOptions.textualOverlay.disableBgFadeIn;
                 }
                 _this.lightboxRenderer.disposeTextualOverlay(false, fadeOutBeforeRemoving)
@@ -196,6 +198,9 @@ var HazelineRunner = /** @class */ (function () {
                     runningStepInSection: null,
                     status: tutorial_section_statuses_enum_1.HazelineTutorialSectionStatuses.ended
                 });
+                _this.currentSection = null;
+                _this.currentSectionStepIdx = 0;
+                _this.previousSectionStepIdx = 0;
                 return false;
             }
             return true;
@@ -216,7 +221,7 @@ var HazelineRunner = /** @class */ (function () {
             }
             return true;
         }), operators_1.filter(function (applyDelay) { return !!applyDelay; }), operators_1.switchMap(function () {
-            _this.overlayRenderer.dispose(); // TODO try to hide instead
+            _this.overlayRenderer.dispose();
             _this.lightboxRenderer.dispose();
             _this.lightboxRenderer.disposeTextualOverlay();
             var message = _this.currentSection.steps[_this.currentSectionStepIdx].delayText;

@@ -94,7 +94,16 @@ export class Hazeline {
             }),
             tap((status: HazelineTutorialSectionStatus | undefined) => {
                 if (status && status.status !== HazelineTutorialSectionStatuses.started) {
-                    sectionToRun.onBeforeEnd().then(() => this.runner.endTutorial());
+                    sectionToRun.onBeforeEnd().then(() => {
+                        this.runner.endTutorial();
+                        this.lightbox.dispose();
+                        this.renderer.dispose();
+
+                        this.renderer = new HazelineOverlayRenderer();
+                        this.lightbox = new HazelineLightboxRenderer();
+
+                        this.runner = new HazelineRunner(this.lightbox, this.renderer, this.elementManager);
+                    });
                 }
             })
         ).subscribe();

@@ -37,7 +37,7 @@ export class HazelineOverlayRenderer {
     }
 
     private _$prematureEndRequired = new Subject<boolean>();
-    private overlayOptions = HazelineElementsDefaults.overlay;
+    private overlayOptions = Object.assign({}, HazelineElementsDefaults.overlay);
 
     private endTutorialBtnClickEvtListener = () => this._$prematureEndRequired.next(true);
     private endTutorialBtnMouseLeaveEvtListener = () => HazelineStylesManager.styleElement(this.endTutorialBtn, this.overlayOptions.endTutorialBtnCSS);
