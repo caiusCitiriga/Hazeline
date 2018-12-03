@@ -68,7 +68,14 @@ var Hazeline = /** @class */ (function () {
             return rxjs_1.of(status);
         }), operators_1.tap(function (status) {
             if (status && status.status !== tutorial_section_statuses_enum_1.HazelineTutorialSectionStatuses.started) {
-                sectionToRun.onBeforeEnd().then(function () { return _this.runner.endTutorial(); });
+                sectionToRun.onBeforeEnd().then(function () {
+                    _this.runner.endTutorial();
+                    _this.lightbox.dispose();
+                    _this.renderer.dispose();
+                    _this.renderer = new overlay_renderer_core_1.HazelineOverlayRenderer();
+                    _this.lightbox = new lightbox_renderer_core_1.HazelineLightboxRenderer();
+                    _this.runner = new runner_core_1.HazelineRunner(_this.lightbox, _this.renderer, _this.elementManager);
+                });
             }
         })).subscribe();
         return this._$tutorialStatus;

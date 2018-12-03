@@ -13,7 +13,7 @@ It works great with <b style="color: #f44336">Angular</b>!
 
 [![License: MIT](https://img.shields.io/github/license/mashape/apistatus.svg)](https://raw.githubusercontent.com/caiusCitiriga/nrg-cli/feature/templates/LICENSE)
 
-![Hazeline GIF demo](https://github.com/caiusCitiriga/Hazeline/raw/dev/docs/hazeline-demo.gif)
+![Hazeline GIF demo](https://github.com/caiusCitiriga/Hazeline/raw/dev/docs/haze_demo.gif)
 
 ## Install
 ```
@@ -266,6 +266,96 @@ The third, optional property. If set to `true` it will remove the Next and Previ
     }
 },
 ```
+
+## A note about performances
+
+Although I've tryied my best to keep Hazeline as efficient as possible, note that a heavy usage of events listeneres, and observables is going on under the hood. Of course all the events listeners are **detached** at the end of the tutorial, and all the observables are closed or unsubscribed too.
+
+All the tests that I've done so far, didn't seem to go "slow", "laggish" or with poor performances. But still, be aware of this. 
+
+The only time you may see some glitching going around is when going crazy with scrolling, resizing of the window. 
+
+Or when you are heavily debbugging with the DevTools opened in Chrome. But when the DevTools are closed everything will run smooth.
+
+## A note about compatibility
+
+Even though I've done my best to keep compatibility across browsers, there's one property used inside Hazeline that will **sure** break **IE** (guess who 😤).
+
+The incriminated property is `ParentNode.prepend(...nodesToPrepend);`
+
+If you still **need** to support IE (who uses it still? 😓) you can integrate this polyfill (coming from the official MDN documentation):
+
+```js
+// Source: https://github.com/jserz/js_piece/blob/master/DOM/ParentNode/prepend()/prepend().md
+(function (arr) {
+  arr.forEach(function (item) {
+    if (item.hasOwnProperty('prepend')) {
+      return;
+    }
+    Object.defineProperty(item, 'prepend', {
+      configurable: true,
+      enumerable: true,
+      writable: true,
+      value: function prepend() {
+        var argArr = Array.prototype.slice.call(arguments),
+          docFrag = document.createDocumentFragment();
+        
+        argArr.forEach(function (argItem) {
+          var isNode = argItem instanceof Node;
+          docFrag.appendChild(isNode ? argItem : document.createTextNode(String(argItem)));
+        });
+        
+        this.insertBefore(docFrag, this.firstChild);
+      }
+    });
+  });
+})([Element.prototype, Document.prototype, DocumentFragment.prototype]);
+```
+
+Other than that it should work in **any** other browser. I've tested it on Chrome, Firefox, and Safari. Unfortunately I couldn't test it on Edge or IE since I'm working on Mac. 
+
+But if some brave heart reading this, would like to do it, I'd really appreciate it ❤️
+
+## A note about responsiveness
+
+Hazeline has in mind responsiveness. There's one problem though, the lightbox. Since the size of the screen might change at runtime, sometimes the lightbox might be placed half outside of the screen. 
+
+But I left Hazeline fully customizable for this. I kept this principle in mind, and that's why you also have the `onBeforeStart` and `onBeforeEnd` callbacks both on the **Sections** and the **Steps**. 
+
+Since **any** type of customization is done **after** the execution of `onBeforeStart`, you can dinamically detect your screen size, and change the actual options for the running step accordingly, and then after the callback execution the new options will be used.
+
+#### Quick example:
+```ts
+const hazelineSection = 
+
+...
+
+{
+    elementSelector: '#inputZip',
+    text: 'Third',
+    dynamicOptions: {
+        lightbox: {
+            positioning: {
+                attachment: 'left top',
+                targetAttachment: 'bottom left',
+            }
+        }
+    },
+    onBeforeStart: () => new Promise((res, rej) => {
+        const stepIndex = hazelineSection.steps.findIndex(step => step.elementSelector === '#inputZip');
+        //  This will force Hazeline to ignore the previous configuration 
+        //  and use the textual overlay instead
+        hazelineSection.steps[stepIndex].useOverlayInsteadOfLightbox = true;
+        res();
+    })
+}
+
+...
+
+haze.addSection(hazelineSection);
+haze.runTutorial(hazelineSection.id);
+```
+
 
 ## Hazeline section step specific properties
 ---
@@ -540,6 +630,15 @@ interface HazelineTutorialStep {
     onBeforeStart?: () => Promise<boolean>;
 }
 ```
+
+## Conclusions
+
+I really hope that you will enjoy using Hazeline as much as I enjoyed developing it, and publishing it, making it available to you too. 
+
+So if you used it in a project hit me up with a star! I'd really love to see how much impact this library does.
+
+Thank you ❤️<br>
+Caius 
 
 ---
 ### Built With

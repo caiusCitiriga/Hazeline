@@ -26,7 +26,7 @@ var HazelineOverlayRenderer = /** @class */ (function () {
             },
         };
         this._$prematureEndRequired = new rxjs_1.Subject();
-        this.overlayOptions = elements_defaults_const_1.HazelineElementsDefaults.overlay;
+        this.overlayOptions = Object.assign({}, elements_defaults_const_1.HazelineElementsDefaults.overlay);
         this.endTutorialBtnClickEvtListener = function () { return _this._$prematureEndRequired.next(true); };
         this.endTutorialBtnMouseLeaveEvtListener = function () { return styles_manager_core_1.HazelineStylesManager.styleElement(_this.endTutorialBtn, _this.overlayOptions.endTutorialBtnCSS); };
         this.endTutorialBtnMouseEnterEvtListener = function () { return styles_manager_core_1.HazelineStylesManager.styleElement(_this.endTutorialBtn, _this.overlayOptions.endTutorialBtnHoverCSS); };

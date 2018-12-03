@@ -18,6 +18,7 @@ export const HazelineElementsDefaults: HazelineOptions = {
         },
 
         lightboxWrapperCSS: {
+            color: '#333',
             padding: '8px',
             width: '350px',
             height: '250px',

@@ -113,6 +113,7 @@ exports.HazelineElementsDefaults = {
             offset: '0 0'
         },
         lightboxWrapperCSS: {
+            color: '#333',
             padding: '8px',
             width: '350px',
             height: '250px',
@@ -452,8 +453,8 @@ var HazelineLightboxRenderer = /** @class */ (function () {
     function HazelineLightboxRenderer() {
         var _this = this;
         this._$eventTrigger = new rxjs_1.Subject();
-        this.ligthboxOptions = elements_defaults_const_1.HazelineElementsDefaults.lightbox;
-        this.textualOverlayOptions = elements_defaults_const_1.HazelineElementsDefaults.textualOverlay;
+        this.ligthboxOptions = Object.assign({}, elements_defaults_const_1.HazelineElementsDefaults.lightbox);
+        this.textualOverlayOptions = Object.assign({}, elements_defaults_const_1.HazelineElementsDefaults.textualOverlay);
         //  User defined events listeners for this step
         this.customNextBtnClickEvtListener = undefined;
         this.customPrevBtnClickEvtListener = undefined;
@@ -713,6 +714,7 @@ var HazelineLightboxRenderer = /** @class */ (function () {
         var attachment = this.ligthboxOptions.positioning.attachment;
         var constraints = this.ligthboxOptions.positioning.constraints;
         var targetAttachment = this.ligthboxOptions.positioning.targetAttachment;
+        this.styleWholeLigthboxElement();
         if (!this.tether) {
             this.tether = new tether_1.default({
                 target: target,
@@ -864,7 +866,7 @@ var HazelineOverlayRenderer = /** @class */ (function () {
             },
         };
         this._$prematureEndRequired = new rxjs_1.Subject();
-        this.overlayOptions = elements_defaults_const_1.HazelineElementsDefaults.overlay;
+        this.overlayOptions = Object.assign({}, elements_defaults_const_1.HazelineElementsDefaults.overlay);
         this.endTutorialBtnClickEvtListener = function () { return _this._$prematureEndRequired.next(true); };
         this.endTutorialBtnMouseLeaveEvtListener = function () { return styles_manager_core_1.HazelineStylesManager.styleElement(_this.endTutorialBtn, _this.overlayOptions.endTutorialBtnCSS); };
         this.endTutorialBtnMouseEnterEvtListener = function () { return styles_manager_core_1.HazelineStylesManager.styleElement(_this.endTutorialBtn, _this.overlayOptions.endTutorialBtnHoverCSS); };
@@ -1212,6 +1214,8 @@ var HazelineRunner = /** @class */ (function () {
                 ? false
                 : _this.currentSection.steps[_this.previousSectionStepIdx].useOverlayInsteadOfLightbox;
         }), operators_1.tap(function () {
+            debugger;
+            _this.applyCustomOptionsIfAny(elements_defaults_const_1.HazelineElementsDefaults);
             _this.applyCustomOptionsIfAny(section.globalOptions);
             _this.applyCustomOptionsIfAny(_this.currentSection.steps[_this.currentSectionStepIdx].dynamicOptions, true);
         }), operators_1.tap(function () { return wrapElementsDimensions = _this.getWrappingDimensions(); }), operators_1.tap(function () {
@@ -1227,7 +1231,7 @@ var HazelineRunner = /** @class */ (function () {
                     _this.overlayRenderer.removeEndTutorialButton();
                 }
                 var fadeOutBeforeRemoving = true;
-                if (_this.currentSection.steps[_this.currentSectionStepIdx].dynamicOptions.textualOverlay) {
+                if (_this.currentSection.steps[_this.currentSectionStepIdx].dynamicOptions && _this.currentSection.steps[_this.currentSectionStepIdx].dynamicOptions.textualOverlay) {
                     fadeOutBeforeRemoving = !_this.currentSection.steps[_this.currentSectionStepIdx].dynamicOptions.textualOverlay.disableBgFadeIn;
                 }
                 _this.lightboxRenderer.disposeTextualOverlay(false, fadeOutBeforeRemoving)
@@ -1344,6 +1348,9 @@ var HazelineRunner = /** @class */ (function () {
                     runningStepInSection: null,
                     status: tutorial_section_statuses_enum_1.HazelineTutorialSectionStatuses.ended
                 });
+                _this.currentSection = null;
+                _this.currentSectionStepIdx = 0;
+                _this.previousSectionStepIdx = 0;
                 return false;
             }
             return true;
@@ -1364,7 +1371,7 @@ var HazelineRunner = /** @class */ (function () {
             }
             return true;
         }), operators_1.filter(function (applyDelay) { return !!applyDelay; }), operators_1.switchMap(function () {
-            _this.overlayRenderer.dispose(); // TODO try to hide instead
+            _this.overlayRenderer.dispose();
             _this.lightboxRenderer.dispose();
             _this.lightboxRenderer.disposeTextualOverlay();
             var message = _this.currentSection.steps[_this.currentSectionStepIdx].delayText;
@@ -1520,7 +1527,14 @@ var Hazeline = /** @class */ (function () {
             return rxjs_1.of(status);
         }), operators_1.tap(function (status) {
             if (status && status.status !== tutorial_section_statuses_enum_1.HazelineTutorialSectionStatuses.started) {
-                sectionToRun.onBeforeEnd().then(function () { return _this.runner.endTutorial(); });
+                sectionToRun.onBeforeEnd().then(function () {
+                    _this.runner.endTutorial();
+                    _this.lightbox.dispose();
+                    _this.renderer.dispose();
+                    _this.renderer = new overlay_renderer_core_1.HazelineOverlayRenderer();
+                    _this.lightbox = new lightbox_renderer_core_1.HazelineLightboxRenderer();
+                    _this.runner = new runner_core_1.HazelineRunner(_this.lightbox, _this.renderer, _this.elementManager);
+                });
             }
         })).subscribe();
         return this._$tutorialStatus;
@@ -16089,82 +16103,91 @@ var hazelineSection = {
     id: 'test',
     steps: [
         {
-            elementSelector: '#input-1',
-            text: 'First',
+            elementSelector: '#start-haze',
+            text: 'Introducing Hazeline, the definitive tutorial library',
             useOverlayInsteadOfLightbox: true,
-            dynamicOptions: {
-                textualOverlay: {
-                    hideButtons: true,
-                    overlayCSS: {
-                        justifyContent: 'center'
-                    },
-                    overlayParagraphFadeInOpacity: 1,
-                }
-            }
+        },
+        {
+            elementSelector: '#start-haze',
+            text: '<div style="text-align: center">Hazeline is meant to be:</div><br><ul style="list-style: none; margin: 0; padding: 0"><li>Simple</li><li>Nice to see</li><li>Customizable</li><li>Framework agnostic</li></ul>',
+            useOverlayInsteadOfLightbox: true,
+        },
+        {
+            elementSelector: '#input-1',
+            text: 'Amaze your users by guiding them across the application that you\'ve build. Step by step, explaining them how each part works by making them try each feature one by one.',
+        },
+        {
+            elementSelector: '#start-haze',
+            text: 'You can even wait for a certain event to happen, by delaying the start of a specific step, like the next one.',
+            useOverlayInsteadOfLightbox: true,
+        },
+        {
+            delayBeforeStart: 3000,
+            delayTextColor: '#fff',
+            text: 'The answer is 42',
+            elementSelector: '#input-2',
+            useOverlayInsteadOfLightbox: true,
+            delayText: 'Hazeline is calculating the meaning of life. <br>Please wait.',
         },
         {
             elementSelector: '#input-2',
-            text: 'Second',
-            useOverlayInsteadOfLightbox: true,
-            dynamicOptions: {
-                textualOverlay: {
-                    overlayBgFadeInOpacity: 1,
-                    clickAnywhereForNextStep: true,
-                    hideButtons: true,
-                    overlayCSS: {
-                        opacity: '0',
-                        justifyContent: 'center'
-                    },
-                    paragraphCSS: {
-                        justifyContent: 'center'
-                    }
-                }
-            }
-        },
-        {
-            elementSelector: '#inputZip',
-            text: 'Third',
-            dynamicOptions: {
-                lightbox: {
-                    positioning: {
-                        attachment: 'left top',
-                        targetAttachment: 'bottom left',
-                    }
-                }
-            },
-            onBeforeStart: function () { return new Promise(function (res, rej) {
-                var stepIndex = hazelineSection.steps.findIndex(function (step) { return step.elementSelector === '#inputZip'; });
-                hazelineSection.steps[stepIndex].useOverlayInsteadOfLightbox = true;
-                res();
-            }); },
+            text: 'You can listen for custom events on the elements, and trigger the next step automatically. And even decide wether hiding or leaving visible the NEXT and PREV buttons.',
             nextStepCustomTrigger: {
-                event: 'keyup',
-                disableDefaultNextPrevBtns: true,
+                event: 'click',
                 callback: function (evt, step, el) { return new Promise(function (res, rej) {
-                    if (evt.keyCode === 13) {
-                        res();
-                        return;
-                    }
-                    rej();
+                    el.blur();
+                    res();
                 }); }
             }
         },
         {
-            elementSelector: '#input-4',
-            text: 'Last',
+            elementSelector: '#input-3',
+            text: 'Also totally customize the Lightbox or any other parts, globally (once) or dynamically (step by step)',
+            dynamicOptions: {
+                overlay: {
+                    overlayCSS: {
+                        background: 'rgba(150, 34, 26, 0.83)'
+                    },
+                    endTutorialBtnCSS: {
+                        color: '#fff',
+                        borderColor: '#fff'
+                    }
+                },
+                lightbox: {
+                    nextBtnText: '>',
+                    prevBtnText: '<',
+                    lightboxWrapperCSS: {
+                        color: '#eee',
+                        background: '#333'
+                    },
+                    positioning: {
+                        offset: '-10px 0'
+                    }
+                }
+            }
         },
         {
-            elementSelector: '#input-6',
-            text: 'Last',
-        }
+            text: '<strong class="haze-font">Hazeline</strong>',
+            elementSelector: '#input-2',
+            dynamicOptions: {
+                textualOverlay: {
+                    hideButtons: true,
+                    paragraphCSS: {
+                        width: '100%',
+                        textAlign: 'center'
+                    }
+                }
+            },
+            useOverlayInsteadOfLightbox: true,
+        },
     ],
 };
+var haze = new hazeline_1.Hazeline();
 window.onload = function () {
-    var haze = new hazeline_1.Hazeline();
     haze.addSection(hazelineSection);
-    setTimeout(function () {
+    document.getElementById('start-haze').onclick = function () {
         haze.runTutorial('test');
-    }, 800);
+    };
 };
 
 
