@@ -21,9 +21,14 @@ npm install --save hazeline
 ```
 
 #### Include the Theter min file provided with Hazeline:
+
+Due to a problem with the `--prod` build in Angular, caused by the Tether package installed via NPM, we had to remove Tether from our `package.json` and unfortunately, we need that **you include** the Tether package in your application. 
+
+But don't worry, we've got you covered here, by providing a Thether `.min.js` file that you can find inside `hazeline/dist/tether.min.js`
+
 <br>
 
-From `node_modules`
+From `node_modules` in `html` file:
 ```html
 <html>
     <head>
@@ -32,7 +37,7 @@ From `node_modules`
 </html>
 ```
 
-From `CDN`
+From `CDN` in `html` file:
 ```html
 <html>
     <head>
