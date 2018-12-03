@@ -1,17 +1,19 @@
 import { Observable, BehaviorSubject, of, Subject, from } from 'rxjs';
 import { filter, tap, switchMap, take, debounceTime, delay } from 'rxjs/operators';
 
+import { HazelineElementsDefaults } from './consts/elements-defaults.const';
+
+import { HazelineElementsIds } from './enums/elements-ids.enum';
+import { HazelineTutorialSectionStatuses } from './enums/tutorial-section-statuses.enum';
+
 import { HazelineOptions } from './interfaces/hazeline-options.interface';
 import { HazelineTutorialSection } from './interfaces/tutorial-section.interface';
-import { HazelineTutorialSectionStatuses } from './enums/tutorial-section-statuses.enum';
 import { HazelineTutorialSectionStatus } from './interfaces/tutorial-section-status.interface';
+import { HazelineWrappingElementsDimensions } from './interfaces/wrapping-elements-dimensions.interface';
 
 import { HazelineElementManager } from './element-manager.core';
 import { HazelineOverlayRenderer } from './overlay-renderer.core';
 import { HazelineLightboxRenderer, HazelineEventTrigger } from './lightbox-renderer.core';
-import { HazelineWrappingElementsDimensions } from './interfaces/wrapping-elements-dimensions.interface';
-import { HazelineElementsDefaults } from './consts/elements-defaults.const';
-import { HazelineElementsIds } from './enums/elements-ids.enum';
 
 export class HazelineRunner {
 
@@ -115,6 +117,20 @@ export class HazelineRunner {
                                 section.steps[this.currentSectionStepIdx],
                                 this.isLastStep);
                         }
+                    }
+                }),
+                tap(() => {
+                    if (this.currentSection.steps[this.currentSectionStepIdx].nextStepCustomTrigger) {
+                        if (this.currentSection.steps[this.currentSectionStepIdx].nextStepCustomTrigger.disableDefaultNextPrevBtns) {
+                            this.lightboxRenderer.disableNextPrevBtns();
+                        }
+
+                        this.lightboxRenderer.attachCustomNextEventListenerOnElement({
+                            step: this.currentSection.steps[this.currentSectionStepIdx],
+                            event: this.currentSection.steps[this.currentSectionStepIdx].nextStepCustomTrigger.event,
+                            listener: this.currentSection.steps[this.currentSectionStepIdx].nextStepCustomTrigger.callback,
+                            element: HazelineElementManager.getElementBySelector<HTMLElement>(this.currentSection.steps[this.currentSectionStepIdx].elementSelector),
+                        });
                     }
                 }),
                 tap(() => this._$sectionStatus.next({
@@ -239,6 +255,18 @@ export class HazelineRunner {
                     }
 
                     return true;
+                }),
+                tap(() => {
+                    if (this.currentSection.steps[this.currentSectionStepIdx].nextStepCustomTrigger) {
+                        if (this.currentSection.steps[this.currentSectionStepIdx].nextStepCustomTrigger.disableDefaultNextPrevBtns) {
+                            this.lightboxRenderer.enableNextPrevBtns();
+                        }
+
+                        this.lightboxRenderer.detachCustomEventsListeners({
+                            event: this.currentSection.steps[this.currentSectionStepIdx].nextStepCustomTrigger.event,
+                            element: HazelineElementManager.getElementBySelector<HTMLElement>(this.currentSection.steps[this.currentSectionStepIdx].elementSelector)
+                        });
+                    }
                 }),
                 tap(() => isNextStepRequired ? this.currentSectionStepIdx++ : this.currentSectionStepIdx--),
                 tap(() => this.overlayRenderer.removeEndTutorialButton()),

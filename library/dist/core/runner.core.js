@@ -2,11 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var rxjs_1 = require("rxjs");
 var operators_1 = require("rxjs/operators");
+var elements_defaults_const_1 = require("./consts/elements-defaults.const");
+var elements_ids_enum_1 = require("./enums/elements-ids.enum");
 var tutorial_section_statuses_enum_1 = require("./enums/tutorial-section-statuses.enum");
 var element_manager_core_1 = require("./element-manager.core");
 var lightbox_renderer_core_1 = require("./lightbox-renderer.core");
-var elements_defaults_const_1 = require("./consts/elements-defaults.const");
-var elements_ids_enum_1 = require("./enums/elements-ids.enum");
 var HazelineRunner = /** @class */ (function () {
     function HazelineRunner(lightbox, renderer, elementManager) {
         var _this = this;
@@ -90,6 +90,18 @@ var HazelineRunner = /** @class */ (function () {
                 catch (_a) {
                     _this.lightboxRenderer.placeLightbox(element_manager_core_1.HazelineElementManager.getElementBySelector(section.steps[_this.currentSectionStepIdx].elementSelector), section.steps[_this.currentSectionStepIdx], _this.isLastStep);
                 }
+            }
+        }), operators_1.tap(function () {
+            if (_this.currentSection.steps[_this.currentSectionStepIdx].nextStepCustomTrigger) {
+                if (_this.currentSection.steps[_this.currentSectionStepIdx].nextStepCustomTrigger.disableDefaultNextPrevBtns) {
+                    _this.lightboxRenderer.disableNextPrevBtns();
+                }
+                _this.lightboxRenderer.attachCustomNextEventListenerOnElement({
+                    step: _this.currentSection.steps[_this.currentSectionStepIdx],
+                    event: _this.currentSection.steps[_this.currentSectionStepIdx].nextStepCustomTrigger.event,
+                    listener: _this.currentSection.steps[_this.currentSectionStepIdx].nextStepCustomTrigger.callback,
+                    element: element_manager_core_1.HazelineElementManager.getElementBySelector(_this.currentSection.steps[_this.currentSectionStepIdx].elementSelector),
+                });
             }
         }), operators_1.tap(function () { return _this._$sectionStatus.next({
             runningSection: section,
@@ -183,6 +195,16 @@ var HazelineRunner = /** @class */ (function () {
                 return false;
             }
             return true;
+        }), operators_1.tap(function () {
+            if (_this.currentSection.steps[_this.currentSectionStepIdx].nextStepCustomTrigger) {
+                if (_this.currentSection.steps[_this.currentSectionStepIdx].nextStepCustomTrigger.disableDefaultNextPrevBtns) {
+                    _this.lightboxRenderer.enableNextPrevBtns();
+                }
+                _this.lightboxRenderer.detachCustomEventsListeners({
+                    event: _this.currentSection.steps[_this.currentSectionStepIdx].nextStepCustomTrigger.event,
+                    element: element_manager_core_1.HazelineElementManager.getElementBySelector(_this.currentSection.steps[_this.currentSectionStepIdx].elementSelector)
+                });
+            }
         }), operators_1.tap(function () { return isNextStepRequired ? _this.currentSectionStepIdx++ : _this.currentSectionStepIdx--; }), operators_1.tap(function () { return _this.overlayRenderer.removeEndTutorialButton(); }), operators_1.filter(function () { return !!_this.currentSection.steps && !!_this.currentSection.steps.length; }), operators_1.switchMap(function () { return rxjs_1.of(_this.currentSection.steps[_this.currentSectionStepIdx].delayBeforeStart); }), operators_1.tap(function (dealyAmount) {
             if (!dealyAmount) {
                 _this.runSection(_this.currentSection);

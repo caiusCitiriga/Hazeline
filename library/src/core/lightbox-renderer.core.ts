@@ -20,18 +20,21 @@ export class HazelineLightboxRenderer {
     private lightboxPrevBtn: HTMLButtonElement;
     private lightboxControlsWrp: HTMLDivElement;
 
+    private lightboxNextBtnOriginalDisplayMode: string;
+    private lightboxPrevBtnOriginalDisplayMode: string;
+
     private textualOverlay: HTMLDivElement;
     private textualOverlayParagraph: HTMLDivElement;
 
     private ligthboxOptions: HazelineLightboxOptions = HazelineElementsDefaults.lightbox;
     private textualOverlayOptions: HazelineTextualOverlayOptions = HazelineElementsDefaults.textualOverlay;
 
-    private nextBtnClickEvtListener = () => {
-        this._$eventTrigger.next({ type: HazelineEventTrigger.next });
-    }
-    private prevBtnClickEvtListener = () => {
-        this._$eventTrigger.next({ type: HazelineEventTrigger.previous });
-    };
+    //  User defined events listeners for this step
+    private customNextBtnClickEvtListener: (evt: any) => void = undefined;
+    private customPrevBtnClickEvtListener: (evt: any) => void = undefined;
+    //  Hazeline's default events listeners for this step
+    private nextBtnClickEvtListener = () => this._$eventTrigger.next({ type: HazelineEventTrigger.next });
+    private prevBtnClickEvtListener = () => this._$eventTrigger.next({ type: HazelineEventTrigger.previous });
 
     private prevBtnMouseLeaveEvtListener = () =>
         HazelineStylesManager.styleElement<HTMLButtonElement>(this.lightboxPrevBtn, this.ligthboxOptions.lightboxPrevBtnCSS || HazelineElementsDefaults.lightbox.lightboxPrevBtnCSS);
@@ -43,7 +46,35 @@ export class HazelineLightboxRenderer {
     private nextBtnMouseEnterEvtListener = () =>
         HazelineStylesManager.styleElement<HTMLButtonElement>(this.lightboxNextBtn, this.ligthboxOptions.lightboxNextBtnHoverCSS || HazelineElementsDefaults.lightbox.lightboxNextBtnHoverCSS);
 
+
     public $eventTriggered(): Observable<{ type: HazelineEventTrigger }> { return this._$eventTrigger; }
+
+    public attachCustomNextEventListenerOnElement(opts: CustomEventListenerOpts): void {
+        this.customNextBtnClickEvtListener = (evt: any) => {
+            opts.listener(evt, opts.step, opts.element)
+                .then(() => this._$eventTrigger.next({ type: HazelineEventTrigger.next }))
+                .catch(() => null);
+        };
+
+        opts.element.addEventListener(opts.event, this.customNextBtnClickEvtListener);
+    }
+
+    public detachCustomEventsListeners(opts: CustomEventListenerDetachOpts): void {
+        if (this.customNextBtnClickEvtListener) {
+            opts.element.removeEventListener(opts.event, this.customNextBtnClickEvtListener);
+        }
+        if (this.customPrevBtnClickEvtListener) {
+            opts.element.removeEventListener(opts.event, this.customPrevBtnClickEvtListener);
+        }
+    }
+
+    public disableNextPrevBtns(): void {
+        this.lightboxNextBtnOriginalDisplayMode = this.lightboxNextBtn.style.display;
+        this.lightboxPrevBtnOriginalDisplayMode = this.lightboxPrevBtn.style.display;
+
+        this.lightboxNextBtn.style.display = 'none';
+        this.lightboxPrevBtn.style.display = 'none';
+    }
 
     public dispose(detachListeners = false): void {
         if (document.getElementById(HazelineElementsIds.lightbox)) {
@@ -104,6 +135,14 @@ export class HazelineLightboxRenderer {
 
         timer(10).subscribe(() => elementRemoved.next(true));
         return elementRemoved;
+    }
+
+    public enableNextPrevBtns(): void {
+        this.lightboxNextBtn.style.display = !!this.lightboxNextBtnOriginalDisplayMode ? this.lightboxNextBtnOriginalDisplayMode : 'unset';
+        this.lightboxPrevBtn.style.display = !!this.lightboxPrevBtnOriginalDisplayMode ? this.lightboxPrevBtnOriginalDisplayMode : 'unset';
+
+        this.lightboxNextBtnOriginalDisplayMode = undefined;
+        this.lightboxPrevBtnOriginalDisplayMode = undefined;
     }
 
     public hideLightbox(): void {
@@ -408,4 +447,16 @@ export class HazelineLightboxRenderer {
 export enum HazelineEventTrigger {
     next,
     previous
+}
+
+export interface CustomEventListenerOpts {
+    event: string,
+    element: HTMLElement,
+    step: HazelineTutorialStep,
+    listener: (evt: Event, step: HazelineTutorialStep, element: HTMLElement) => Promise<boolean>
+}
+
+export interface CustomEventListenerDetachOpts {
+    event: string,
+    element: HTMLElement,
 }

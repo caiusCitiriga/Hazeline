@@ -1,21 +1,9 @@
-import { Hazeline } from 'hazeline';
+import { Hazeline, HazelineTutorialStep } from 'hazeline';
 
 window.onload = () => {
     const haze = new Hazeline();
     haze.addSection({
         id: 'test',
-        onBeforeStart: () => new Promise((res, rej) => {
-            setTimeout(() => {
-                console.log('Executed <code>onBeforeStart</code> event on Section');
-                res();
-            }, 1000);
-        }),
-        onBeforeEnd: () => new Promise((res, rej) => {
-            setTimeout(() => {
-                console.log('Executed <code>onBeforeEnd</code> event on Section');
-                res();
-            }, 1000);
-        }),
         steps: [
             {
                 elementSelector: '#input-1',
@@ -61,18 +49,18 @@ window.onload = () => {
                         }
                     }
                 },
-                onBeforeStart: () => new Promise((res, rej) => {
-                    setTimeout(() => {
-                        console.log('Executed <code>onStart</code> event on Step');
-                        res();
-                    }, 1000);
-                }),
-                onBeforeEnd: () => new Promise((res, rej) => {
-                    setTimeout(() => {
-                        console.log('Executed <code>onEnd</code> event on Step');
-                        res();
-                    }, 1000);
-                }),
+                nextStepCustomTrigger: {
+                    event: 'keyup',
+                    disableDefaultNextPrevBtns: true,
+                    callback: (evt: Event, step: HazelineTutorialStep, el: HTMLElement) => new Promise<boolean>((res, rej) => {
+                        if ((evt as KeyboardEvent).keyCode === 13) {
+                            res();
+                            return;
+                        }
+
+                        rej();
+                    })
+                }
             },
             {
                 elementSelector: '#input-4',
