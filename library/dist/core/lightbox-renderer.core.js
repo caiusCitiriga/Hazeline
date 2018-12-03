@@ -1,9 +1,5 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-var tether_1 = __importDefault(require("tether"));
 var rxjs_1 = require("rxjs");
 var elements_ids_enum_1 = require("./enums/elements-ids.enum");
 var elements_defaults_const_1 = require("./consts/elements-defaults.const");
@@ -275,7 +271,7 @@ var HazelineLightboxRenderer = /** @class */ (function () {
         var targetAttachment = this.ligthboxOptions.positioning.targetAttachment;
         this.styleWholeLigthboxElement();
         if (!this.tether) {
-            this.tether = new tether_1.default({
+            this.tether = new Tether({
                 target: target,
                 offset: offset,
                 element: this.lightboxWrp,

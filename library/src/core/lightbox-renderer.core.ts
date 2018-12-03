@@ -1,4 +1,4 @@
-import Tether from 'tether';
+declare var Tether;
 import { Observable, Subject, BehaviorSubject, timer } from 'rxjs';
 
 import { HazelineElementsIds } from './enums/elements-ids.enum';

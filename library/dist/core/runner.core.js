@@ -56,7 +56,7 @@ var HazelineRunner = /** @class */ (function () {
         }
         var wrapElementsDimensions;
         rxjs_1.from(this.currentSection.steps[this.currentSectionStepIdx].onBeforeStart())
-            .pipe(operators_1.tap(function () {
+            .pipe(operators_1.tap(function () { return _this.overlayRenderer.placeEndTutorialButton(); }), operators_1.tap(function () {
             _this.isFirstStep = _this.currentSectionStepIdx === 0;
             _this.isLastStep = (section.steps.length - 1) === _this.currentSectionStepIdx;
             _this.thisStepUsesTextualOverlay = _this.currentSection.steps[_this.currentSectionStepIdx].useOverlayInsteadOfLightbox;
@@ -67,7 +67,7 @@ var HazelineRunner = /** @class */ (function () {
             _this.applyCustomOptionsIfAny(elements_defaults_const_1.HazelineElementsDefaults);
             _this.applyCustomOptionsIfAny(section.globalOptions);
             _this.applyCustomOptionsIfAny(_this.currentSection.steps[_this.currentSectionStepIdx].dynamicOptions, true);
-        }), operators_1.tap(function () { return _this.overlayRenderer.placeEndTutorialButton(); }), operators_1.tap(function () { return wrapElementsDimensions = _this.getWrappingDimensions(); }), operators_1.tap(function () {
+        }), operators_1.tap(function () { return wrapElementsDimensions = _this.getWrappingDimensions(); }), operators_1.tap(function () {
             if (!_this.thisStepUsesTextualOverlay) {
                 _this.lightboxRenderer.disposeTextualOverlay();
             }

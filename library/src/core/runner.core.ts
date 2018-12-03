@@ -74,6 +74,7 @@ export class HazelineRunner {
         let wrapElementsDimensions: HazelineWrappingElementsDimensions;
         from(this.currentSection.steps[this.currentSectionStepIdx].onBeforeStart())
             .pipe(
+                tap(() => this.overlayRenderer.placeEndTutorialButton()),
                 tap(() => {
                     this.isFirstStep = this.currentSectionStepIdx === 0;
                     this.isLastStep = (section.steps.length - 1) === this.currentSectionStepIdx;
@@ -88,7 +89,6 @@ export class HazelineRunner {
                     this.applyCustomOptionsIfAny(section.globalOptions);
                     this.applyCustomOptionsIfAny(this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions, true);
                 }),
-                tap(() => this.overlayRenderer.placeEndTutorialButton()),
                 tap(() => wrapElementsDimensions = this.getWrappingDimensions()),
                 tap(() => {
                     if (!this.thisStepUsesTextualOverlay) {

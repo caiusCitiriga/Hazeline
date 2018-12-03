@@ -1,5 +1,6 @@
 rm -rf dist
 node_modules/.bin/tsc
+cp ./src/core/tether.min.js dist/
 npm link
 
 cd ../demo
