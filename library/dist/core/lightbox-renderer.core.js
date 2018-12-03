@@ -14,12 +14,12 @@ var HazelineLightboxRenderer = /** @class */ (function () {
         this._$eventTrigger = new rxjs_1.Subject();
         this.ligthboxOptions = elements_defaults_const_1.HazelineElementsDefaults.lightbox;
         this.textualOverlayOptions = elements_defaults_const_1.HazelineElementsDefaults.textualOverlay;
-        this.nextBtnClickEvtListener = function () {
-            _this._$eventTrigger.next({ type: HazelineEventTrigger.next });
-        };
-        this.prevBtnClickEvtListener = function () {
-            _this._$eventTrigger.next({ type: HazelineEventTrigger.previous });
-        };
+        //  User defined events listeners for this step
+        this.customNextBtnClickEvtListener = undefined;
+        this.customPrevBtnClickEvtListener = undefined;
+        //  Hazeline's default events listeners for this step
+        this.nextBtnClickEvtListener = function () { return _this._$eventTrigger.next({ type: HazelineEventTrigger.next }); };
+        this.prevBtnClickEvtListener = function () { return _this._$eventTrigger.next({ type: HazelineEventTrigger.previous }); };
         this.prevBtnMouseLeaveEvtListener = function () {
             return styles_manager_core_1.HazelineStylesManager.styleElement(_this.lightboxPrevBtn, _this.ligthboxOptions.lightboxPrevBtnCSS || elements_defaults_const_1.HazelineElementsDefaults.lightbox.lightboxPrevBtnCSS);
         };
@@ -34,6 +34,29 @@ var HazelineLightboxRenderer = /** @class */ (function () {
         };
     }
     HazelineLightboxRenderer.prototype.$eventTriggered = function () { return this._$eventTrigger; };
+    HazelineLightboxRenderer.prototype.attachCustomNextEventListenerOnElement = function (opts) {
+        var _this = this;
+        this.customNextBtnClickEvtListener = function (evt) {
+            opts.listener(evt, opts.step, opts.element)
+                .then(function () { return _this._$eventTrigger.next({ type: HazelineEventTrigger.next }); })
+                .catch(function () { return null; });
+        };
+        opts.element.addEventListener(opts.event, this.customNextBtnClickEvtListener);
+    };
+    HazelineLightboxRenderer.prototype.detachCustomEventsListeners = function (opts) {
+        if (this.customNextBtnClickEvtListener) {
+            opts.element.removeEventListener(opts.event, this.customNextBtnClickEvtListener);
+        }
+        if (this.customPrevBtnClickEvtListener) {
+            opts.element.removeEventListener(opts.event, this.customPrevBtnClickEvtListener);
+        }
+    };
+    HazelineLightboxRenderer.prototype.disableNextPrevBtns = function () {
+        this.lightboxNextBtnOriginalDisplayMode = this.lightboxNextBtn.style.display;
+        this.lightboxPrevBtnOriginalDisplayMode = this.lightboxPrevBtn.style.display;
+        this.lightboxNextBtn.style.display = 'none';
+        this.lightboxPrevBtn.style.display = 'none';
+    };
     HazelineLightboxRenderer.prototype.dispose = function (detachListeners) {
         if (detachListeners === void 0) { detachListeners = false; }
         if (document.getElementById(elements_ids_enum_1.HazelineElementsIds.lightbox)) {
@@ -91,6 +114,12 @@ var HazelineLightboxRenderer = /** @class */ (function () {
         }
         rxjs_1.timer(10).subscribe(function () { return elementRemoved.next(true); });
         return elementRemoved;
+    };
+    HazelineLightboxRenderer.prototype.enableNextPrevBtns = function () {
+        this.lightboxNextBtn.style.display = !!this.lightboxNextBtnOriginalDisplayMode ? this.lightboxNextBtnOriginalDisplayMode : 'unset';
+        this.lightboxPrevBtn.style.display = !!this.lightboxPrevBtnOriginalDisplayMode ? this.lightboxPrevBtnOriginalDisplayMode : 'unset';
+        this.lightboxNextBtnOriginalDisplayMode = undefined;
+        this.lightboxPrevBtnOriginalDisplayMode = undefined;
     };
     HazelineLightboxRenderer.prototype.hideLightbox = function () {
         this.lightboxWrp.style.opacity = '0';

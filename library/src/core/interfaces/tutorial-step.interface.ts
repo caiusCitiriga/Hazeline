@@ -11,6 +11,12 @@ export interface HazelineTutorialStep {
     dynamicOptions?: HazelineOptions;
     useOverlayInsteadOfLightbox?: boolean;
 
-    onBeforeEnd?: () => Promise<boolean>;
-    onBeforeStart?: () => Promise<boolean>;
+    nextStepCustomTrigger?: {
+        event: string;
+        disableDefaultNextPrevBtns?: boolean;
+        callback: (evt: Event, step: HazelineTutorialStep, htmlElement: HTMLElement) => Promise<void>,
+    };
+
+    onBeforeEnd?: () => Promise<void>;
+    onBeforeStart?: () => Promise<void>;
 }
