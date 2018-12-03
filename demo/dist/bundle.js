@@ -1002,6 +1002,7 @@ var HazelineOverlayRenderer = /** @class */ (function () {
         elements.bottomBox.id = elements_ids_enum_1.HazelineElementsIds.bottomBox;
         elements.bottomBox.id = elements_ids_enum_1.HazelineElementsIds.bottomBox;
         Object.keys(elements).forEach(function (el) {
+            debugger;
             styles_manager_core_1.HazelineStylesManager.styleElement(elements[el], _this.overlayOptions.overlayCSS);
         });
         elements.topBox.style.width = dimensions.topBox.width + "px";
@@ -1016,19 +1017,6 @@ var HazelineOverlayRenderer = /** @class */ (function () {
         elements.bottomBox.style.height = dimensions.bottomBox.height + "px";
         elements.bottomBox.style.top = dimensions.bottomBox.offsetTop + "px";
         elements.bottomBox.style.left = dimensions.bottomBox.offsetLeft + "px";
-        // if (this.overlayOptions.topSideWrapOffset) {
-        //     elements.topBox.style.top = `-${this.overlayOptions.topSideWrapOffset}px`;
-        // }
-        // if (this.overlayOptions.rightSideWrapOffset) {
-        //     elements.rightBox.style.left = `unset`;
-        //     elements.rightBox.style.right = `-${this.overlayOptions.rightSideWrapOffset}px`;
-        //     elements.topBox.style.width = `${dimensions.topBox.width + this.overlayOptions.rightSideWrapOffset}px`;
-        //     elements.bottomBox.style.width = `${dimensions.bottomBox.width + this.overlayOptions.rightSideWrapOffset}px`;
-        // }
-        // if (this.overlayOptions.bottomSideWrapOffset) {
-        //     elements.bottomBox.style.top = `unset`;
-        //     elements.bottomBox.style.bottom = `-${this.overlayOptions.bottomSideWrapOffset}px`;
-        // }
         return elements;
     };
     HazelineOverlayRenderer.prototype.attachElementsToBody = function (elements) {
@@ -1214,13 +1202,16 @@ var HazelineRunner = /** @class */ (function () {
                 ? false
                 : _this.currentSection.steps[_this.previousSectionStepIdx].useOverlayInsteadOfLightbox;
         }), operators_1.tap(function () {
-            debugger;
             _this.applyCustomOptionsIfAny(elements_defaults_const_1.HazelineElementsDefaults);
             _this.applyCustomOptionsIfAny(section.globalOptions);
             _this.applyCustomOptionsIfAny(_this.currentSection.steps[_this.currentSectionStepIdx].dynamicOptions, true);
         }), operators_1.tap(function () { return wrapElementsDimensions = _this.getWrappingDimensions(); }), operators_1.tap(function () {
             if (!_this.isFirstStep && !_this.thisStepUsesTextualOverlay) {
                 _this.lightboxRenderer.disposeTextualOverlay();
+                _this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
+            }
+            else {
+                _this.overlayRenderer.placeEndTutorialButton();
                 _this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
             }
         }), operators_1.tap(function () {
@@ -16102,6 +16093,10 @@ var hazeline_1 = __webpack_require__(/*! hazeline */ "../library/dist/index.js")
 var hazelineSection = {
     id: 'test',
     steps: [
+        {
+            elementSelector: '#input-1',
+            text: 'Amaze your users by guiding them across the application that you\'ve build. Step by step, explaining them how each part works by making them try each feature one by one.',
+        },
         {
             elementSelector: '#start-haze',
             text: 'Introducing Hazeline, the definitive tutorial library',

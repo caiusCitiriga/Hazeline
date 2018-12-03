@@ -162,6 +162,7 @@ var HazelineOverlayRenderer = /** @class */ (function () {
         elements.bottomBox.id = elements_ids_enum_1.HazelineElementsIds.bottomBox;
         elements.bottomBox.id = elements_ids_enum_1.HazelineElementsIds.bottomBox;
         Object.keys(elements).forEach(function (el) {
+            debugger;
             styles_manager_core_1.HazelineStylesManager.styleElement(elements[el], _this.overlayOptions.overlayCSS);
         });
         elements.topBox.style.width = dimensions.topBox.width + "px";
@@ -176,19 +177,6 @@ var HazelineOverlayRenderer = /** @class */ (function () {
         elements.bottomBox.style.height = dimensions.bottomBox.height + "px";
         elements.bottomBox.style.top = dimensions.bottomBox.offsetTop + "px";
         elements.bottomBox.style.left = dimensions.bottomBox.offsetLeft + "px";
-        // if (this.overlayOptions.topSideWrapOffset) {
-        //     elements.topBox.style.top = `-${this.overlayOptions.topSideWrapOffset}px`;
-        // }
-        // if (this.overlayOptions.rightSideWrapOffset) {
-        //     elements.rightBox.style.left = `unset`;
-        //     elements.rightBox.style.right = `-${this.overlayOptions.rightSideWrapOffset}px`;
-        //     elements.topBox.style.width = `${dimensions.topBox.width + this.overlayOptions.rightSideWrapOffset}px`;
-        //     elements.bottomBox.style.width = `${dimensions.bottomBox.width + this.overlayOptions.rightSideWrapOffset}px`;
-        // }
-        // if (this.overlayOptions.bottomSideWrapOffset) {
-        //     elements.bottomBox.style.top = `unset`;
-        //     elements.bottomBox.style.bottom = `-${this.overlayOptions.bottomSideWrapOffset}px`;
-        // }
         return elements;
     };
     HazelineOverlayRenderer.prototype.attachElementsToBody = function (elements) {

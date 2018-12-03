@@ -84,7 +84,6 @@ export class HazelineRunner {
 
                 }),
                 tap(() => {
-                    debugger;
                     this.applyCustomOptionsIfAny(HazelineElementsDefaults);
                     this.applyCustomOptionsIfAny(section.globalOptions);
                     this.applyCustomOptionsIfAny(this.currentSection.steps[this.currentSectionStepIdx].dynamicOptions, true);
@@ -93,6 +92,9 @@ export class HazelineRunner {
                 tap(() => {
                     if (!this.isFirstStep && !this.thisStepUsesTextualOverlay) {
                         this.lightboxRenderer.disposeTextualOverlay();
+                        this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
+                    } else {
+                        this.overlayRenderer.placeEndTutorialButton();
                         this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
                     }
                 }),

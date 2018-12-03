@@ -4,6 +4,10 @@ const hazelineSection: HazelineTutorialSection = {
     id: 'test',
     steps: [
         {
+            elementSelector: '#input-1',
+            text: 'Amaze your users by guiding them across the application that you\'ve build. Step by step, explaining them how each part works by making them try each feature one by one.',
+        },
+        {
             elementSelector: '#start-haze',
             text: 'Introducing Hazeline, the definitive tutorial library',
             useOverlayInsteadOfLightbox: true,

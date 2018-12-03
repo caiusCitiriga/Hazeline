@@ -64,13 +64,16 @@ var HazelineRunner = /** @class */ (function () {
                 ? false
                 : _this.currentSection.steps[_this.previousSectionStepIdx].useOverlayInsteadOfLightbox;
         }), operators_1.tap(function () {
-            debugger;
             _this.applyCustomOptionsIfAny(elements_defaults_const_1.HazelineElementsDefaults);
             _this.applyCustomOptionsIfAny(section.globalOptions);
             _this.applyCustomOptionsIfAny(_this.currentSection.steps[_this.currentSectionStepIdx].dynamicOptions, true);
         }), operators_1.tap(function () { return wrapElementsDimensions = _this.getWrappingDimensions(); }), operators_1.tap(function () {
             if (!_this.isFirstStep && !_this.thisStepUsesTextualOverlay) {
                 _this.lightboxRenderer.disposeTextualOverlay();
+                _this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
+            }
+            else {
+                _this.overlayRenderer.placeEndTutorialButton();
                 _this.overlayRenderer.updateElementsDimensions(wrapElementsDimensions);
             }
         }), operators_1.tap(function () {
