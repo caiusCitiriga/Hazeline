@@ -1,7 +1,4 @@
-<style>
-@import url('https://fonts.googleapis.com/css?family=Kalam:400,700');
-</style>
-# <span style="color: #ff7a00; font-style: italic; font-family: Kalam">Hazeline</span> <span style="font-style: italic; font-family: Kalam">, the definitive tutorial library</span>.
+![Hazeline, the definitive tutorial library.](https://github.com/caiusCitiriga/Hazeline/raw/dev/docs/hazeline_title.png)
 
 <p align="center">
 A simple, fully customizable, <b>framework agnostic</b> tutorial library for <b>any</b> web application.</p>
