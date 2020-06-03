@@ -1,0 +1,30 @@
+{
+    "name": "hazeline",
+    "version": "1.0.0",
+    "description": "A simple, fully customizable, framework agnostic tutorial library for any web application",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/caiusCitiriga/Hazeline.git"
+    },
+    "keywords": [
+        "tutorial",
+        "guide",
+        "step-by-step",
+        "walkthrough",
+        "demo"
+    ],
+    "author": "Caius Citiriga",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/caiusCitiriga/Hazeline/issues"
+    },
+    "homepage": "https://github.com/caiusCitiriga/Hazeline#readme",
+    "devDependencies": {
+        "typescript": "^3.9.3"
+    }
+}
