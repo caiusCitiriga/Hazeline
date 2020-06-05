@@ -6,11 +6,6 @@ export interface IHazeCloakManagerOpts {
     cloakBackgroundColor?: string;
 }
 
-/**
- * 1) try to draw a transparent black rectangle on top of full black cloak
- * 2) try using the clear rect
- */
-
 export interface IHazeClickMasksSet {
     left: HTMLDivElement;
     above: HTMLDivElement;
@@ -140,8 +135,6 @@ export class HazeCloakManager {
 
     private async initializeCloak(): Promise<void> {
         if (!!this.cloak && !!this.cloakCTX) {
-            // this.cloak.style.opacity = '0';
-            // return new Promise(r => setTimeout(() => r(), this.transitionTime));
             this.cloak.width = window.innerWidth;
             this.cloak.height = window.innerHeight;
             return Promise.resolve();
