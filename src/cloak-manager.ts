@@ -142,6 +142,8 @@ export class HazeCloakManager {
         if (!!this.cloak && !!this.cloakCTX) {
             // this.cloak.style.opacity = '0';
             // return new Promise(r => setTimeout(() => r(), this.transitionTime));
+            this.cloak.width = window.innerWidth;
+            this.cloak.height = window.innerHeight;
             return Promise.resolve();
         }
 

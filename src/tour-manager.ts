@@ -18,11 +18,14 @@ export interface IHazeTourStep {
     lightbox?: {
         stepTitle?: string;
         stepDescription: string;
+
+        hideNextBtn?: boolean;
+        hidePrevBtn?: boolean;
     }
 }
 
 export interface IHazeTourManagerOpts {
-    lightbox: HTMLDivElement;
+    lightbox?: HTMLDivElement;
 
     cloakManager?: IHazeCloakManagerOpts;
     lightboxManager?: IHazeLightboxManagerOpts;
@@ -70,7 +73,8 @@ export class HazeTourManager {
 
         if (this.currentStep.mode === 'lightbox') {
             await this.lightboxManager.setTargetSelector(this.currentStep.targetSelector);
-            await this.lightboxManager.attachToElement();
+            await this.lightboxManager.attachToElement(this.currentStep);
+            this.attachPrevNextListeners();
             await this.lightboxManager.fadeIn();
         }
 
@@ -111,7 +115,8 @@ export class HazeTourManager {
 
         if (this.currentStep.mode === 'lightbox') {
             await this.lightboxManager.setTargetSelector(this.currentStep.targetSelector);
-            await this.lightboxManager.attachToElement();
+            await this.lightboxManager.attachToElement(this.currentStep);
+            this.attachPrevNextListeners();
             await this.lightboxManager.fadeIn();
         }
 
@@ -131,8 +136,9 @@ export class HazeTourManager {
         this.currentStepIdx--;
         if (this.currentStepIdx === -1) {
             console.log(`[HazeTourManager] First step reached`);
-            return Promise.resolve();
+            this.currentStepIdx = 0;
         }
+
         this.currentStep = this.steps[this.currentStepIdx];
 
         await this.attachTargetElement();
@@ -148,7 +154,8 @@ export class HazeTourManager {
 
         if (this.currentStep.mode === 'lightbox') {
             await this.lightboxManager.setTargetSelector(this.currentStep.targetSelector);
-            await this.lightboxManager.attachToElement();
+            await this.lightboxManager.attachToElement(this.currentStep);
+            this.attachPrevNextListeners();
             await this.lightboxManager.fadeIn();
         }
 
@@ -166,8 +173,8 @@ export class HazeTourManager {
     }
 
     private initializeDependencies(): void {
-        this.cloakManager = new HazeCloakManager('body', this.opts.cloakManager || undefined);
-        this.lightboxManager = new HazeLightboxManager('body', this.opts.lightbox, this.opts.lightboxManager || undefined);
+        this.cloakManager = new HazeCloakManager('body', this.opts.cloakManager);
+        this.lightboxManager = new HazeLightboxManager('body', this.opts.lightbox, this.opts.lightboxManager);
     }
 
     private loadSteps(): void {
@@ -263,8 +270,14 @@ export class HazeTourManager {
         this.previousStep();
     }
 
-    private reposition() {
-        this.cloakManager.cloakView();
-        this.lightboxManager.attachToElement();
+    private async reposition() {
+        await this.cloakManager.cloakView();
+        await this.lightboxManager.attachToElement(this.currentStep);
+        this.attachPrevNextListeners();
+    }
+
+    private attachPrevNextListeners(): void {
+        this.lightboxManager.onNextClick = this.nextStep.bind(this);
+        this.lightboxManager.onPrevClick = this.previousStep.bind(this);
     }
 }

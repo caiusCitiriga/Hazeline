@@ -1,6 +1,13 @@
+import { IHazeTourStep } from './tour-manager';
+
 export interface IHazeLightboxManagerOpts {
     debug?: boolean;
     lightboxZIndex?: number;
+    /**
+     * TODO: in readme specify that the user has to set the desired final display setting.
+     * because that will be used when positioning the lightbox
+     */
+    lightboxCSSDisplayMode?: string;
     lightboxPositioningOffset?: number;
     unknownPositioningFallback?: 'left' | 'above' | 'below' | 'right';
 
@@ -10,11 +17,21 @@ export interface IHazeLightboxManagerOpts {
 
 export class HazeLightboxManager {
 
+    private readonly NEXT_BTN_ID = 'hazeNextBtn';
+    private readonly PREV_BTN_ID = 'hazePrevBtn';
+    private readonly LIGHTBOX_ID = 'hazeLightbox';
+    private readonly STEP_TITLE_ID = 'hazeLightboxTitle';
+    private readonly STEP_MESSAGE_ID = 'hazeLightboxMessage';
+
     private attachAttempts = 0;
     private transitionTime = 220;
     private lightboxZIndex = 9000;
     private maxAttachAttempts = 10;
     private targetElement: HTMLElement;
+    private currentStep: IHazeTourStep;
+
+    private onNextStepBtnClickCB: () => Promise<void>;
+    private onPrevStepBtnClickCB: () => Promise<void>;
 
     constructor(
         private targetSelector: string,
@@ -28,32 +45,43 @@ export class HazeLightboxManager {
         if (!this.lightbox) {
             this.lightbox = this.generateDefaultLightbox();
         }
-        this.lightbox = this.generateDefaultLightbox();
+        this.validateLightbox();
     }
 
-    async setTargetSelector(selector: string, attach = false): Promise<void> {
-        this.targetSelector = selector;
-        if (attach) {
-            return this.attachToElement();
-        }
+    set onNextClick(cb: () => Promise<void>) {
+        this.onNextStepBtnClickCB = cb;
+    }
 
+    set onPrevClick(cb: () => Promise<void>) {
+        this.onPrevStepBtnClickCB = cb;
+    }
+
+    async setTargetSelector(selector: string): Promise<void> {
+        this.targetSelector = selector;
         return Promise.resolve();
     }
 
     setLightbox(lightbox: HTMLDivElement): void {
         this.lightbox = lightbox;
+        this.validateLightbox();
     }
 
-    async attachToElement(): Promise<void> {
+    async attachToElement(currentStep: IHazeTourStep): Promise<void> {
         if (!this.targetSelector) {
             throw new Error('[HazeLightboxManager] No target element defined');
         }
+        if (!currentStep) {
+            throw new Error('[HazeLightboxManager] No current step can be found');
+        }
+
+        this.clearPreviousStepTexts();
+        this.currentStep = currentStep;
 
         this.targetElement = document.querySelector(this.targetSelector);
         if (!this.targetElement && this.attachAttempts < this.maxAttachAttempts) {
             await new Promise(r => setTimeout(() => r(), 100));
             this.attachAttempts++;
-            return this.attachToElement();
+            return this.attachToElement(currentStep);
         } else if (!this.targetElement && this.attachAttempts === this.maxAttachAttempts) {
             throw new Error(`[HazeLightboxManager] Max attach attempts reached without finding the element`);
         }
@@ -86,11 +114,10 @@ export class HazeLightboxManager {
 
     private generateDefaultLightbox(): HTMLDivElement {
         const lightbox = document.createElement('div');
-        lightbox.id = 'hazeLightbox';
+        lightbox.id = this.LIGHTBOX_ID;
         lightbox.style.width = '350px';
         lightbox.style.padding = '10px';
         lightbox.style.display = 'flex';
-        // lightbox.style.minHeight = '120px';
         lightbox.style.borderRadius = '12px';
         lightbox.style.backgroundColor = '#fff';
         lightbox.style.flexDirection = 'column';
@@ -103,6 +130,9 @@ export class HazeLightboxManager {
         const nextBtn = document.createElement('button');
         const previousBtn = document.createElement('button');
 
+        nextBtn.id = this.NEXT_BTN_ID;
+        previousBtn.id = this.PREV_BTN_ID;
+
         nextBtn.innerHTML = this.opts && this.opts.nextBtnText ? this.opts.nextBtnText : '<span>Next</span>';
         previousBtn.innerHTML = this.opts && this.opts.previousBtnText ? this.opts.previousBtnText : '<span>Previous</span>';
         const btnStyle = {
@@ -111,13 +141,13 @@ export class HazeLightboxManager {
             lineHeight: '0',
             display: 'flex',
             fontSize: '22px',
+            color: '#0069d9',
             borderRadius: '5px',
             alignItems: 'center',
             backgroundColor: '#fff',
             justifyContent: 'center',
-            color: '#0069d9',
-            transition: 'all 120ms ease-in-out',
             border: '2px solid #0062cc',
+            transition: 'all 120ms ease-in-out',
         }
         Object.keys(btnStyle).forEach(k => {
             nextBtn.style[k] = btnStyle[k];
@@ -201,13 +231,15 @@ export class HazeLightboxManager {
     }
 
     private positionLightbox(side: 'left' | 'above' | 'below' | 'right', dryRun?: boolean) {
-
         const offset = this.opts && this.opts.lightboxPositioningOffset ? this.opts.lightboxPositioningOffset : 10;
         const targetBounds = this.targetElement.getBoundingClientRect();
 
         // append the lightbox to get access to the bounding client rect, but set it "invisible"
         this.lightbox.style.visibility = 'hidden';
         this.lightbox.style.position = 'absolute';
+        this.lightbox.style.zIndex = this.lightbox.style.zIndex ? this.lightbox.style.zIndex : this.lightboxZIndex.toString();
+        this.lightbox.style.display = this.opts && this.opts.lightboxCSSDisplayMode ? this.opts.lightboxCSSDisplayMode : 'block';
+
         document.body.appendChild(this.lightbox);
         const lightboxBounds = this.lightbox.getBoundingClientRect();
 
@@ -230,11 +262,89 @@ export class HazeLightboxManager {
                 break;
         }
 
+        this.applyStepTexts();
+        this.attachPrevNextEventsListeners();
+
         if (!dryRun) {
             this.lightbox.style.visibility = 'visible';
         }
 
     }
 
+    private attachPrevNextEventsListeners(): void {
+        const nextBtnEl = this.lightbox.querySelector(`#${this.NEXT_BTN_ID}`) as HTMLElement;
+        if (!this.currentStep.lightbox || !this.currentStep.lightbox.hideNextBtn || !nextBtnEl) {
+            nextBtnEl.style.visibility = 'visible';
+            nextBtnEl.onclick = async e => {
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                await this.onNextStepBtnClickCB();
+            }
+        } else if (!!this.currentStep.lightbox && !!this.currentStep.lightbox.hideNextBtn && !!nextBtnEl) {
+            nextBtnEl.onclick = () => null;
+            nextBtnEl.style.visibility = 'hidden';
+        }
+
+        const prevBtnEl = this.lightbox.querySelector(`#${this.PREV_BTN_ID}`) as HTMLElement;
+        if (!this.currentStep.lightbox || !this.currentStep.lightbox.hidePrevBtn || !prevBtnEl) {
+            prevBtnEl.style.visibility = 'visible';
+            prevBtnEl.onclick = async e => {
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                await this.onPrevStepBtnClickCB();
+            }
+        } else if (!!this.currentStep.lightbox && !!this.currentStep.lightbox.hidePrevBtn && !!prevBtnEl) {
+            prevBtnEl.onclick = () => null;
+            prevBtnEl.style.visibility = 'hidden';
+        }
+    }
+
+    private clearPreviousStepTexts(): void {
+        if (!this.currentStep || !this.currentStep.lightbox) { return; }
+
+        const titleElement = this.lightbox.querySelector(`#${this.STEP_TITLE_ID}`) as HTMLElement;
+        titleElement.innerHTML = '';
+
+        const messageElement = this.lightbox.querySelector(`#${this.STEP_MESSAGE_ID}`) as HTMLHtmlElement;
+        messageElement.innerHTML = '';
+    }
+
+    private applyStepTexts(): void {
+        if (!this.currentStep.lightbox) { return; }
+
+        const titleElement = this.lightbox.querySelector(`#${this.STEP_TITLE_ID}`) as HTMLElement;
+        if (!this.currentStep.lightbox.stepTitle) {
+            titleElement.style.visibility = 'hidden';
+        } else {
+            titleElement.style.visibility = 'visible';
+            titleElement.innerHTML = this.currentStep.lightbox.stepTitle;
+        }
+
+        const messageElement = this.lightbox.querySelector(`#${this.STEP_MESSAGE_ID}`) as HTMLHtmlElement;
+        messageElement.innerHTML = this.currentStep.lightbox.stepDescription;
+    }
+
+    private validateLightbox(): void {
+        if (!this.lightbox.id) {
+            throw new Error(`[HazeLightboxManager] the custom lightbox element ID attribute is missing`);
+        }
+        if (this.lightbox.id !== this.LIGHTBOX_ID) {
+            throw new Error(`[HazeLightboxManager] the custom lightbox element ID attribute is not correct. Please set it to: "${this.LIGHTBOX_ID}"`);
+        }
+        if (!this.lightbox.querySelector(`#${this.NEXT_BTN_ID}`)) {
+            throw new Error(`[HazeLightboxManager] cannot find the NEXT button in the custom lightbox element. Be sure to set the button ID to: "${this.NEXT_BTN_ID}"`);
+        }
+        if (!this.lightbox.querySelector(`#${this.PREV_BTN_ID}`)) {
+            throw new Error(`[HazeLightboxManager] cannot find the PREVIOUS button in the custom lightbox element. Be sure to set the button ID to: "${this.PREV_BTN_ID}"`);
+        }
+        if (!this.lightbox.querySelector(`#${this.STEP_TITLE_ID}`)) {
+            throw new Error(`[HazeLightboxManager] cannot find the TITLE element in the custom lightbox element. Be sure to set its ID to: "${this.STEP_TITLE_ID}"`);
+        }
+        if (!this.lightbox.querySelector(`#${this.STEP_MESSAGE_ID}`)) {
+            throw new Error(`[HazeLightboxManager] cannot find the MESSAGE element in the custom lightbox element. Be sure to set its ID to: "${this.STEP_MESSAGE_ID}"`);
+        }
+    }
 }
 
