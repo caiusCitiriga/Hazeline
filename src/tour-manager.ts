@@ -64,9 +64,9 @@ export class HazeTourManager {
         this.currentStep = this.steps[this.currentStepIdx];
 
         await this.attachTargetElement();
-        await this.attachNextStepTriggerElement();
+        await this.attachCustomNextStepTriggerElement();
 
-        this.attachNextStepEventListener();
+        this.attachCustomNextStepEventTrigger();
 
         await this.cloakManager.setTargetSelector(this.currentStep.targetSelector);
         await this.cloakManager.cloakView();
@@ -74,7 +74,7 @@ export class HazeTourManager {
         if (this.currentStep.mode === 'lightbox') {
             await this.lightboxManager.setTargetSelector(this.currentStep.targetSelector);
             await this.lightboxManager.attachToElement(this.currentStep);
-            this.attachPrevNextListeners();
+            this.attachLightboxPrevNextListeners();
             await this.lightboxManager.fadeIn();
         }
 
@@ -103,11 +103,11 @@ export class HazeTourManager {
         this.currentStep = this.steps[this.currentStepIdx];
 
         await this.attachTargetElement();
-        await this.attachNextStepTriggerElement();
-        await this.attachPreviousStepTriggerElement();
+        await this.attachCustomNextStepTriggerElement();
+        await this.attachCustomPreviousStepTriggerElement();
 
-        this.attachNextStepEventListener();
-        this.attachPreviousStepEventListener();
+        this.attachCustomNextStepEventTrigger();
+        this.attachCustomPreviousStepEventTrigger();
 
         // update the cloaker position
         await this.cloakManager.setTargetSelector(this.currentStep.targetSelector);
@@ -116,7 +116,7 @@ export class HazeTourManager {
         if (this.currentStep.mode === 'lightbox') {
             await this.lightboxManager.setTargetSelector(this.currentStep.targetSelector);
             await this.lightboxManager.attachToElement(this.currentStep);
-            this.attachPrevNextListeners();
+            this.attachLightboxPrevNextListeners();
             await this.lightboxManager.fadeIn();
         }
 
@@ -142,11 +142,11 @@ export class HazeTourManager {
         this.currentStep = this.steps[this.currentStepIdx];
 
         await this.attachTargetElement();
-        await this.attachNextStepTriggerElement();
-        await this.attachPreviousStepTriggerElement();
+        await this.attachCustomNextStepTriggerElement();
+        await this.attachCustomPreviousStepTriggerElement();
 
-        this.attachNextStepEventListener();
-        this.attachPreviousStepEventListener();
+        this.attachCustomNextStepEventTrigger();
+        this.attachCustomPreviousStepEventTrigger();
 
         // update the cloaker position
         await this.cloakManager.setTargetSelector(this.currentStep.targetSelector);
@@ -155,7 +155,7 @@ export class HazeTourManager {
         if (this.currentStep.mode === 'lightbox') {
             await this.lightboxManager.setTargetSelector(this.currentStep.targetSelector);
             await this.lightboxManager.attachToElement(this.currentStep);
-            this.attachPrevNextListeners();
+            this.attachLightboxPrevNextListeners();
             await this.lightboxManager.fadeIn();
         }
 
@@ -200,7 +200,7 @@ export class HazeTourManager {
         return Promise.resolve();
     }
 
-    private async attachNextStepTriggerElement(): Promise<void> {
+    private async attachCustomNextStepTriggerElement(): Promise<void> {
         if (!this.currentStep.nextTriggerEvent || !this.currentStep.nextStepTriggerSelector) {
             return;
         }
@@ -213,7 +213,7 @@ export class HazeTourManager {
         if (!this.nextStepTriggerElement && this.attachAttempts < this.MAX_ATTACH_ATTEMPTS) {
             await new Promise(r => setTimeout(() => r(), 100));
             this.attachAttempts++;
-            return this.attachNextStepTriggerElement();
+            return this.attachCustomNextStepTriggerElement();
         } else if (!this.nextStepTriggerElement && this.attachAttempts === this.MAX_ATTACH_ATTEMPTS) {
             throw new Error(`[HazeTourManager] Max attach attempts reached without finding the element`);
         }
@@ -222,7 +222,7 @@ export class HazeTourManager {
         return Promise.resolve();
     }
 
-    private async attachPreviousStepTriggerElement(): Promise<void> {
+    private async attachCustomPreviousStepTriggerElement(): Promise<void> {
         if (!this.currentStep.previousTriggerEvent || !this.currentStep.previousStepTriggerSelector) {
             return;
         }
@@ -235,7 +235,7 @@ export class HazeTourManager {
         if (!this.previousStepTriggerElement && this.attachAttempts < this.MAX_ATTACH_ATTEMPTS) {
             await new Promise(r => setTimeout(() => r(), 100));
             this.attachAttempts++;
-            return this.attachPreviousStepTriggerElement();
+            return this.attachCustomPreviousStepTriggerElement();
         } else if (!this.previousStepTriggerElement && this.attachAttempts === this.MAX_ATTACH_ATTEMPTS) {
             throw new Error(`[HazeTourManager] Max attach attempts reached without finding the element`);
         }
@@ -244,12 +244,12 @@ export class HazeTourManager {
         return Promise.resolve();
     }
 
-    private attachNextStepEventListener() {
+    private attachCustomNextStepEventTrigger() {
         if (!this.nextStepTriggerElement) { return; }
         this.nextStepTriggerElement.addEventListener(this.currentStep.nextTriggerEvent, this.nextStepTriggerFN.bind(this));
     }
 
-    private attachPreviousStepEventListener() {
+    private attachCustomPreviousStepEventTrigger() {
         if (!this.previousStepTriggerElement) { return; }
         this.previousStepTriggerElement.addEventListener(this.currentStep.previousTriggerEvent, this.previousStepTriggerFN.bind(this));
     }
@@ -273,10 +273,10 @@ export class HazeTourManager {
     private async reposition() {
         await this.cloakManager.cloakView();
         await this.lightboxManager.attachToElement(this.currentStep);
-        this.attachPrevNextListeners();
+        this.attachLightboxPrevNextListeners();
     }
 
-    private attachPrevNextListeners(): void {
+    private attachLightboxPrevNextListeners(): void {
         this.lightboxManager.onNextClick = this.nextStep.bind(this);
         this.lightboxManager.onPrevClick = this.previousStep.bind(this);
     }
